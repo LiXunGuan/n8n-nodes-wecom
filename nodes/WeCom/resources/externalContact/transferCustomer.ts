@@ -1,0 +1,67 @@
+import type { INodeProperties } from 'n8n-workflow';
+
+const showOnly = {
+	resource: ['externalContact'],
+	operation: ['transferCustomer'],
+};
+
+export const transferCustomerDescription: INodeProperties[] = [
+	{
+		displayName: '原成员 Name or ID',
+		name: 'handover_userid',
+		type: 'options',
+		typeOptions: {
+			loadOptionsMethod: 'getAllUsers',
+		},
+		required: true,
+		default: '',
+		displayOptions: {
+			show: showOnly,
+		},
+		hint: '原跟进成员的UserID，客户将从该成员转出',
+		description: '原跟进成员的企业成员UserID。<a href="https://developer.work.weixin.qq.com/document/path/92125" target="_blank">官方文档</a>.',
+		placeholder: 'zhangsan',
+	},
+	{
+		displayName: '接替成员 Name or ID',
+		name: 'takeover_userid',
+		type: 'options',
+		typeOptions: {
+			loadOptionsMethod: 'getAllUsers',
+		},
+		required: true,
+		default: '',
+		displayOptions: {
+			show: showOnly,
+		},
+		hint: '接替成员的UserID，客户将转给该成员',
+		description: '接替成员的企业成员UserID。<a href="https://developer.work.weixin.qq.com/document/path/92125" target="_blank">官方文档</a>.',
+		placeholder: 'lisi',
+	},
+	{
+		displayName: '客户UserID列表',
+		name: 'external_userid',
+		type: 'string',
+		required: true,
+		default: '',
+		displayOptions: {
+			show: showOnly,
+		},
+		hint: '要转移的客户external_userid列表，多个用逗号分隔',
+		description: '要转移的客户external_userid列表，多个用英文逗号分隔，一次最多转移100个客户。<a href="https://developer.work.weixin.qq.com/document/path/92125" target="_blank">官方文档</a>',
+		placeholder: 'wmxxxxxxxxxxxxxxxxxx,wmyyyyyyyyyyyyyyyyyy',
+	},
+	{
+		displayName: '转移说明',
+		name: 'transfer_success_msg',
+		type: 'string',
+		default: '',
+		displayOptions: {
+			show: showOnly,
+		},
+		hint: '可选。转移成功后发给客户的消息，最多200个字符',
+		description: '转移成功后自动发送给客户的消息，用于告知客户更换跟进人。最多200个字符。<a href="https://developer.work.weixin.qq.com/document/path/92125" target="_blank">官方文档</a>',
+		placeholder: '您好，您的专属服务人员已更换为xxx',
+	},
+];
+

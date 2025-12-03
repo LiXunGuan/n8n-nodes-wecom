@@ -1,0 +1,74 @@
+{
+	"name": "n8n-nodes-wecom",
+	"version": "0.2.2",
+	"description": "Complete n8n integration for WeCom (企业微信/WeChat Work). Send messages, manage contacts, departments, customer relations, meetings, documents, email, calendar, approvals, and more. Full-featured enterprise WeChat automation node.",
+	"license": "MIT",
+	"homepage": "https://github.com/funcodingdev/n8n-nodes-wecom",
+	"keywords": [
+		"n8n-community-node-package",
+		"wecom",
+		"wechat work",
+		"enterprise wechat",
+		"企业微信",
+		"weixin",
+		"qyweixin",
+		"wechat",
+		"messaging",
+		"contacts",
+		"crm",
+		"automation",
+		"workflow",
+		"china",
+		"business",
+		"communication",
+		"notification",
+		"webhook",
+		"trigger"
+	],
+	"author": {
+		"name": "funcodingdev",
+		"email": "funcodingdev@foxmail.com"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/funcodingdev/n8n-nodes-wecom.git"
+	},
+	"scripts": {
+		"build": "n8n-node build",
+		"build:watch": "tsc --watch",
+		"dev": "n8n-node dev",
+		"lint": "n8n-node lint",
+		"lint:fix": "n8n-node lint --fix",
+		"release": "n8n-node release",
+		"prepublishOnly": "n8n-node prerelease"
+	},
+	"files": [
+		"dist"
+	],
+	"n8n": {
+		"n8nNodesApiVersion": 1,
+		"strict": false,
+		"credentials": [
+			"dist/credentials/WeComApi.credentials.js",
+			"dist/credentials/WeComWebhookApi.credentials.js",
+			"dist/credentials/WeComReceiveApi.credentials.js"
+		],
+		"nodes": [
+			"dist/nodes/WeComBase/WeComBase.node.js",
+			"dist/nodes/WeComOffice/WeComOffice.node.js",
+			"dist/nodes/WeComTrigger/WeComTrigger.node.js",
+			"dist/nodes/WeComWechat/WeComWechat.node.js"
+		]
+	},
+	"devDependencies": {
+		"@n8n/node-cli": "*",
+		"@types/node": "^24.9.1",
+		"eslint": "9.32.0",
+		"prettier": "3.6.2",
+		"release-it": "^19.0.4",
+		"typescript": "5.9.2"
+	},
+	"peerDependencies": {
+		"n8n-workflow": "*"
+	}
+}

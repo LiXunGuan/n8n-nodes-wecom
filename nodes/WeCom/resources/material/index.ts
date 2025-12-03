@@ -1,0 +1,37 @@
+import type { INodeProperties } from 'n8n-workflow';
+import { uploadTempDescription } from './uploadTemp';
+import { getTempDescription } from './getTemp';
+import { uploadImageDescription } from './uploadImage';
+import { getHighQualityVoiceDescription } from './getHighQualityVoice';
+import { uploadTempAsyncDescription } from './uploadTempAsync';
+
+const showOnlyForMaterial = {
+	resource: ['material'],
+};
+
+export const materialDescription: INodeProperties[] = [
+	{
+		displayName: '操作',
+		name: 'operation',
+		type: 'options',
+		noDataExpression: true,
+		displayOptions: {
+			show: showOnlyForMaterial,
+		},
+		 
+		options: [
+			{ name: '上传临时素材', value: 'uploadTemp', action: '上传临时素材' },
+			{ name: '上传图片', value: 'uploadImage', action: '上传图片' },
+			{ name: '异步上传临时素材', value: 'uploadTempAsync', action: '异步上传临时素材' },
+			{ name: '获取临时素材', value: 'getTemp', action: '获取临时素材' },
+			{ name: '获取高清语音素材', value: 'getHighQualityVoice', action: '获取高清语音素材' },
+		],
+		default: 'uploadTemp',
+	},
+	...uploadTempDescription,
+	...getTempDescription,
+	...uploadImageDescription,
+	...getHighQualityVoiceDescription,
+	...uploadTempAsyncDescription,
+];
+

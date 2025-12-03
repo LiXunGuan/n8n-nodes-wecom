@@ -1,0 +1,208 @@
+import type { INodeProperties } from 'n8n-workflow';
+
+const showOnlyForCreate = {
+	resource: ['contact'],
+	operation: ['createUser'],
+};
+
+export const createUserDescription: INodeProperties[] = [
+	{
+		displayName: 'UserID',
+		name: 'userid',
+		type: 'string',
+		required: true,
+		displayOptions: {
+			show: showOnlyForCreate,
+		},
+		default: '',
+		placeholder: 'zhangsan',
+		description: '成员 UserID，企业内必须唯一。长度为1~64个字节，只能由数字、字母和"_-@."四种字符组成，且第一个字符必须是字母或数字。<a href="https://developer.work.weixin.qq.com/document/path/90195" target="_blank">官方文档</a>',
+		hint: '企业内唯一标识，如：zhangsan',
+	},
+	{
+		displayName: '姓名',
+		name: 'name',
+		type: 'string',
+		required: true,
+		displayOptions: {
+			show: showOnlyForCreate,
+		},
+		default: '',
+		placeholder: '张三',
+		description: '成员名称，长度为1~64个utf8字符。<a href="https://developer.work.weixin.qq.com/document/path/90195" target="_blank">官方文档</a>',
+		hint: '成员的真实姓名',
+	},
+	{
+		displayName: '手机号',
+		name: 'mobile',
+		type: 'string',
+		displayOptions: {
+			show: showOnlyForCreate,
+		},
+		default: '',
+		placeholder: '13800138000',
+		description: '可选。手机号码，企业内必须唯一，mobile/email 二者不能同时为空。<a href="https://developer.work.weixin.qq.com/document/path/90195" target="_blank">官方文档</a>',
+		hint: '11位手机号码，企业内唯一',
+	},
+	{
+		displayName: '所属部门',
+		name: 'department',
+		type: 'string',
+		required: true,
+		displayOptions: {
+			show: showOnlyForCreate,
+		},
+		default: '',
+		placeholder: '1,2,3',
+		description: '成员所属部门 ID 列表，不超过100个。多个部门用逗号分隔，部门 ID 为数字。<a href="https://developer.work.weixin.qq.com/document/path/90195" target="_blank">官方文档</a>',
+		hint: '部门 ID 列表，如：1,2,3，成员可属于多个部门',
+	},
+	{
+		displayName: '职务信息',
+		name: 'position',
+		type: 'string',
+		displayOptions: {
+			show: showOnlyForCreate,
+		},
+		default: '',
+		placeholder: '产品经理',
+		description: '可选。职务信息，长度为0~128个字符。<a href="https://developer.work.weixin.qq.com/document/path/90195" target="_blank">官方文档</a>',
+		hint: '成员的职位/岗位名称',
+	},
+	{
+		displayName: '性别',
+		name: 'gender',
+		type: 'options',
+		displayOptions: {
+			show: showOnlyForCreate,
+		},
+		options: [
+			{
+				name: '保密',
+				value: '0',
+			},
+			{
+				name: '男',
+				value: '1',
+			},
+			{
+				name: '女',
+				value: '2',
+			},
+		],
+		default: '0',
+		description: '可选。性别，0表示未定义，1表示男性，2表示女性。<a href="https://developer.work.weixin.qq.com/document/path/90195" target="_blank">官方文档</a>',
+	},
+	{
+		displayName: '邮箱',
+		name: 'email',
+		type: 'string',
+		placeholder: 'zhangsan@example.com',
+		displayOptions: {
+			show: showOnlyForCreate,
+		},
+		default: '',
+		description: '可选。邮箱地址，长度6~64个字节，且为有效的 email 格式。企业内必须唯一，mobile/email 二者不能同时为空。<a href="https://developer.work.weixin.qq.com/document/path/90195" target="_blank">官方文档</a>',
+		hint: '企业内唯一的邮箱地址',
+	},
+	{
+		displayName: '企业邮箱',
+		name: 'biz_mail',
+		type: 'string',
+		displayOptions: {
+			show: showOnlyForCreate,
+		},
+		default: '',
+		placeholder: 'zhangsan@company.com',
+		description: '可选。企业邮箱，仅对开通企业邮箱的企业有效。长度6~64个字节，且为有效的企业邮箱格式。<a href="https://developer.work.weixin.qq.com/document/path/90195" target="_blank">官方文档</a>',
+		hint: '需企业已开通企业邮箱服务',
+	},
+	{
+		displayName: '地址',
+		name: 'address',
+		type: 'string',
+		displayOptions: {
+			show: showOnlyForCreate,
+		},
+		default: '',
+		placeholder: '北京市海淀区...',
+		description: '可选。地址，长度最大128个字符。<a href="https://developer.work.weixin.qq.com/document/path/90195" target="_blank">官方文档</a>',
+	},
+	{
+		displayName: '别名',
+		name: 'alias',
+		type: 'string',
+		displayOptions: {
+			show: showOnlyForCreate,
+		},
+		default: '',
+		placeholder: 'jackzhang',
+		description: '可选。成员别名，长度1~64个utf8字符。<a href="https://developer.work.weixin.qq.com/document/path/90195" target="_blank">官方文档</a>',
+	},
+	{
+		displayName: '座机',
+		name: 'telephone',
+		type: 'string',
+		displayOptions: {
+			show: showOnlyForCreate,
+		},
+		default: '',
+		placeholder: '010-12345678',
+		description: '可选。座机号码，32字节以内，由纯数字、"-"、"+" 或 "," 组成。<a href="https://developer.work.weixin.qq.com/document/path/90195" target="_blank">官方文档</a>',
+	},
+	{
+		displayName: '启用状态',
+		name: 'enable',
+		type: 'options',
+		displayOptions: {
+			show: showOnlyForCreate,
+		},
+		options: [
+			{
+				name: '启用',
+				value: 1,
+			},
+			{
+				name: '禁用',
+				value: 0,
+			},
+		],
+		default: 1,
+		description: '1表示启用成员，0表示禁用成员。<a href="https://developer.work.weixin.qq.com/document/path/90195" target="_blank">官方文档</a>',
+	},
+	{
+		displayName: '头像MediaID',
+		name: 'avatar_mediaid',
+		type: 'string',
+		displayOptions: {
+			show: showOnlyForCreate,
+		},
+		default: '',
+		placeholder: '请输入头像的 media_id...',
+		description: '可选。成员头像的 mediaid，通过素材管理接口上传图片获得。<a href="https://developer.work.weixin.qq.com/document/path/90195" target="_blank">官方文档</a>',
+		hint: '需先通过素材管理接口上传图片',
+	},
+	{
+		displayName: '成员对外属性',
+		name: 'external_profile',
+		type: 'json',
+		displayOptions: {
+			show: showOnlyForCreate,
+		},
+		default: '{}',
+		placeholder: '{"external_corp_name":"企业简称","external_attr":[...]}',
+		description: '可选。成员对外属性，用于配置成员在外部联系人中显示的信息。<a href="https://developer.work.weixin.qq.com/document/path/90195" target="_blank">官方文档</a>',
+		hint: 'JSON 格式，配置对外显示的企业简称、属性等',
+	},
+	{
+		displayName: '是否邀请该成员使用企业微信',
+		name: 'to_invite',
+		type: 'boolean',
+		displayOptions: {
+			show: showOnlyForCreate,
+		},
+		default: true,
+		description: '默认值为 true。<a href="https://developer.work.weixin.qq.com/document/path/90195" target="_blank">官方文档</a>',
+	},
+];
+
