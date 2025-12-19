@@ -236,7 +236,7 @@ export async function executeWedoc(
 			else if (operation === 'querySmartsheetSheet') {
 				const docid = this.getNodeParameter('docid', i) as string;
 
-				response = await weComApiRequest.call(this, 'POST', '/cgi-bin/wedoc/smartsheet/get_sheets', { docid });
+				response = await weComApiRequest.call(this, 'POST', '/cgi-bin/wedoc/smartsheet/get_sheet', { docid });
 			} else if (operation === 'querySmartsheetView') {
 				const docid = this.getNodeParameter('docid', i) as string;
 				const sheet_id = this.getNodeParameter('sheet_id', i) as string;
