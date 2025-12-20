@@ -16,6 +16,8 @@ export default [
 			'n8n-nodes-base/node-param-description-wrong-for-dynamic-multi-options': 'off',
 			'n8n-nodes-base/node-param-description-wrong-for-dynamic-options': 'off',
 			'n8n-nodes-base/node-param-fixed-collection-type-unsorted-items': 'off',
+			// Allow Chinese trigger suffix instead of '-Trigger'
+			'n8n-nodes-base/node-class-description-display-name-unsuffixed-trigger-node': 'off',
 		},
 	},
 ];

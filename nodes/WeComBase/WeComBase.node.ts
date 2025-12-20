@@ -15,6 +15,7 @@ import { linkedcorpDescription } from '../WeCom/resources/linkedcorp';
 import { pushMessageDescription } from '../WeCom/resources/pushMessage';
 import { systemDescription } from '../WeCom/resources/system';
 import { invoiceDescription } from '../WeCom/resources/invoice';
+import { passiveReplyDescription } from '../WeCom/resources/passiveReply';
 import { executeMessage } from '../WeCom/resources/message/execute';
 import { executeContact } from '../WeCom/resources/contact/execute';
 import { executeMaterial } from '../WeCom/resources/material/execute';
@@ -23,6 +24,7 @@ import { executeLinkedcorp } from '../WeCom/resources/linkedcorp/execute';
 import { executePushMessage } from '../WeCom/resources/pushMessage/execute';
 import { executeSystem } from '../WeCom/resources/system/execute';
 import { executeInvoice } from '../WeCom/resources/invoice/execute';
+import { executePassiveReply } from '../WeCom/resources/passiveReply/execute';
 import { weComApiRequest } from '../WeCom/shared/transport';
 
 export class WeComBase implements INodeType {
@@ -67,6 +69,16 @@ export class WeComBase implements INodeType {
 					},
 				},
 			},
+			{
+				// 被动回复不需要凭证，因为加密信息从输入数据中获取
+				name: 'weComApi',
+				required: false,
+				displayOptions: {
+					show: {
+						resource: ['passiveReply'],
+					},
+				},
+			},
 		],
 		requestDefaults: {
 			baseURL: 'https://qyapi.weixin.qq.com',
@@ -104,6 +116,11 @@ export class WeComBase implements INodeType {
 						description: '通过群机器人 Webhook 发送消息到群聊',
 					},
 					{
+						name: '被动回复',
+						value: 'passiveReply',
+						description: '被动回复企业微信消息（需配合「企业微信消息接收（被动回复）触发器」使用）',
+					},
+					{
 						name: '企业互联',
 						value: 'linkedcorp',
 						description: '企业互联和上下游管理',
@@ -130,6 +147,7 @@ export class WeComBase implements INodeType {
 		...messageDescription,
 		...appChatDescription,
 		...pushMessageDescription,
+		...passiveReplyDescription,
 		...linkedcorpDescription,
 		...materialDescription,
 		...systemDescription,
@@ -276,6 +294,8 @@ export class WeComBase implements INodeType {
 			}
 		} else if (resource === 'invoice') {
 			returnData = await executeInvoice.call(this, operation as string, items);
+		} else if (resource === 'passiveReply') {
+			returnData = await executePassiveReply.call(this, operation as string, items);
 		}
 
 		return [returnData];

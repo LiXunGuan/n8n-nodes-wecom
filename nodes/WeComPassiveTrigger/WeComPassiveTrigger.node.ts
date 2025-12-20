@@ -23,7 +23,7 @@ import {
 // eslint-disable-next-line @n8n/community-nodes/node-usable-as-tool
 export class WeComPassiveTrigger implements INodeType {
 	description: INodeTypeDescription = {
-		displayName: '企业微信消息接收（被动回复）Trigger',
+		displayName: '企业微信消息接收（被动回复）触发器',
 		name: 'weComPassiveTrigger',
 		// eslint-disable-next-line @n8n/community-nodes/icon-validation
 		icon: { light: 'file:../../icons/wecom.png', dark: 'file:../../icons/wecom.dark.png' },
@@ -136,7 +136,7 @@ export class WeComPassiveTrigger implements INodeType {
 				displayOptions: {
 					show: {},
 				},
-				description: '工作流末尾需连接「企业微信被动回复」节点，且必须在5秒内返回响应。可回复：文本、图片、语音、视频、图文、模板卡片更新消息。',
+				description: '工作流结构：本触发器 → 处理节点（可选）→ 企业微信被动回复节点。被动回复节点必须是工作流的最后一个节点，且必须在5秒内返回响应。',
 			},
 		],
 	};
@@ -202,8 +202,8 @@ export class WeComPassiveTrigger implements INodeType {
 
 		// 尝试多种方式获取原始 XML 数据
 		if (req.rawBody) {
-			// n8n 在某些情况下会提供 rawBody
-			rawBody = typeof req.rawBody === 'string' ? req.rawBody : req.rawBody.toString('utf8');
+			// n8n 在某些情况下会提供 rawBody (Buffer类型)
+			rawBody = req.rawBody.toString('utf8');
 		} else if (typeof req.body === 'string') {
 			// body 本身就是字符串
 			rawBody = req.body;
@@ -284,9 +284,11 @@ export class WeComPassiveTrigger implements INodeType {
 			corpId,
 		};
 
-		// 被动回复模式：等待工作流执行完成，由 WeComReply 节点返回响应
+		// 被动回复模式：等待工作流执行完成，由被动回复节点返回响应
 		// responseMode: 'lastNode' 会等待最后一个节点的输出作为响应
+		// noWebhookResponse: true 告诉 n8n 不要立即响应，而是等待工作流完成
 		return {
+			noWebhookResponse: true,
 			workflowData: [
 				[
 					{

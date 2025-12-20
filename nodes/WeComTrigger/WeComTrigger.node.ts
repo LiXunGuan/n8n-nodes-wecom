@@ -15,7 +15,7 @@ import {
 // eslint-disable-next-line @n8n/community-nodes/node-usable-as-tool
 export class WeComTrigger implements INodeType {
 	description: INodeTypeDescription = {
-		displayName: '企业微信消息接收 Trigger',
+		displayName: '企业微信消息接收触发器',
 		name: 'weComTrigger',
 		// eslint-disable-next-line @n8n/community-nodes/icon-validation
 		icon: { light: 'file:../../icons/wecom.png', dark: 'file:../../icons/wecom.dark.png' },

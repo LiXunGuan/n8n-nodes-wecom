@@ -42,9 +42,9 @@
 - **微信客服** - 客服账号、接待人员、消息收发、统计管理
 
 
-### 4. 企业微信消息接收（Trigger）
+### 4. 企业微信消息接收触发器
 
-接收企业微信的消息和事件推送
+接收企业微信的消息和事件推送（支持普通接收和被动回复两种模式）
 
 ## 隐私与安全
 
@@ -96,7 +96,7 @@ npm install n8n-nodes-wecom
 3. 进入"应用管理" > 选择或创建一个应用
 4. 复制 **AgentId**（应用ID，例如：1000001）
 5. 启用 **API接收消息**，设置Token、EncodingAESKey
-6. 在 n8n 中创建"企业微信消息接收 Trigger"节点：
+6. 在 n8n 中创建"企业微信消息接收触发器"节点：
    - 配置凭证（企业ID、应用ID、Token、EncodingAESKey）
    - **Path** 表示 Webhook URL 的路径，建议使用应用 ID
    - 保存节点后，查看生成的 Webhook URL（例如：`https://your-n8n.com/webhook/1000001`）
@@ -115,7 +115,7 @@ npm install n8n-nodes-wecom
 
 ## 一、基础功能（企业微信-基础 节点）
 
-### 消息接收（Trigger 节点）
+### 消息接收（触发器节点）
 
 > [官方文档：接收消息与事件](https://developer.work.weixin.qq.com/document/path/90238)
 
@@ -137,6 +137,8 @@ npm install n8n-nodes-wecom
 
 > [官方文档：被动回复消息](https://developer.work.weixin.qq.com/document/path/90241)
 
+使用「企业微信消息接收（被动回复）触发器」+ 「企业微信-基础」节点的「被动回复」功能实现：
+
 - ✅ [被动回复文本消息](https://developer.work.weixin.qq.com/document/path/90241)
 - ✅ [被动回复图片消息](https://developer.work.weixin.qq.com/document/path/90241)
 - ✅ [被动回复语音消息](https://developer.work.weixin.qq.com/document/path/90241)
@@ -144,6 +146,16 @@ npm install n8n-nodes-wecom
 - ✅ [被动回复图文消息](https://developer.work.weixin.qq.com/document/path/90241)
 - ✅ 自动加密和签名
 - ✅ 支持从工作流输出中读取回复内容
+
+**工作流配置示例：**
+```
+[企业微信消息接收(被动回复)触发器] → [中间处理节点(可选)] → [企业微信-基础 (被动回复)]
+```
+
+> ⚠️ **重要提示**：
+> - 被动回复节点**必须是工作流的最后一个节点**
+> - 必须在**5秒内**返回响应，否则企业微信会认为请求失败
+> - 请确保工作流处理时间足够快
 
 **回调机制参考文档：**
 
