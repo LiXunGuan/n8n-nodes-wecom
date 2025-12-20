@@ -194,6 +194,34 @@ export class WeComTrigger implements INodeType {
 				hint: '从工作流输出数据中读取该字段作为媒体ID（需先通过素材管理接口上传获得）',
 			},
 			{
+				displayName: '视频标题字段',
+				name: 'replyVideoTitleField',
+				type: 'string',
+				displayOptions: {
+					show: {
+						enablePassiveReply: [true],
+						replyType: ['video'],
+					},
+				},
+				default: 'videoTitle',
+				description: 'The field name containing video title from workflow output',
+				hint: '从工作流输出数据中读取该字段作为视频标题（可选）',
+			},
+			{
+				displayName: '视频描述字段',
+				name: 'replyVideoDescriptionField',
+				type: 'string',
+				displayOptions: {
+					show: {
+						enablePassiveReply: [true],
+						replyType: ['video'],
+					},
+				},
+				default: 'videoDescription',
+				description: 'The field name containing video description from workflow output',
+				hint: '从工作流输出数据中读取该字段作为视频描述（可选）',
+			},
+			{
 				displayName: '图文消息字段',
 				name: 'replyNewsField',
 				type: 'string',
@@ -361,10 +389,34 @@ export class WeComTrigger implements INodeType {
 
 		if (enablePassiveReply) {
 			try {
+				// 检查消息类型是否支持被动回复
+				// 根据企业微信官方文档，只有以下消息类型支持被动回复：
+				// text（文本）、image（图片）、voice（语音）、video（视频）、location（位置）
+				const msgType = messageData.MsgType as string;
+				const supportedPassiveReplyTypes = ['text', 'image', 'voice', 'video', 'location'];
+
+				if (!msgType || !supportedPassiveReplyTypes.includes(msgType)) {
+					// 不支持被动回复的类型（如 event 事件类型），直接返回 success
+					outputData._passiveReplySkipped = {
+						reason: 'Message type does not support passive reply',
+						messageType: msgType,
+					};
+					return {
+						workflowData: [
+							[
+								{
+									json: outputData,
+								},
+							],
+						],
+						webhookResponse: 'success',
+					};
+				}
+
 				// 获取回复消息类型
 				const replyType = this.getNodeParameter('replyType', 'text') as string;
 				const toUser = messageData.FromUserName as string;
-				const fromUser = corpId;
+				const fromUser = messageData.ToUserName as string;
 
 				let replyContent: Record<string, unknown> = {};
 
@@ -392,8 +444,11 @@ export class WeComTrigger implements INodeType {
 						}
 						replyContent = { MediaId: mediaId };
 						if (replyType === 'video') {
-							replyContent.Title = (outputData.videoTitle as string) || '';
-							replyContent.Description = (outputData.videoDescription as string) || '';
+							// 使用配置字段读取视频标题和描述
+							const videoTitleField = this.getNodeParameter('replyVideoTitleField', 'videoTitle') as string;
+							const videoDescriptionField = this.getNodeParameter('replyVideoDescriptionField', 'videoDescription') as string;
+							replyContent.Title = (outputData[videoTitleField] as string) || '';
+							replyContent.Description = (outputData[videoDescriptionField] as string) || '';
 						}
 						break;
 					}
