@@ -1,3 +1,4 @@
+/* eslint-disable n8n-nodes-base/node-dirname-against-convention */
 import type {
 	IExecuteFunctions,
 	INodeExecutionData,
@@ -11,6 +12,12 @@ import {
 	generateEncryptedResponseXML,
 } from '../WeCom/shared/crypto';
 
+/**
+ * 企业微信被动回复节点
+ *
+ * 用于回复企业微信消息，需配合「企业微信消息接收（被动回复）Trigger」节点使用。
+ * 此节点会将输出数据加密后作为 HTTP 响应返回给企业微信服务器。
+ */
 // eslint-disable-next-line @n8n/community-nodes/node-usable-as-tool
 export class WeComReply implements INodeType {
 	description: INodeTypeDescription = {
@@ -21,7 +28,7 @@ export class WeComReply implements INodeType {
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{$parameter.replyType}}',
-		description: '被动回复企业微信消息（需配合企业微信消息接收 Trigger 使用）',
+		description: '被动回复企业微信消息（需配合「企业微信消息接收（被动回复）Trigger」使用）',
 		defaults: {
 			name: '企业微信被动回复',
 		},
@@ -198,7 +205,7 @@ export class WeComReply implements INodeType {
 				if (!wecomCrypto || !wecomCrypto.token || !wecomCrypto.encodingAESKey || !wecomCrypto.corpId) {
 					throw new NodeOperationError(
 						this.getNode(),
-						'缺少企业微信加密信息，请确保此节点连接到"企业微信消息接收 Trigger"节点之后',
+						'缺少企业微信加密信息，请确保此节点连接到「企业微信消息接收（被动回复）Trigger」节点之后',
 					);
 				}
 
@@ -209,7 +216,7 @@ export class WeComReply implements INodeType {
 				if (!fromUserName || !toUserName) {
 					throw new NodeOperationError(
 						this.getNode(),
-						'缺少消息发送者或接收者信息，请确保输入数据来自"企业微信消息接收 Trigger"',
+						'缺少消息发送者或接收者信息，请确保输入数据来自「企业微信消息接收（被动回复）Trigger」',
 					);
 				}
 
@@ -332,3 +339,4 @@ export class WeComReply implements INodeType {
 		return [returnData];
 	}
 }
+

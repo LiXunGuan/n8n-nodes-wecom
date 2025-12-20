@@ -56,7 +56,8 @@
 		"nodes": [
 			"dist/nodes/WeComBase/WeComBase.node.js",
 			"dist/nodes/WeComOffice/WeComOffice.node.js",
-			"dist/nodes/WeComReply/WeComReply.node.js",
+			"dist/nodes/WeComPassiveTrigger/WeComPassiveTrigger.node.js",
+			"dist/nodes/WeComPassiveTrigger/WeComReply.node.js",
 			"dist/nodes/WeComTrigger/WeComTrigger.node.js",
 			"dist/nodes/WeComWechat/WeComWechat.node.js"
 		]

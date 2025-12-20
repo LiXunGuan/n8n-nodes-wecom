@@ -12,19 +12,27 @@ import {
 	parseXML,
 } from '../WeCom/shared/crypto';
 
+/**
+ * 企业微信消息接收 Trigger（被动回复模式）
+ *
+ * 与普通的 WeComTrigger 不同，此节点支持被动回复消息：
+ * - 使用 responseMode: 'lastNode' 等待工作流执行完成
+ * - 工作流最后需要连接"企业微信被动回复"节点来返回回复消息
+ * - 适用于需要根据消息内容进行处理并回复的场景
+ */
 // eslint-disable-next-line @n8n/community-nodes/node-usable-as-tool
-export class WeComTrigger implements INodeType {
+export class WeComPassiveTrigger implements INodeType {
 	description: INodeTypeDescription = {
-		displayName: '企业微信消息接收 Trigger',
-		name: 'weComTrigger',
+		displayName: '企业微信消息接收（被动回复）Trigger',
+		name: 'weComPassiveTrigger',
 		// eslint-disable-next-line @n8n/community-nodes/icon-validation
 		icon: { light: 'file:../../icons/wecom.png', dark: 'file:../../icons/wecom.dark.png' },
 		group: ['trigger'],
 		version: 1,
-		subtitle: '接收企业微信消息回调',
-		description: '接收企业微信应用消息、事件等回调通知',
+		subtitle: '接收消息并支持被动回复',
+		description: '接收企业微信消息并支持被动回复（需配合"企业微信被动回复"节点使用）',
 		defaults: {
-			name: '企业微信消息接收',
+			name: '企业微信消息接收（被动回复）',
 		},
 		inputs: [],
 		outputs: [NodeConnectionTypes.Main],
@@ -38,7 +46,7 @@ export class WeComTrigger implements INodeType {
 			{
 				name: 'default',
 				httpMethod: 'POST',
-				responseMode: 'onReceived',
+				responseMode: 'lastNode',
 				path: '={{$parameter.path}}',
 				isFullPath: true,
 			},
@@ -61,30 +69,15 @@ export class WeComTrigger implements INodeType {
 				description: 'Webhook URL 的路径，建议使用应用 ID',
 			},
 			{
-				displayName: '事件类型',
+				displayName: '消息类型',
 				name: 'events',
 				type: 'multiOptions',
 				// eslint-disable-next-line n8n-nodes-base/node-param-multi-options-type-unsorted-items
 				options: [
 					{
-						name: '所有事件',
+						name: '所有消息',
 						value: '*',
-						description: '接收所有类型的消息和事件',
-					},
-					{
-						name: '事件消息',
-						value: 'event',
-						description: '接收事件推送（如成员变更、部门变更等）',
-					},
-					{
-						name: '位置消息',
-						value: 'location',
-						description: '接收用户发送的位置消息',
-					},
-					{
-						name: '图片消息',
-						value: 'image',
-						description: '接收用户发送的图片消息',
+						description: '接收所有支持被动回复的消息类型',
 					},
 					{
 						name: '文本消息',
@@ -92,9 +85,9 @@ export class WeComTrigger implements INodeType {
 						description: '接收用户发送的文本消息',
 					},
 					{
-						name: '视频消息',
-						value: 'video',
-						description: '接收用户发送的视频消息',
+						name: '图片消息',
+						value: 'image',
+						description: '接收用户发送的图片消息',
 					},
 					{
 						name: '语音消息',
@@ -102,15 +95,30 @@ export class WeComTrigger implements INodeType {
 						description: '接收用户发送的语音消息',
 					},
 					{
+						name: '视频消息',
+						value: 'video',
+						description: '接收用户发送的视频消息',
+					},
+					{
+						name: '位置消息',
+						value: 'location',
+						description: '接收用户发送的位置消息',
+					},
+					{
 						name: '链接消息',
 						value: 'link',
 						description: '接收用户发送的链接消息',
 					},
+					{
+						name: '事件消息',
+						value: 'event',
+						description: '接收支持被动回复的事件（关注、进入应用、菜单点击等）',
+					},
 				],
 				default: ['*'],
 				required: true,
-				description: '选择要接收的消息和事件类型',
-				hint: '可以选择多个类型，如果选择"所有事件"则接收所有消息',
+				description: '选择要接收的消息类型',
+				hint: '支持被动回复的事件：成员关注、进入应用、上报地理位置、菜单点击、扫码推事件、模板卡片菜单事件',
 			},
 			{
 				displayName: '返回原始数据',
@@ -119,6 +127,16 @@ export class WeComTrigger implements INodeType {
 				default: false,
 				description: 'Whether to return unparsed raw XML data',
 				hint: '开启后会在输出中包含原始的 XML 字符串',
+			},
+			{
+				displayName: '使用说明',
+				name: 'notice',
+				type: 'notice',
+				default: '',
+				displayOptions: {
+					show: {},
+				},
+				description: '工作流末尾需连接「企业微信被动回复」节点，且必须在5秒内返回响应。可回复：文本、图片、语音、视频、图文、模板卡片更新消息。',
 			},
 		],
 	};
@@ -237,9 +255,9 @@ export class WeComTrigger implements INodeType {
 		// 解析解密后的 XML 消息
 		const messageData = parseXML(decryptedMsg);
 
-		// 过滤事件类型
+		// 过滤消息类型
 		const events = this.getNodeParameter('events', []) as string[];
-		const msgType = messageData.MsgType || messageData.Event || 'unknown';
+		const msgType = messageData.MsgType || 'unknown';
 
 		if (!events.includes('*') && !events.includes(msgType)) {
 			// 不处理此类型的消息，返回 success
@@ -259,7 +277,15 @@ export class WeComTrigger implements INodeType {
 			outputData.rawXML = decryptedMsg;
 		}
 
-		// 返回数据并响应 success
+		// 添加加密信息供 WeComReply 节点使用
+		outputData._wecomCrypto = {
+			token,
+			encodingAESKey,
+			corpId,
+		};
+
+		// 被动回复模式：等待工作流执行完成，由 WeComReply 节点返回响应
+		// responseMode: 'lastNode' 会等待最后一个节点的输出作为响应
 		return {
 			workflowData: [
 				[
@@ -268,7 +294,7 @@ export class WeComTrigger implements INodeType {
 					},
 				],
 			],
-			webhookResponse: 'success',
 		};
 	}
 }
+
