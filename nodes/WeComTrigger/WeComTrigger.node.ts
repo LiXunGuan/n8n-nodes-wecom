@@ -185,7 +185,7 @@ export class WeComTrigger implements INodeType {
 		// 尝试多种方式获取原始 XML 数据
 		if (req.rawBody) {
 			// n8n 在某些情况下会提供 rawBody
-			rawBody = typeof req.rawBody === 'string' ? req.rawBody : req.rawBody.toString('utf8');
+			rawBody = req.rawBody.toString('utf8');
 		} else if (typeof req.body === 'string') {
 			// body 本身就是字符串
 			rawBody = req.body;
