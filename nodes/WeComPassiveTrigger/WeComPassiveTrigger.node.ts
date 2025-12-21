@@ -285,10 +285,10 @@ export class WeComPassiveTrigger implements INodeType {
 		};
 
 		// 被动回复模式：等待工作流执行完成，由被动回复节点返回响应
-		// responseMode: 'lastNode' 会等待最后一个节点的输出作为响应
-		// noWebhookResponse: true 告诉 n8n 不要立即响应，而是等待工作流完成
+		// responseMode: 'lastNode' 会自动等待最后一个节点的输出作为响应
+		// 参考官方 ChatTrigger 实现，需要同时返回 webhookResponse 和 workflowData
 		return {
-			noWebhookResponse: true,
+			webhookResponse: { status: 200 },
 			workflowData: [
 				[
 					{
@@ -299,4 +299,3 @@ export class WeComPassiveTrigger implements INodeType {
 		};
 	}
 }
-
