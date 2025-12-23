@@ -18,7 +18,6 @@ export async function executePassiveReply(
 			if (operation === 'reply') {
 				const item = items[i];
 
-				// 从输入数据中获取加密信息
 				const wecomCrypto = item.json._wecomCrypto as {
 					token: string;
 					encodingAESKey: string;
@@ -28,12 +27,11 @@ export async function executePassiveReply(
 				if (!wecomCrypto || !wecomCrypto.token || !wecomCrypto.encodingAESKey || !wecomCrypto.corpId) {
 					throw new NodeOperationError(
 						this.getNode(),
-						'缺少企业微信加密信息，请确保此节点连接到「企业微信消息接收（被动回复）触发器」节点之后',
+						'缺少企业微信加密信息。请确保工作流结构为：企业微信消息接收（被动回复）触发器 → 本节点',
 						{ itemIndex: i },
 					);
 				}
 
-				// 获取消息发送者和接收者信息
 				const fromUserName = item.json.FromUserName as string;
 				const toUserName = item.json.ToUserName as string;
 
@@ -45,10 +43,7 @@ export async function executePassiveReply(
 					);
 				}
 
-				// 获取回复类型
-				const replyType = this.getNodeParameter('replyType', i) as 'text' | 'image' | 'voice' | 'video' | 'news';
-
-				// 根据消息类型构建回复内容
+				const replyType = this.getNodeParameter('replyType', i) as 'text' | 'image' | 'voice' | 'video' | 'news' | 'update_template_card';
 				let replyContent: Record<string, unknown> = {};
 
 				switch (replyType) {
@@ -107,7 +102,6 @@ export async function executePassiveReply(
 							);
 						}
 
-						// 转换为企业微信格式
 						const formattedArticles = articles.map(article => ({
 							Title: article.title,
 							Description: article.description || '',
@@ -118,20 +112,162 @@ export async function executePassiveReply(
 						replyContent = { Articles: formattedArticles };
 						break;
 					}
+
+					case 'update_template_card': {
+						const buttonReplaceName = this.getNodeParameter('buttonReplaceName', i, '') as string;
+
+						if (buttonReplaceName) {
+							replyContent = { Button: { ReplaceName: buttonReplaceName } };
+						} else {
+							const cardType = this.getNodeParameter('cardType', i) as string;
+							const cardSource = this.getNodeParameter('cardSource', i, '{}') as string;
+							const cardMainTitle = this.getNodeParameter('cardMainTitle', i, '{"title": ""}') as string;
+							const cardEmphasisContent = this.getNodeParameter('cardEmphasisContent', i, '{}') as string;
+							const cardQuoteArea = this.getNodeParameter('cardQuoteArea', i, '{}') as string;
+							const cardSubTitleText = this.getNodeParameter('cardSubTitleText', i, '') as string;
+							const cardHorizontalContentList = this.getNodeParameter('cardHorizontalContentList', i, '[]') as string;
+							const cardJumpList = this.getNodeParameter('cardJumpList', i, '[]') as string;
+							const cardAction = this.getNodeParameter('cardAction', i, '{}') as string;
+							const cardTaskId = this.getNodeParameter('cardTaskId', i, '') as string;
+							const cardActionMenu = this.getNodeParameter('cardActionMenu', i, '{}') as string;
+
+							const templateCard: Record<string, unknown> = {
+								CardType: cardType,
+							};
+
+							try {
+								const sourceObj = JSON.parse(cardSource);
+								if (Object.keys(sourceObj).length > 0) {
+									templateCard.Source = sourceObj;
+								}
+							} catch {
+								// 忽略解析错误
+							}
+
+							try {
+								templateCard.MainTitle = JSON.parse(cardMainTitle);
+							} catch {
+								templateCard.MainTitle = { title: '' };
+							}
+
+							try {
+								const emphasisObj = JSON.parse(cardEmphasisContent);
+								if (Object.keys(emphasisObj).length > 0) {
+									templateCard.EmphasisContent = emphasisObj;
+								}
+							} catch {
+								// 忽略解析错误
+							}
+
+							try {
+								const quoteObj = JSON.parse(cardQuoteArea);
+								if (Object.keys(quoteObj).length > 0) {
+									templateCard.QuoteArea = quoteObj;
+								}
+							} catch {
+								// 忽略解析错误
+							}
+
+							if (cardSubTitleText) {
+								templateCard.SubTitleText = cardSubTitleText;
+							}
+
+							try {
+								const horizontalList = JSON.parse(cardHorizontalContentList);
+								if (Array.isArray(horizontalList) && horizontalList.length > 0) {
+									templateCard.HorizontalContentList = horizontalList;
+								}
+							} catch {
+								// 忽略解析错误
+							}
+
+							try {
+								const jumpListObj = JSON.parse(cardJumpList);
+								if (Array.isArray(jumpListObj) && jumpListObj.length > 0) {
+									templateCard.JumpList = jumpListObj;
+								}
+							} catch {
+								// 忽略解析错误
+							}
+
+							try {
+								const cardActionObj = JSON.parse(cardAction);
+								if (Object.keys(cardActionObj).length > 0) {
+									templateCard.CardAction = cardActionObj;
+								}
+							} catch {
+								// 忽略解析错误
+							}
+
+							if (cardTaskId) {
+								templateCard.TaskId = cardTaskId;
+							}
+
+							try {
+								const actionMenuObj = JSON.parse(cardActionMenu);
+								if (Object.keys(actionMenuObj).length > 0) {
+									templateCard.ActionMenu = actionMenuObj;
+								}
+							} catch {
+								// 忽略解析错误
+							}
+
+							if (cardType === 'button_interaction') {
+								const cardButtonList = this.getNodeParameter('cardButtonList', i, '[]') as string;
+								try {
+									const buttonListObj = JSON.parse(cardButtonList);
+									if (Array.isArray(buttonListObj) && buttonListObj.length > 0) {
+										templateCard.ButtonList = buttonListObj;
+									}
+								} catch {
+									// 忽略解析错误
+								}
+							} else if (cardType === 'vote_interaction' || cardType === 'multiple_interaction') {
+								const cardCheckboxQuestionKey = this.getNodeParameter('cardCheckboxQuestionKey', i, '') as string;
+								const cardCheckboxMode = this.getNodeParameter('cardCheckboxMode', i, 'single') as string;
+								const cardOptionList = this.getNodeParameter('cardOptionList', i, '[]') as string;
+								const cardSubmitButtonText = this.getNodeParameter('cardSubmitButtonText', i, '提交') as string;
+								const cardSubmitButtonKey = this.getNodeParameter('cardSubmitButtonKey', i) as string;
+
+								if (cardCheckboxQuestionKey) {
+									templateCard.Checkbox = {
+										QuestionKey: cardCheckboxQuestionKey,
+										Mode: cardCheckboxMode,
+										OptionList: JSON.parse(cardOptionList),
+									};
+								}
+
+								templateCard.SubmitButton = {
+									Text: cardSubmitButtonText,
+									Key: cardSubmitButtonKey,
+								};
+							} else if (cardType === 'news_notice') {
+								const cardImageTextArea = this.getNodeParameter('cardImageTextArea', i, '{}') as string;
+								try {
+									const imageTextObj = JSON.parse(cardImageTextArea);
+									if (Object.keys(imageTextObj).length > 0) {
+										templateCard.ImageTextArea = imageTextObj;
+									}
+								} catch {
+									// 忽略解析错误
+								}
+							}
+
+							replyContent = { TemplateCard: templateCard };
+						}
+						break;
+					}
 				}
 
-				// 创建加密实例
 				const crypto = new WeComCrypto(wecomCrypto.encodingAESKey, wecomCrypto.corpId);
 
-				// 生成回复消息 XML
 				const replyMessageXML = generateReplyMessageXML(
-					fromUserName,  // ToUserName: 发送给消息的发送者
-					toUserName,    // FromUserName: 来自应用
+					fromUserName,
+					toUserName,
 					replyType,
 					replyContent,
 				);
 
-				// 生成加密的响应 XML
 				const encryptedResponseXML = generateEncryptedResponseXML(
 					crypto,
 					wecomCrypto.token,
@@ -139,8 +275,6 @@ export async function executePassiveReply(
 					this.getNode(),
 				);
 
-				// 使用 sendResponse 方法直接发送响应
-				// 参考官方 RespondToWebhook 节点的实现
 				this.sendResponse({
 					body: encryptedResponseXML,
 					headers: {
@@ -149,16 +283,10 @@ export async function executePassiveReply(
 					statusCode: 200,
 				});
 
-				// 返回数据供下一个节点使用（如果有）
 				returnData.push({
 					json: {
 						success: true,
-						// 保留原始消息信息供调试
-						_debug: {
-							fromUserName,
-							toUserName,
-							replyType,
-						},
+						repliedAt: new Date().toISOString(),
 					} as IDataObject,
 					pairedItem: { item: i },
 				});
@@ -168,6 +296,7 @@ export async function executePassiveReply(
 				returnData.push({
 					json: {
 						error: (error as Error).message,
+						success: false,
 					},
 					pairedItem: { item: i },
 				});

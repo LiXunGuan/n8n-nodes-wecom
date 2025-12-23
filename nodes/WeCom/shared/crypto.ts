@@ -295,10 +295,10 @@ export function generateXML(data: Record<string, string>): string {
 
 /**
  * 生成被动回复消息的 XML
- * 
+ *
  * 用于回复用户消息，支持多种消息类型
  * 官方文档：https://developer.work.weixin.qq.com/document/path/90241
- * 
+ *
  * 注意：
  * - ToUserName 和 FromUserName 的值与收到的消息是相反的
  * - CreateTime 是当前时间戳（秒）
@@ -306,14 +306,14 @@ export function generateXML(data: Record<string, string>): string {
  *
  * @param toUser - 接收方 UserID（通常是发送消息的成员UserID）
  * @param fromUser - 发送方（通常是企业应用的 CorpID）
- * @param msgType - 消息类型（text/image/voice/video/news）
+ * @param msgType - 消息类型（text/image/voice/video/news/update_template_card）
  * @param content - 消息内容（根据不同类型格式不同）
  * @returns 被动回复消息的 XML 字符串
  */
 export function generateReplyMessageXML(
 	toUser: string,
 	fromUser: string,
-	msgType: 'text' | 'image' | 'voice' | 'video' | 'news',
+	msgType: 'text' | 'image' | 'voice' | 'video' | 'news' | 'update_template_card',
 	content: Record<string, unknown>,
 ): string {
 	const createTime = Math.floor(Date.now() / 1000);
@@ -372,6 +372,166 @@ export function generateReplyMessageXML(
 			xml += '</Articles>';
 			break;
 		}
+		case 'update_template_card':
+			if (content.Button) {
+				xml += '<Button>';
+				const button = content.Button as Record<string, unknown>;
+				xml += `<ReplaceName><![CDATA[${button.ReplaceName as string}]]></ReplaceName>`;
+				xml += '</Button>';
+			} else if (content.TemplateCard) {
+				const card = content.TemplateCard as Record<string, unknown>;
+				xml += '<TemplateCard>';
+				xml += `<CardType><![CDATA[${card.CardType as string}]]></CardType>`;
+
+				if (card.Source) {
+					const source = card.Source as Record<string, unknown>;
+					xml += '<Source>';
+					if (source.icon_url) xml += `<IconUrl><![CDATA[${source.icon_url as string}]]></IconUrl>`;
+					if (source.desc) xml += `<Desc><![CDATA[${source.desc as string}]]></Desc>`;
+					xml += '</Source>';
+				}
+
+				if (card.MainTitle) {
+					const mainTitle = card.MainTitle as Record<string, unknown>;
+					xml += '<MainTitle>';
+					if (mainTitle.title) xml += `<Title><![CDATA[${mainTitle.title as string}]]></Title>`;
+					if (mainTitle.desc) xml += `<Desc><![CDATA[${mainTitle.desc as string}]]></Desc>`;
+					xml += '</MainTitle>';
+				}
+
+				if (card.EmphasisContent) {
+					const emphasis = card.EmphasisContent as Record<string, unknown>;
+					xml += '<EmphasisContent>';
+					if (emphasis.title) xml += `<Title><![CDATA[${emphasis.title as string}]]></Title>`;
+					if (emphasis.desc) xml += `<Desc><![CDATA[${emphasis.desc as string}]]></Desc>`;
+					xml += '</EmphasisContent>';
+				}
+
+				if (card.QuoteArea) {
+					const quote = card.QuoteArea as Record<string, unknown>;
+					xml += '<QuoteArea>';
+					if (quote.type) xml += `<Type>${quote.type as number}</Type>`;
+					if (quote.url) xml += `<Url><![CDATA[${quote.url as string}]]></Url>`;
+					if (quote.title) xml += `<Title><![CDATA[${quote.title as string}]]></Title>`;
+					if (quote.quote_text) xml += `<QuoteText><![CDATA[${quote.quote_text as string}]]></QuoteText>`;
+					xml += '</QuoteArea>';
+				}
+
+				if (card.SubTitleText) {
+					xml += `<SubTitleText><![CDATA[${card.SubTitleText as string}]]></SubTitleText>`;
+				}
+
+				if (card.HorizontalContentList) {
+					const list = card.HorizontalContentList as Array<Record<string, unknown>>;
+					xml += '<HorizontalContentList>';
+					for (const item of list) {
+						xml += '<HorizontalContent>';
+						if (item.keyname) xml += `<Keyname><![CDATA[${item.keyname as string}]]></Keyname>`;
+						if (item.value) xml += `<Value><![CDATA[${item.value as string}]]></Value>`;
+						if (item.type) xml += `<Type>${item.type as number}</Type>`;
+						if (item.url) xml += `<Url><![CDATA[${item.url as string}]]></Url>`;
+						xml += '</HorizontalContent>';
+					}
+					xml += '</HorizontalContentList>';
+				}
+
+				if (card.JumpList) {
+					const jumpList = card.JumpList as Array<Record<string, unknown>>;
+					xml += '<JumpList>';
+					for (const jump of jumpList) {
+						xml += '<Jump>';
+						if (jump.type) xml += `<Type>${jump.type as number}</Type>`;
+						if (jump.title) xml += `<Title><![CDATA[${jump.title as string}]]></Title>`;
+						if (jump.url) xml += `<Url><![CDATA[${jump.url as string}]]></Url>`;
+						xml += '</Jump>';
+					}
+					xml += '</JumpList>';
+				}
+
+				if (card.CardAction) {
+					const action = card.CardAction as Record<string, unknown>;
+					xml += '<CardAction>';
+					if (action.type) xml += `<Type>${action.type as number}</Type>`;
+					if (action.url) xml += `<Url><![CDATA[${action.url as string}]]></Url>`;
+					xml += '</CardAction>';
+				}
+
+				if (card.TaskId) {
+					xml += `<TaskId><![CDATA[${card.TaskId as string}]]></TaskId>`;
+				}
+
+				if (card.ButtonList) {
+					const buttonList = card.ButtonList as Array<Record<string, unknown>>;
+					xml += '<ButtonList>';
+					for (const btn of buttonList) {
+						xml += '<Button>';
+						if (btn.text) xml += `<Text><![CDATA[${btn.text as string}]]></Text>`;
+						if (btn.style) xml += `<Style>${btn.style as number}</Style>`;
+						if (btn.key) xml += `<Key><![CDATA[${btn.key as string}]]></Key>`;
+						xml += '</Button>';
+					}
+					xml += '</ButtonList>';
+				}
+
+				if (card.Checkbox) {
+					const checkbox = card.Checkbox as Record<string, unknown>;
+					xml += '<Checkbox>';
+					if (checkbox.QuestionKey) xml += `<QuestionKey><![CDATA[${checkbox.QuestionKey as string}]]></QuestionKey>`;
+					if (checkbox.Mode) xml += `<Mode><![CDATA[${checkbox.Mode as string}]]></Mode>`;
+					if (checkbox.OptionList) {
+						const options = checkbox.OptionList as Array<Record<string, unknown>>;
+						xml += '<OptionList>';
+						for (const opt of options) {
+							xml += '<Option>';
+							if (opt.id) xml += `<Id><![CDATA[${opt.id as string}]]></Id>`;
+							if (opt.text) xml += `<Text><![CDATA[${opt.text as string}]]></Text>`;
+							xml += '</Option>';
+						}
+						xml += '</OptionList>';
+					}
+					xml += '</Checkbox>';
+				}
+
+				if (card.SubmitButton) {
+					const submitBtn = card.SubmitButton as Record<string, unknown>;
+					xml += '<SubmitButton>';
+					if (submitBtn.Text) xml += `<Text><![CDATA[${submitBtn.Text as string}]]></Text>`;
+					if (submitBtn.Key) xml += `<Key><![CDATA[${submitBtn.Key as string}]]></Key>`;
+					xml += '</SubmitButton>';
+				}
+
+				if (card.ImageTextArea) {
+					const imageText = card.ImageTextArea as Record<string, unknown>;
+					xml += '<ImageTextArea>';
+					if (imageText.type) xml += `<Type>${imageText.type as number}</Type>`;
+					if (imageText.url) xml += `<Url><![CDATA[${imageText.url as string}]]></Url>`;
+					if (imageText.title) xml += `<Title><![CDATA[${imageText.title as string}]]></Title>`;
+					if (imageText.desc) xml += `<Desc><![CDATA[${imageText.desc as string}]]></Desc>`;
+					if (imageText.image_url) xml += `<ImageUrl><![CDATA[${imageText.image_url as string}]]></ImageUrl>`;
+					xml += '</ImageTextArea>';
+				}
+
+				if (card.ActionMenu) {
+					const actionMenu = card.ActionMenu as Record<string, unknown>;
+					xml += '<ActionMenu>';
+					if (actionMenu.desc) xml += `<Desc><![CDATA[${actionMenu.desc as string}]]></Desc>`;
+					if (actionMenu.action_list) {
+						const actions = actionMenu.action_list as Array<Record<string, unknown>>;
+						xml += '<ActionList>';
+						for (const act of actions) {
+							xml += '<Action>';
+							if (act.text) xml += `<Text><![CDATA[${act.text as string}]]></Text>`;
+							if (act.key) xml += `<Key><![CDATA[${act.key as string}]]></Key>`;
+							xml += '</Action>';
+						}
+						xml += '</ActionList>';
+					}
+					xml += '</ActionMenu>';
+				}
+
+				xml += '</TemplateCard>';
+			}
+			break;
 	}
 
 	xml += '</xml>';

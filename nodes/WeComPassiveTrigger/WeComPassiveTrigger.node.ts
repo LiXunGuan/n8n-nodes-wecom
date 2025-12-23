@@ -13,12 +13,10 @@ import {
 } from '../WeCom/shared/crypto';
 
 /**
- * 企业微信消息接收 Trigger（被动回复模式）
+ * 企业微信消息接收触发器（被动回复模式）
  *
- * 与普通的 WeComTrigger 不同，此节点支持被动回复消息：
- * - 使用 responseMode: 'lastNode' 等待工作流执行完成
- * - 工作流最后需要连接"企业微信被动回复"节点来返回回复消息
- * - 适用于需要根据消息内容进行处理并回复的场景
+ * 使用 responseMode: 'lastNode' 由最后一个节点处理响应
+ * 工作流结构：本触发器 → 处理节点（可选）→ 企业微信被动回复节点
  */
 // eslint-disable-next-line @n8n/community-nodes/node-usable-as-tool
 export class WeComPassiveTrigger implements INodeType {
@@ -47,7 +45,6 @@ export class WeComPassiveTrigger implements INodeType {
 				name: 'default',
 				httpMethod: 'POST',
 				responseMode: 'lastNode',
-				responseData: 'noData',
 				path: '={{$parameter.path}}',
 				isFullPath: true,
 			},
@@ -137,7 +134,7 @@ export class WeComPassiveTrigger implements INodeType {
 				displayOptions: {
 					show: {},
 				},
-				description: '工作流结构：本触发器 → 处理节点（可选）→ 企业微信被动回复节点。被动回复节点必须是工作流的最后一个节点，且必须在5秒内返回响应。',
+				description: '工作流结构：本触发器 → 处理节点（可选）→ 企业微信被动回复节点。被动回复节点必须是最后一个节点，且须在 5 秒内返回响应。',
 			},
 		],
 	};
@@ -197,26 +194,19 @@ export class WeComPassiveTrigger implements INodeType {
 		}
 
 		// POST 请求：接收消息
-		// 获取原始请求对象以读取 XML body
 		const req = this.getRequestObject();
 		let rawBody = '';
-
-		// 尝试多种方式获取原始 XML 数据
 		if (req.rawBody) {
-			// n8n 在某些情况下会提供 rawBody (Buffer类型)
 			rawBody = req.rawBody.toString('utf8');
 		} else if (typeof req.body === 'string') {
-			// body 本身就是字符串
 			rawBody = req.body;
 		} else if (req.body && typeof req.body === 'object') {
-			// body 是对象，尝试从常见字段获取
 			const bodyData = req.body as IDataObject;
 			if (bodyData.data && typeof bodyData.data === 'string') {
 				rawBody = bodyData.data;
 			} else if (bodyData.xml && typeof bodyData.xml === 'string') {
 				rawBody = bodyData.xml;
 			} else {
-				// 最后尝试 JSON 序列化（不太可能是正确的 XML）
 				rawBody = JSON.stringify(bodyData);
 			}
 		}
@@ -261,7 +251,7 @@ export class WeComPassiveTrigger implements INodeType {
 		const msgType = messageData.MsgType || 'unknown';
 
 		if (!events.includes('*') && !events.includes(msgType)) {
-			// 不处理此类型的消息，返回 success
+			// 不处理的消息类型，直接返回成功响应
 			return {
 				webhookResponse: 'success',
 			};
@@ -278,16 +268,13 @@ export class WeComPassiveTrigger implements INodeType {
 			outputData.rawXML = decryptedMsg;
 		}
 
-		// 添加加密信息供 WeComReply 节点使用
+		// 添加加密信息供被动回复节点使用
 		outputData._wecomCrypto = {
 			token,
 			encodingAESKey,
 			corpId,
 		};
 
-		// 被动回复模式：等待工作流执行完成，由被动回复节点返回响应
-		// responseMode: 'responseNode' 表示响应由被动回复节点通过 sendResponse() 发送
-		// 参考官方 Webhook 节点实现
 		return {
 			workflowData: [
 				[
