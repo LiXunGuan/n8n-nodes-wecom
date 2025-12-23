@@ -22,6 +22,7 @@ export const passiveReplyDescription: INodeProperties[] = [
 			},
 		],
 		default: 'reply',
+		required: true,
 	},
 	{
 		displayName: '回复消息类型',

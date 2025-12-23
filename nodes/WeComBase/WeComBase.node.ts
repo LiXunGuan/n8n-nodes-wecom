@@ -280,9 +280,12 @@ export class WeComBase implements INodeType {
 				const responseData = await executeSystem.call(this, i);
 				returnData.push({ json: responseData[0] });
 			}
+		} else if (resource === 'passiveReply') {
+			// passiveReply only has 'reply' operation, use it directly
+			returnData = await executePassiveReply.call(this, 'reply', items);
 		} else {
 			// All other resources have an operation parameter
-			const operation = this.getNodeParameter('operation', 0, 'reply') as string;
+			const operation = this.getNodeParameter('operation', 0) as string;
 
 			if (resource === 'contact') {
 				returnData = await executeContact.call(this, operation, items);
@@ -298,8 +301,6 @@ export class WeComBase implements INodeType {
 				returnData = await executeMaterial.call(this, operation, items);
 			} else if (resource === 'invoice') {
 				returnData = await executeInvoice.call(this, operation, items);
-			} else if (resource === 'passiveReply') {
-				returnData = await executePassiveReply.call(this, operation, items);
 			}
 		}
 
