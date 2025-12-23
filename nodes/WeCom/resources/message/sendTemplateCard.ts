@@ -39,7 +39,6 @@ export const sendTemplateCardDescription: INodeProperties[] = [
 			description: '文本通知型模板卡片',
 		},
 	],
-		required: true,
 		default: 'text_notice',
 		displayOptions: {
 			show: showOnlySendTemplateCard,
@@ -48,54 +47,172 @@ export const sendTemplateCardDescription: INodeProperties[] = [
 			'选择模板卡片的类型。<a href="https://developer.work.weixin.qq.com/document/path/90236#模板卡片消息" target="_blank">官方文档</a>',
 	},
 	{
-		displayName: '模板卡片来源样式信息',
+		displayName: '卡片来源',
 		name: 'source',
-		type: 'json',
-		default: '{}',
-		placeholder: '{"icon_url": "https://...", "desc": "来源描述"}',
+		type: 'fixedCollection',
+		default: {},
+		placeholder: '添加来源信息',
 		displayOptions: {
 			show: showOnlySendTemplateCard,
 		},
-		description:
-			'可选。模板卡片来源样式信息，不需要来源样式可不填写，JSON格式。<a href="https://developer.work.weixin.qq.com/document/path/90236#模板卡片消息" target="_blank">官方文档</a>',
+		description: '可选。模板卡片来源样式信息',
+		options: [
+			{
+				name: 'sourceInfo',
+				displayName: '来源信息',
+				values: [
+					{
+						displayName: '来源图标URL',
+						name: 'icon_url',
+						type: 'string',
+						default: '',
+						placeholder: 'https://example.com/icon.png',
+						description: '来源图标的URL地址',
+					},
+					{
+						displayName: '来源描述',
+						name: 'desc',
+						type: 'string',
+						default: '',
+						placeholder: '企业微信',
+						description: '来源的描述文字',
+					},
+				],
+			},
+		],
 	},
 	{
 		displayName: '一级标题',
 		name: 'main_title',
-		type: 'json',
-		default: '{"title": ""}',
-		placeholder: '{"title": "欢迎使用", "desc": "副标题"}',
+		type: 'fixedCollection',
+		default: {},
+		placeholder: '添加标题',
 		displayOptions: {
 			show: showOnlySendTemplateCard,
 		},
-		hint: '必填字段',
-		description:
-			'模板卡片的主要内容，包含一级标题和标题辅助信息，JSON格式。<a href="https://developer.work.weixin.qq.com/document/path/90236#模板卡片消息" target="_blank">官方文档</a>',
+		description: '模板卡片的主要内容，包含一级标题和标题辅助信息',
+		options: [
+			{
+				name: 'titleInfo',
+				displayName: '标题内容',
+				values: [
+					{
+						displayName: '标题',
+						name: 'title',
+						type: 'string',
+						default: '',
+						placeholder: '欢迎使用',
+						description: '一级标题文本',
+					},
+					{
+						displayName: '副标题',
+						name: 'desc',
+						type: 'string',
+						default: '',
+						placeholder: '点击查看详情',
+						description: '标题辅助信息',
+					},
+				],
+			},
+		],
 	},
 	{
 		displayName: '关键数据样式',
 		name: 'emphasis_content',
-		type: 'json',
-		default: '{}',
-		placeholder: '{"title": "100", "desc": "数据描述"}',
+		type: 'fixedCollection',
+		default: {},
+		placeholder: '添加关键数据',
 		displayOptions: {
 			show: showOnlySendTemplateCard,
 		},
-		description:
-			'可选。关键数据样式，JSON格式。<a href="https://developer.work.weixin.qq.com/document/path/90236#模板卡片消息" target="_blank">官方文档</a>',
+		description: '可选。关键数据样式',
+		options: [
+			{
+				name: 'emphasisInfo',
+				displayName: '关键数据',
+				values: [
+					{
+						displayName: '数据',
+						name: 'title',
+						type: 'string',
+						default: '',
+						placeholder: '100',
+						description: '关键数据内容',
+					},
+					{
+						displayName: '数据描述',
+						name: 'desc',
+						type: 'string',
+						default: '',
+						placeholder: '已完成',
+						description: '数据的描述说明',
+					},
+				],
+			},
+		],
 	},
 	{
 		displayName: '引用文献样式',
 		name: 'quote_area',
-		type: 'json',
-		default: '{}',
-		placeholder: '{"type": 1, "title": "引用标题", "quote_text": "引用内容"}',
+		type: 'fixedCollection',
+		default: {},
+		placeholder: '添加引用',
 		displayOptions: {
 			show: showOnlySendTemplateCard,
 		},
-		hint: '建议不与关键数据共用',
-		description:
-			'可选。引用文献样式，JSON格式。<a href="https://developer.work.weixin.qq.com/document/path/90236#模板卡片消息" target="_blank">官方文档</a>',
+		description: '可选。引用文献样式，建议不与关键数据共用',
+		options: [
+			{
+				name: 'quoteInfo',
+				displayName: '引用内容',
+				values: [
+					{
+						displayName: '引用类型',
+						name: 'type',
+						type: 'options',
+						options: [
+							{
+								name: '边框类型',
+								value: 1,
+							},
+							{
+								name: '卡片类型',
+								value: 2,
+							},
+						],
+						default: 1,
+						description: '引用文献的样式类型',
+					},
+					{
+						displayName: '引用链接',
+						name: 'url',
+						type: 'string',
+						default: '',
+						placeholder: 'https://example.com',
+						description: '点击引用后跳转的链接',
+					},
+					{
+						displayName: '引用标题',
+						name: 'title',
+						type: 'string',
+						default: '',
+						placeholder: '引用标题',
+						description: '引用文献的标题',
+					},
+					{
+						displayName: '引用文本',
+						name: 'quote_text',
+						type: 'string',
+						typeOptions: {
+							rows: 3,
+						},
+						default: '',
+						placeholder: '引用的具体内容',
+						description: '引用文献的具体文本内容',
+					},
+				],
+			},
+		],
 	},
 	{
 		displayName: '二级普通文本',
@@ -113,47 +230,169 @@ export const sendTemplateCardDescription: INodeProperties[] = [
 	{
 		displayName: '二级标题+文本列表',
 		name: 'horizontal_content_list',
-		type: 'json',
+		type: 'fixedCollection',
 		typeOptions: {
-			rows: 4,
+			multipleValues: true,
 		},
-		default: '[]',
-		placeholder: '[{"keyname": "姓名", "value": "张三"}, {"keyname": "部门", "value": "技术部"}]',
+		default: {},
+		placeholder: '添加列表项',
 		displayOptions: {
 			show: showOnlySendTemplateCard,
 		},
-		hint: '列表长度不超过6',
-		description:
-			'可选。二级标题+文本列表，该字段可为空数组，JSON数组格式。<a href="https://developer.work.weixin.qq.com/document/path/90236#模板卡片消息" target="_blank">官方文档</a>',
+		description: '可选。二级标题+文本列表，列表长度不超过6',
+		options: [
+			{
+				name: 'items',
+				displayName: '列表项',
+				values: [
+					{
+						displayName: '标题',
+						name: 'keyname',
+						type: 'string',
+						default: '',
+						placeholder: '姓名',
+						description: '列表项的标题',
+					},
+					{
+						displayName: '内容',
+						name: 'value',
+						type: 'string',
+						default: '',
+						placeholder: '张三',
+						description: '列表项的内容',
+					},
+					{
+						displayName: '内容类型',
+						name: 'type',
+						type: 'options',
+						options: [
+							{
+								name: '普通文本',
+								value: 0,
+							},
+							{
+								name: '带跳转链接',
+								value: 1,
+							},
+						],
+						default: 0,
+						description: '内容的类型',
+					},
+					{
+						displayName: '跳转链接',
+						name: 'url',
+						type: 'string',
+						default: '',
+						placeholder: 'https://example.com',
+						description: '点击内容后跳转的链接（仅当类型为带跳转链接时有效）',
+						displayOptions: {
+							show: {
+								type: [1],
+							},
+						},
+					},
+				],
+			},
+		],
 	},
 	{
-		displayName: '跳转指引样式的列表',
+		displayName: '跳转指引样式列表',
 		name: 'jump_list',
-		type: 'json',
+		type: 'fixedCollection',
 		typeOptions: {
-			rows: 4,
+			multipleValues: true,
 		},
-		default: '[]',
-		placeholder: '[{"type": 1, "title": "查看详情", "url": "https://..."}]',
+		default: {},
+		placeholder: '添加跳转指引',
 		displayOptions: {
 			show: showOnlySendTemplateCard,
 		},
-		hint: '列表长度不超过3',
-		description:
-			'可选。跳转指引样式的列表，该字段可为空数组，JSON数组格式。<a href="https://developer.work.weixin.qq.com/document/path/90236#模板卡片消息" target="_blank">官方文档</a>',
+		description: '可选。跳转指引样式的列表，列表长度不超过3',
+		options: [
+			{
+				name: 'items',
+				displayName: '跳转指引',
+				values: [
+					{
+						displayName: '跳转类型',
+						name: 'type',
+						type: 'options',
+						options: [
+							{
+								name: '跳转URL',
+								value: 1,
+							},
+							{
+								name: '跳转小程序',
+								value: 2,
+							},
+						],
+						default: 1,
+						description: '跳转目标的类型',
+					},
+					{
+						displayName: '标题',
+						name: 'title',
+						type: 'string',
+						default: '',
+						placeholder: '查看详情',
+						description: '跳转指引的标题',
+					},
+					{
+						displayName: '跳转链接',
+						name: 'url',
+						type: 'string',
+						default: '',
+						placeholder: 'https://example.com',
+						description: '跳转的URL地址',
+					},
+				],
+			},
+		],
 	},
 	{
-		displayName: '整体卡片的点击跳转事件',
+		displayName: '整体卡片点击跳转',
 		name: 'card_action',
-		type: 'json',
-		default: '{}',
-		placeholder: '{"type": 1, "url": "https://..."}',
+		type: 'fixedCollection',
+		default: {},
+		placeholder: '设置卡片跳转',
 		displayOptions: {
 			show: showOnlySendTemplateCard,
 		},
-		hint: 'text_notice必填，news_notice不需要',
-		description:
-			'整体卡片的点击跳转事件，JSON格式。<a href="https://developer.work.weixin.qq.com/document/path/90236#模板卡片消息" target="_blank">官方文档</a>',
+		description: '整体卡片的点击跳转事件（text_notice必填，news_notice不需要）',
+		options: [
+			{
+				name: 'actionInfo',
+				displayName: '跳转设置',
+				values: [
+					{
+						displayName: '跳转类型',
+						name: 'type',
+						type: 'options',
+						options: [
+							{
+								name: '跳转URL',
+								value: 1,
+							},
+							{
+								name: '跳转小程序',
+								value: 2,
+							},
+						],
+						default: 1,
+						description: '点击卡片后的跳转类型',
+					},
+					{
+						displayName: '跳转链接',
+						name: 'url',
+						type: 'string',
+						default: '',
+						placeholder: 'https://example.com',
+						description: '跳转的URL地址',
+					},
+				],
+			},
+		],
 	},
 	{
 		displayName: '任务ID',
@@ -171,21 +410,60 @@ export const sendTemplateCardDescription: INodeProperties[] = [
 	{
 		displayName: '按钮列表',
 		name: 'button_list',
-		type: 'json',
+		type: 'fixedCollection',
 		typeOptions: {
-			rows: 4,
+			multipleValues: true,
 		},
-		default: '[]',
-		placeholder: '[{"text": "按钮1", "style": 1, "key": "btn1"}, {"text": "按钮2", "style": 2, "key": "btn2"}]',
+		default: {},
+		placeholder: '添加按钮',
 		displayOptions: {
 			show: {
 				...showOnlySendTemplateCard,
 				card_type: ['button_interaction'],
 			},
 		},
-		hint: '列表长度不超过6',
-		description:
-			'按钮交互型卡片的按钮列表，该字段可为空数组，JSON数组格式。<a href="https://developer.work.weixin.qq.com/document/path/90236#模板卡片消息" target="_blank">官方文档</a>',
+		description: '按钮交互型卡片的按钮列表，列表长度不超过6',
+		options: [
+			{
+				name: 'buttons',
+				displayName: '按钮',
+				values: [
+					{
+						displayName: '按钮文本',
+						name: 'text',
+						type: 'string',
+						default: '',
+						placeholder: '同意',
+						description: '按钮上显示的文字',
+					},
+					{
+						displayName: '按钮样式',
+						name: 'style',
+						type: 'options',
+						options: [
+							{
+								name: '蓝色样式',
+								value: 1,
+							},
+							{
+								name: '灰色样式',
+								value: 2,
+							},
+						],
+						default: 1,
+						description: '按钮的样式类型',
+					},
+					{
+						displayName: '按钮Key',
+						name: 'key',
+						type: 'string',
+						default: '',
+						placeholder: 'btn_agree',
+						description: '按钮的唯一标识，用于回调事件',
+					},
+				],
+			},
+		],
 	},
 	{
 		displayName: '选择题Key值',
@@ -230,22 +508,43 @@ export const sendTemplateCardDescription: INodeProperties[] = [
 	{
 		displayName: '选项列表',
 		name: 'option_list',
-		type: 'json',
+		type: 'fixedCollection',
 		typeOptions: {
-			rows: 4,
+			multipleValues: true,
 		},
-		default: '[]',
-		placeholder: '[{"ID": "option1", "text": "选项1"}, {"ID": "option2", "text": "选项2"}]',
+		default: {},
+		placeholder: '添加选项',
 		displayOptions: {
 			show: {
 				...showOnlySendTemplateCard,
 				card_type: ['vote_interaction', 'multiple_interaction'],
 			},
 		},
-		required: true,
-		hint: '列表长度不超过10',
-		description:
-			'选项列表，JSON数组格式。每个选项包含ID和text字段。<a href="https://developer.work.weixin.qq.com/document/path/90236#模板卡片消息" target="_blank">官方文档</a>',
+		description: '选项列表，列表长度不超过10',
+		options: [
+			{
+				name: 'options',
+				displayName: '选项',
+				values: [
+					{
+						displayName: '选项ID',
+						name: 'id',
+						type: 'string',
+						default: '',
+						placeholder: 'option1',
+						description: '选项的唯一标识',
+					},
+					{
+						displayName: '选项文本',
+						name: 'text',
+						type: 'string',
+						default: '',
+						placeholder: '选项一',
+						description: '选项显示的文本',
+					},
+				],
+			},
+		],
 	},
 	{
 		displayName: '提交按钮文案',
@@ -275,7 +574,6 @@ export const sendTemplateCardDescription: INodeProperties[] = [
 				card_type: ['vote_interaction', 'multiple_interaction'],
 			},
 		},
-		required: true,
 		hint: '最长支持1024字节',
 		description:
 			'提交按钮key值，用户提交选项后，会产生回调事件，回调事件会将本参数作为EventKey返回。<a href="https://developer.work.weixin.qq.com/document/path/90236#模板卡片消息" target="_blank">官方文档</a>',
@@ -283,29 +581,142 @@ export const sendTemplateCardDescription: INodeProperties[] = [
 	{
 		displayName: '图片样式',
 		name: 'image_text_area',
-		type: 'json',
-		default: '{}',
-		placeholder: '{"type": 1, "url": "https://...", "title": "图片标题", "desc": "图片描述"}',
+		type: 'fixedCollection',
+		default: {},
+		placeholder: '添加图片',
 		displayOptions: {
 			show: {
 				...showOnlySendTemplateCard,
 				card_type: ['news_notice'],
 			},
 		},
-		description:
-			'可选。左图右文样式，JSON格式。<a href="https://developer.work.weixin.qq.com/document/path/90236#模板卡片消息" target="_blank">官方文档</a>',
+		description: '可选。左图右文样式',
+		options: [
+			{
+				name: 'imageTextInfo',
+				displayName: '图片内容',
+				values: [
+					{
+						displayName: '图片类型',
+						name: 'type',
+						type: 'options',
+						options: [
+							{
+								name: '普通图片',
+								value: 0,
+							},
+							{
+								name: '可点击图片',
+								value: 1,
+							},
+						],
+						default: 0,
+						description: '图片的类型',
+					},
+					{
+						displayName: '图片链接',
+						name: 'image_url',
+						type: 'string',
+						default: '',
+						placeholder: 'https://example.com/image.png',
+						description: '图片的URL地址',
+					},
+					{
+						displayName: '跳转链接',
+						name: 'url',
+						type: 'string',
+						default: '',
+						placeholder: 'https://example.com',
+						description: '点击图片后跳转的链接（仅当类型为可点击图片时有效）',
+						displayOptions: {
+							show: {
+								type: [1],
+							},
+						},
+					},
+					{
+						displayName: '标题',
+						name: 'title',
+						type: 'string',
+						default: '',
+						placeholder: '图片标题',
+						description: '图片的标题',
+					},
+					{
+						displayName: '描述',
+						name: 'desc',
+						type: 'string',
+						typeOptions: {
+							rows: 2,
+						},
+						default: '',
+						placeholder: '图片描述',
+						description: '图片的描述文字',
+					},
+				],
+			},
+		],
 	},
 	{
 		displayName: '卡片右上角更多操作按钮',
 		name: 'action_menu',
-		type: 'json',
-		default: '{}',
-		placeholder: '{"desc": "操作菜单", "action_list": [{"text": "操作1", "key": "action1"}]}',
+		type: 'fixedCollection',
+		default: {},
+		placeholder: '添加操作菜单',
 		displayOptions: {
 			show: showOnlySendTemplateCard,
 		},
-		description:
-			'可选。卡片右上角更多操作按钮，JSON格式。<a href="https://developer.work.weixin.qq.com/document/path/90236#模板卡片消息" target="_blank">官方文档</a>',
+		description: '可选。卡片右上角更多操作按钮',
+		options: [
+			{
+				name: 'menuInfo',
+				displayName: '操作菜单',
+				values: [
+					{
+						displayName: '菜单描述',
+						name: 'desc',
+						type: 'string',
+						default: '',
+						placeholder: '更多操作',
+						description: '菜单的描述文字',
+					},
+					{
+						displayName: '操作列表',
+						name: 'action_list',
+						type: 'fixedCollection',
+						typeOptions: {
+							multipleValues: true,
+						},
+						default: {},
+						placeholder: '添加操作',
+						options: [
+							{
+								name: 'actions',
+								displayName: '操作',
+								values: [
+									{
+										displayName: '操作文本',
+										name: 'text',
+										type: 'string',
+										default: '',
+										placeholder: '删除',
+										description: '操作的文本',
+									},
+									{
+										displayName: '操作Key',
+										name: 'key',
+										type: 'string',
+										default: '',
+										placeholder: 'action_delete',
+										description: '操作的唯一标识',
+									},
+								],
+							},
+						],
+					},
+				],
+			},
+		],
 	},
 	{
 		displayName: '是否开启ID转译',

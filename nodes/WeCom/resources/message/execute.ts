@@ -444,61 +444,40 @@ export async function executeMessage(
 					false,
 				) as boolean;
 
-				// 解析JSON字段
-				const source = this.getNodeParameter('source', i, '{}') as string;
-				const main_title = this.getNodeParameter('main_title', i, '{"title": ""}') as string;
-				const emphasis_content = this.getNodeParameter('emphasis_content', i, '{}') as string;
-				const quote_area = this.getNodeParameter('quote_area', i, '{}') as string;
+				// 获取fixedCollection字段
+				const sourceData = this.getNodeParameter('source', i, {}) as IDataObject;
+				const mainTitleData = this.getNodeParameter('main_title', i, {}) as IDataObject;
+				const emphasisContentData = this.getNodeParameter('emphasis_content', i, {}) as IDataObject;
+				const quoteAreaData = this.getNodeParameter('quote_area', i, {}) as IDataObject;
 				const sub_title_text = this.getNodeParameter('sub_title_text', i, '') as string;
-				const horizontal_content_list = this.getNodeParameter(
-					'horizontal_content_list',
-					i,
-					'[]',
-				) as string;
-				const jump_list = this.getNodeParameter('jump_list', i, '[]') as string;
-				const card_action = this.getNodeParameter('card_action', i, '{}') as string;
+				const horizontalContentListData = this.getNodeParameter('horizontal_content_list', i, {}) as IDataObject;
+				const jumpListData = this.getNodeParameter('jump_list', i, {}) as IDataObject;
+				const cardActionData = this.getNodeParameter('card_action', i, {}) as IDataObject;
 				const task_id = this.getNodeParameter('task_id', i, '') as string;
-				const action_menu = this.getNodeParameter('action_menu', i, '{}') as string;
+				const actionMenuData = this.getNodeParameter('action_menu', i, {}) as IDataObject;
 
 				const template_card: IDataObject = {
 					card_type,
 				};
 
 				// 添加source
-				try {
-					const sourceObj = JSON.parse(source);
-					if (Object.keys(sourceObj).length > 0) {
-						template_card.source = sourceObj;
-					}
-				} catch {
-					// 忽略解析错误
+				if (sourceData.sourceInfo) {
+					template_card.source = sourceData.sourceInfo;
 				}
 
 				// 添加main_title
-				try {
-					template_card.main_title = JSON.parse(main_title);
-				} catch {
-					template_card.main_title = { title: '' };
+				if (mainTitleData.titleInfo) {
+					template_card.main_title = mainTitleData.titleInfo;
 				}
 
 				// 添加emphasis_content
-				try {
-					const emphasisObj = JSON.parse(emphasis_content);
-					if (Object.keys(emphasisObj).length > 0) {
-						template_card.emphasis_content = emphasisObj;
-					}
-				} catch {
-					// 忽略解析错误
+				if (emphasisContentData.emphasisInfo) {
+					template_card.emphasis_content = emphasisContentData.emphasisInfo;
 				}
 
 				// 添加quote_area
-				try {
-					const quoteObj = JSON.parse(quote_area);
-					if (Object.keys(quoteObj).length > 0) {
-						template_card.quote_area = quoteObj;
-					}
-				} catch {
-					// 忽略解析错误
+				if (quoteAreaData.quoteInfo) {
+					template_card.quote_area = quoteAreaData.quoteInfo;
 				}
 
 				// 添加sub_title_text
@@ -507,33 +486,18 @@ export async function executeMessage(
 				}
 
 				// 添加horizontal_content_list
-				try {
-					const horizontalList = JSON.parse(horizontal_content_list);
-					if (Array.isArray(horizontalList) && horizontalList.length > 0) {
-						template_card.horizontal_content_list = horizontalList;
-					}
-				} catch {
-					// 忽略解析错误
+				if (horizontalContentListData.items && Array.isArray(horizontalContentListData.items)) {
+					template_card.horizontal_content_list = horizontalContentListData.items;
 				}
 
 				// 添加jump_list
-				try {
-					const jumpListObj = JSON.parse(jump_list);
-					if (Array.isArray(jumpListObj) && jumpListObj.length > 0) {
-						template_card.jump_list = jumpListObj;
-					}
-				} catch {
-					// 忽略解析错误
+				if (jumpListData.items && Array.isArray(jumpListData.items)) {
+					template_card.jump_list = jumpListData.items;
 				}
 
 				// 添加card_action
-				try {
-					const cardActionObj = JSON.parse(card_action);
-					if (Object.keys(cardActionObj).length > 0) {
-						template_card.card_action = cardActionObj;
-					}
-				} catch {
-					// 忽略解析错误
+				if (cardActionData.actionInfo) {
+					template_card.card_action = cardActionData.actionInfo;
 				}
 
 				// 添加task_id
@@ -543,15 +507,10 @@ export async function executeMessage(
 
 				// 针对不同卡片类型的特殊处理
 				if (card_type === 'button_interaction') {
-					const button_list = this.getNodeParameter('button_list', i, '[]') as string;
-					try {
-						const buttonListObj = JSON.parse(button_list);
-						if (Array.isArray(buttonListObj) && buttonListObj.length > 0) {
-							template_card.button_list = buttonListObj;
-						}
-				} catch {
-					// 忽略解析错误
-				}
+					const buttonListData = this.getNodeParameter('button_list', i, {}) as IDataObject;
+					if (buttonListData.buttons && Array.isArray(buttonListData.buttons)) {
+						template_card.button_list = buttonListData.buttons;
+					}
 				} else if (
 					card_type === 'vote_interaction' ||
 					card_type === 'multiple_interaction'
@@ -566,46 +525,51 @@ export async function executeMessage(
 						i,
 						'single',
 					) as string;
-					const option_list = this.getNodeParameter('option_list', i, '[]') as string;
+					const optionListData = this.getNodeParameter('option_list', i, {}) as IDataObject;
 					const submit_button_text = this.getNodeParameter(
 						'submit_button_text',
 						i,
 						'提交',
 					) as string;
-					const submit_button_key = this.getNodeParameter('submit_button_key', i) as string;
+					const submit_button_key = this.getNodeParameter('submit_button_key', i, '') as string;
 
 					if (checkbox_question_key) {
 						template_card.checkbox = {
 							question_key: checkbox_question_key,
 							mode: checkbox_mode,
-							option_list: JSON.parse(option_list),
+							option_list: optionListData.options || [],
 						};
 					}
 
-					template_card.submit_button = {
-						text: submit_button_text,
-						key: submit_button_key,
-					};
+					if (submit_button_key) {
+						template_card.submit_button = {
+							text: submit_button_text,
+							key: submit_button_key,
+						};
+					}
 				} else if (card_type === 'news_notice') {
-					const image_text_area = this.getNodeParameter('image_text_area', i, '{}') as string;
-					try {
-						const imageTextObj = JSON.parse(image_text_area);
-						if (Object.keys(imageTextObj).length > 0) {
-							template_card.image_text_area = imageTextObj;
-						}
-				} catch {
-					// 忽略解析错误
-				}
+					const imageTextAreaData = this.getNodeParameter('image_text_area', i, {}) as IDataObject;
+					if (imageTextAreaData.imageTextInfo) {
+						template_card.image_text_area = imageTextAreaData.imageTextInfo;
+					}
 				}
 
 				// 添加action_menu
-				try {
-					const actionMenuObj = JSON.parse(action_menu);
-					if (Object.keys(actionMenuObj).length > 0) {
-						template_card.action_menu = actionMenuObj;
+				if (actionMenuData.menuInfo) {
+					const menuInfo = actionMenuData.menuInfo as IDataObject;
+					const menuData: IDataObject = {};
+					if (menuInfo.desc) {
+						menuData.desc = menuInfo.desc;
 					}
-				} catch {
-					// 忽略解析错误
+					if (menuInfo.action_list) {
+						const actionListData = menuInfo.action_list as IDataObject;
+						if (actionListData.actions && Array.isArray(actionListData.actions)) {
+							menuData.action_list = actionListData.actions;
+						}
+					}
+					if (Object.keys(menuData).length > 0) {
+						template_card.action_menu = menuData;
+					}
 				}
 
 				body = {
@@ -629,61 +593,40 @@ export async function executeMessage(
 				const card_type = this.getNodeParameter('card_type', i) as string;
 				const button_key = this.getNodeParameter('button_key', i, '') as string;
 
-				// 解析JSON字段
-				const source = this.getNodeParameter('source', i, '{}') as string;
-				const main_title = this.getNodeParameter('main_title', i, '{"title": ""}') as string;
-				const emphasis_content = this.getNodeParameter('emphasis_content', i, '{}') as string;
-				const quote_area = this.getNodeParameter('quote_area', i, '{}') as string;
+				// 获取fixedCollection字段
+				const sourceData = this.getNodeParameter('source', i, {}) as IDataObject;
+				const mainTitleData = this.getNodeParameter('main_title', i, {}) as IDataObject;
+				const emphasisContentData = this.getNodeParameter('emphasis_content', i, {}) as IDataObject;
+				const quoteAreaData = this.getNodeParameter('quote_area', i, {}) as IDataObject;
 				const sub_title_text = this.getNodeParameter('sub_title_text', i, '') as string;
-				const horizontal_content_list = this.getNodeParameter(
-					'horizontal_content_list',
-					i,
-					'[]',
-				) as string;
-				const jump_list = this.getNodeParameter('jump_list', i, '[]') as string;
-				const card_action = this.getNodeParameter('card_action', i, '{}') as string;
+				const horizontalContentListData = this.getNodeParameter('horizontal_content_list', i, {}) as IDataObject;
+				const jumpListData = this.getNodeParameter('jump_list', i, {}) as IDataObject;
+				const cardActionData = this.getNodeParameter('card_action', i, {}) as IDataObject;
 				const task_id = this.getNodeParameter('task_id', i, '') as string;
-				const action_menu = this.getNodeParameter('action_menu', i, '{}') as string;
+				const actionMenuData = this.getNodeParameter('action_menu', i, {}) as IDataObject;
 
 				const template_card: IDataObject = {
 					card_type,
 				};
 
 				// 添加source
-				try {
-					const sourceObj = JSON.parse(source);
-					if (Object.keys(sourceObj).length > 0) {
-						template_card.source = sourceObj;
-					}
-				} catch {
-					// 忽略解析错误
+				if (sourceData.sourceInfo) {
+					template_card.source = sourceData.sourceInfo;
 				}
 
 				// 添加main_title
-				try {
-					template_card.main_title = JSON.parse(main_title);
-				} catch {
-					template_card.main_title = { title: '' };
+				if (mainTitleData.titleInfo) {
+					template_card.main_title = mainTitleData.titleInfo;
 				}
 
 				// 添加emphasis_content
-				try {
-					const emphasisObj = JSON.parse(emphasis_content);
-					if (Object.keys(emphasisObj).length > 0) {
-						template_card.emphasis_content = emphasisObj;
-					}
-				} catch {
-					// 忽略解析错误
+				if (emphasisContentData.emphasisInfo) {
+					template_card.emphasis_content = emphasisContentData.emphasisInfo;
 				}
 
 				// 添加quote_area
-				try {
-					const quoteObj = JSON.parse(quote_area);
-					if (Object.keys(quoteObj).length > 0) {
-						template_card.quote_area = quoteObj;
-					}
-				} catch {
-					// 忽略解析错误
+				if (quoteAreaData.quoteInfo) {
+					template_card.quote_area = quoteAreaData.quoteInfo;
 				}
 
 				// 添加sub_title_text
@@ -692,33 +635,18 @@ export async function executeMessage(
 				}
 
 				// 添加horizontal_content_list
-				try {
-					const horizontalList = JSON.parse(horizontal_content_list);
-					if (Array.isArray(horizontalList) && horizontalList.length > 0) {
-						template_card.horizontal_content_list = horizontalList;
-					}
-				} catch {
-					// 忽略解析错误
+				if (horizontalContentListData.items && Array.isArray(horizontalContentListData.items)) {
+					template_card.horizontal_content_list = horizontalContentListData.items;
 				}
 
 				// 添加jump_list
-				try {
-					const jumpListObj = JSON.parse(jump_list);
-					if (Array.isArray(jumpListObj) && jumpListObj.length > 0) {
-						template_card.jump_list = jumpListObj;
-					}
-				} catch {
-					// 忽略解析错误
+				if (jumpListData.items && Array.isArray(jumpListData.items)) {
+					template_card.jump_list = jumpListData.items;
 				}
 
 				// 添加card_action
-				try {
-					const cardActionObj = JSON.parse(card_action);
-					if (Object.keys(cardActionObj).length > 0) {
-						template_card.card_action = cardActionObj;
-					}
-				} catch {
-					// 忽略解析错误
+				if (cardActionData.actionInfo) {
+					template_card.card_action = cardActionData.actionInfo;
 				}
 
 				// 添加task_id
@@ -728,15 +656,10 @@ export async function executeMessage(
 
 				// 针对不同卡片类型的特殊处理
 				if (card_type === 'button_interaction') {
-					const button_list = this.getNodeParameter('button_list', i, '[]') as string;
-					try {
-						const buttonListObj = JSON.parse(button_list);
-						if (Array.isArray(buttonListObj) && buttonListObj.length > 0) {
-							template_card.button_list = buttonListObj;
-						}
-				} catch {
-					// 忽略解析错误
-				}
+					const buttonListData = this.getNodeParameter('button_list', i, {}) as IDataObject;
+					if (buttonListData.buttons && Array.isArray(buttonListData.buttons)) {
+						template_card.button_list = buttonListData.buttons;
+					}
 				} else if (
 					card_type === 'vote_interaction' ||
 					card_type === 'multiple_interaction'
@@ -751,46 +674,51 @@ export async function executeMessage(
 						i,
 						'single',
 					) as string;
-					const option_list = this.getNodeParameter('option_list', i, '[]') as string;
+					const optionListData = this.getNodeParameter('option_list', i, {}) as IDataObject;
 					const submit_button_text = this.getNodeParameter(
 						'submit_button_text',
 						i,
 						'提交',
 					) as string;
-					const submit_button_key = this.getNodeParameter('submit_button_key', i) as string;
+					const submit_button_key = this.getNodeParameter('submit_button_key', i, '') as string;
 
 					if (checkbox_question_key) {
 						template_card.checkbox = {
 							question_key: checkbox_question_key,
 							mode: checkbox_mode,
-							option_list: JSON.parse(option_list),
+							option_list: optionListData.options || [],
 						};
 					}
 
-					template_card.submit_button = {
-						text: submit_button_text,
-						key: submit_button_key,
-					};
+					if (submit_button_key) {
+						template_card.submit_button = {
+							text: submit_button_text,
+							key: submit_button_key,
+						};
+					}
 				} else if (card_type === 'news_notice') {
-					const image_text_area = this.getNodeParameter('image_text_area', i, '{}') as string;
-					try {
-						const imageTextObj = JSON.parse(image_text_area);
-						if (Object.keys(imageTextObj).length > 0) {
-							template_card.image_text_area = imageTextObj;
-						}
-				} catch {
-					// 忽略解析错误
-				}
+					const imageTextAreaData = this.getNodeParameter('image_text_area', i, {}) as IDataObject;
+					if (imageTextAreaData.imageTextInfo) {
+						template_card.image_text_area = imageTextAreaData.imageTextInfo;
+					}
 				}
 
 				// 添加action_menu
-				try {
-					const actionMenuObj = JSON.parse(action_menu);
-					if (Object.keys(actionMenuObj).length > 0) {
-						template_card.action_menu = actionMenuObj;
+				if (actionMenuData.menuInfo) {
+					const menuInfo = actionMenuData.menuInfo as IDataObject;
+					const menuData: IDataObject = {};
+					if (menuInfo.desc) {
+						menuData.desc = menuInfo.desc;
 					}
-				} catch {
-					// 忽略解析错误
+					if (menuInfo.action_list) {
+						const actionListData = menuInfo.action_list as IDataObject;
+						if (actionListData.actions && Array.isArray(actionListData.actions)) {
+							menuData.action_list = actionListData.actions;
+						}
+					}
+					if (Object.keys(menuData).length > 0) {
+						template_card.action_menu = menuData;
+					}
 				}
 
 				// 构建更新请求body

@@ -120,136 +120,104 @@ export async function executePassiveReply(
 							replyContent = { Button: { ReplaceName: buttonReplaceName } };
 						} else {
 							const cardType = this.getNodeParameter('cardType', i) as string;
-							const cardSource = this.getNodeParameter('cardSource', i, '{}') as string;
-							const cardMainTitle = this.getNodeParameter('cardMainTitle', i, '{"title": ""}') as string;
-							const cardEmphasisContent = this.getNodeParameter('cardEmphasisContent', i, '{}') as string;
-							const cardQuoteArea = this.getNodeParameter('cardQuoteArea', i, '{}') as string;
+							const cardSourceData = this.getNodeParameter('cardSource', i, {}) as IDataObject;
+							const cardMainTitleData = this.getNodeParameter('cardMainTitle', i, {}) as IDataObject;
+							const cardEmphasisContentData = this.getNodeParameter('cardEmphasisContent', i, {}) as IDataObject;
+							const cardQuoteAreaData = this.getNodeParameter('cardQuoteArea', i, {}) as IDataObject;
 							const cardSubTitleText = this.getNodeParameter('cardSubTitleText', i, '') as string;
-							const cardHorizontalContentList = this.getNodeParameter('cardHorizontalContentList', i, '[]') as string;
-							const cardJumpList = this.getNodeParameter('cardJumpList', i, '[]') as string;
-							const cardAction = this.getNodeParameter('cardAction', i, '{}') as string;
+							const cardHorizontalContentListData = this.getNodeParameter('cardHorizontalContentList', i, {}) as IDataObject;
+							const cardJumpListData = this.getNodeParameter('cardJumpList', i, {}) as IDataObject;
+							const cardActionData = this.getNodeParameter('cardAction', i, {}) as IDataObject;
 							const cardTaskId = this.getNodeParameter('cardTaskId', i, '') as string;
-							const cardActionMenu = this.getNodeParameter('cardActionMenu', i, '{}') as string;
+							const cardActionMenuData = this.getNodeParameter('cardActionMenu', i, {}) as IDataObject;
 
 							const templateCard: Record<string, unknown> = {
 								CardType: cardType,
 							};
 
-							try {
-								const sourceObj = JSON.parse(cardSource);
-								if (Object.keys(sourceObj).length > 0) {
-									templateCard.Source = sourceObj;
-								}
-							} catch {
-								// 忽略解析错误
+							if (cardSourceData.source) {
+								templateCard.Source = cardSourceData.source;
 							}
 
-							try {
-								templateCard.MainTitle = JSON.parse(cardMainTitle);
-							} catch {
-								templateCard.MainTitle = { title: '' };
+							if (cardMainTitleData.mainTitle) {
+								templateCard.MainTitle = cardMainTitleData.mainTitle;
 							}
 
-							try {
-								const emphasisObj = JSON.parse(cardEmphasisContent);
-								if (Object.keys(emphasisObj).length > 0) {
-									templateCard.EmphasisContent = emphasisObj;
-								}
-							} catch {
-								// 忽略解析错误
+							if (cardEmphasisContentData.emphasisContent) {
+								templateCard.EmphasisContent = cardEmphasisContentData.emphasisContent;
 							}
 
-							try {
-								const quoteObj = JSON.parse(cardQuoteArea);
-								if (Object.keys(quoteObj).length > 0) {
-									templateCard.QuoteArea = quoteObj;
-								}
-							} catch {
-								// 忽略解析错误
+							if (cardQuoteAreaData.quoteArea) {
+								templateCard.QuoteArea = cardQuoteAreaData.quoteArea;
 							}
 
 							if (cardSubTitleText) {
 								templateCard.SubTitleText = cardSubTitleText;
 							}
 
-							try {
-								const horizontalList = JSON.parse(cardHorizontalContentList);
-								if (Array.isArray(horizontalList) && horizontalList.length > 0) {
-									templateCard.HorizontalContentList = horizontalList;
-								}
-							} catch {
-								// 忽略解析错误
+							if (cardHorizontalContentListData.items && Array.isArray(cardHorizontalContentListData.items)) {
+								templateCard.HorizontalContentList = cardHorizontalContentListData.items;
 							}
 
-							try {
-								const jumpListObj = JSON.parse(cardJumpList);
-								if (Array.isArray(jumpListObj) && jumpListObj.length > 0) {
-									templateCard.JumpList = jumpListObj;
-								}
-							} catch {
-								// 忽略解析错误
+							if (cardJumpListData.items && Array.isArray(cardJumpListData.items)) {
+								templateCard.JumpList = cardJumpListData.items;
 							}
 
-							try {
-								const cardActionObj = JSON.parse(cardAction);
-								if (Object.keys(cardActionObj).length > 0) {
-									templateCard.CardAction = cardActionObj;
-								}
-							} catch {
-								// 忽略解析错误
+							if (cardActionData.action) {
+								templateCard.CardAction = cardActionData.action;
 							}
 
 							if (cardTaskId) {
 								templateCard.TaskId = cardTaskId;
 							}
 
-							try {
-								const actionMenuObj = JSON.parse(cardActionMenu);
-								if (Object.keys(actionMenuObj).length > 0) {
-									templateCard.ActionMenu = actionMenuObj;
+							if (cardActionMenuData.actionMenu) {
+								const actionMenu = cardActionMenuData.actionMenu as IDataObject;
+								const menuData: IDataObject = {};
+								if (actionMenu.desc) {
+									menuData.desc = actionMenu.desc;
 								}
-							} catch {
-								// 忽略解析错误
+								if (actionMenu.action_list) {
+									const actionListData = actionMenu.action_list as IDataObject;
+									if (actionListData.actions && Array.isArray(actionListData.actions)) {
+										menuData.action_list = actionListData.actions;
+									}
+								}
+								if (Object.keys(menuData).length > 0) {
+									templateCard.ActionMenu = menuData;
+								}
 							}
 
 							if (cardType === 'button_interaction') {
-								const cardButtonList = this.getNodeParameter('cardButtonList', i, '[]') as string;
-								try {
-									const buttonListObj = JSON.parse(cardButtonList);
-									if (Array.isArray(buttonListObj) && buttonListObj.length > 0) {
-										templateCard.ButtonList = buttonListObj;
-									}
-								} catch {
-									// 忽略解析错误
+								const cardButtonListData = this.getNodeParameter('cardButtonList', i, {}) as IDataObject;
+								if (cardButtonListData.buttons && Array.isArray(cardButtonListData.buttons)) {
+									templateCard.ButtonList = cardButtonListData.buttons;
 								}
 							} else if (cardType === 'vote_interaction' || cardType === 'multiple_interaction') {
 								const cardCheckboxQuestionKey = this.getNodeParameter('cardCheckboxQuestionKey', i, '') as string;
 								const cardCheckboxMode = this.getNodeParameter('cardCheckboxMode', i, 'single') as string;
-								const cardOptionList = this.getNodeParameter('cardOptionList', i, '[]') as string;
+								const cardOptionListData = this.getNodeParameter('cardOptionList', i, {}) as IDataObject;
 								const cardSubmitButtonText = this.getNodeParameter('cardSubmitButtonText', i, '提交') as string;
-								const cardSubmitButtonKey = this.getNodeParameter('cardSubmitButtonKey', i) as string;
+								const cardSubmitButtonKey = this.getNodeParameter('cardSubmitButtonKey', i, '') as string;
 
 								if (cardCheckboxQuestionKey) {
 									templateCard.Checkbox = {
 										QuestionKey: cardCheckboxQuestionKey,
 										Mode: cardCheckboxMode,
-										OptionList: JSON.parse(cardOptionList),
+										OptionList: cardOptionListData.options || [],
 									};
 								}
 
-								templateCard.SubmitButton = {
-									Text: cardSubmitButtonText,
-									Key: cardSubmitButtonKey,
-								};
+								if (cardSubmitButtonKey) {
+									templateCard.SubmitButton = {
+										Text: cardSubmitButtonText,
+										Key: cardSubmitButtonKey,
+									};
+								}
 							} else if (cardType === 'news_notice') {
-								const cardImageTextArea = this.getNodeParameter('cardImageTextArea', i, '{}') as string;
-								try {
-									const imageTextObj = JSON.parse(cardImageTextArea);
-									if (Object.keys(imageTextObj).length > 0) {
-										templateCard.ImageTextArea = imageTextObj;
-									}
-								} catch {
-									// 忽略解析错误
+								const cardImageTextAreaData = this.getNodeParameter('cardImageTextArea', i, {}) as IDataObject;
+								if (cardImageTextAreaData.imageText) {
+									templateCard.ImageTextArea = cardImageTextAreaData.imageText;
 								}
 							}
 
