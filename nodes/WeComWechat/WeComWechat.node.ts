@@ -15,7 +15,7 @@ import { weComApiRequest } from '../WeCom/shared/transport';
 
 export class WeComWechat implements INodeType {
 	description: INodeTypeDescription = {
-		displayName: '企业微信-连接微信',
+		displayName: '企业微信-连接微信 (WeCom)',
 		name: 'weComWechat',
 		// eslint-disable-next-line @n8n/community-nodes/icon-validation
 		icon: { light: 'file:../../icons/wecom.png', dark: 'file:../../icons/wecom.dark.png' },

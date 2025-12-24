@@ -29,7 +29,7 @@ import { weComApiRequest } from '../WeCom/shared/transport';
 
 export class WeComBase implements INodeType {
 	description: INodeTypeDescription = {
-		displayName: '企业微信-基础',
+		displayName: '企业微信-基础 (WeCom)',
 		name: 'weComBase',
 		// eslint-disable-next-line @n8n/community-nodes/icon-validation
 		icon: { light: 'file:../../icons/wecom.png', dark: 'file:../../icons/wecom.dark.png' },

@@ -30,7 +30,7 @@ import { executeEmergency } from '../WeCom/resources/emergency/execute';
 
 export class WeComOffice implements INodeType {
 	description: INodeTypeDescription = {
-		displayName: '企业微信-办公',
+		displayName: '企业微信-办公 (WeCom)',
 		name: 'weComOffice',
 		// eslint-disable-next-line @n8n/community-nodes/icon-validation
 		icon: { light: 'file:../../icons/wecom.png', dark: 'file:../../icons/wecom.dark.png' },
