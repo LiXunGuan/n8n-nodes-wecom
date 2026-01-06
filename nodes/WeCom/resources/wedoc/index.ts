@@ -76,6 +76,7 @@ export const wedocDescription: INodeProperties[] = [
 				name: '编辑表格内容',
 				value: 'modSheetContent',
 				action: '编辑表格内容',
+				description: '编辑表格文档的内容',
 			},
 			{
 				name: '编辑收集表',
@@ -87,6 +88,7 @@ export const wedocDescription: INodeProperties[] = [
 				name: '编辑文档内容',
 				value: 'modDocContent',
 				action: '编辑文档内容',
+				description: '编辑文本文档的内容',
 			},
 			{
 				name: '查询记录',
@@ -230,6 +232,7 @@ export const wedocDescription: INodeProperties[] = [
 				name: '删除文档',
 				value: 'deleteDoc',
 				action: '删除文档',
+				description: '删除文档/表格/智能表格',
 			},
 			{
 				name: '删除子表',
@@ -307,6 +310,7 @@ export const wedocDescription: INodeProperties[] = [
 				name: '重命名文档',
 				value: 'renameDoc',
 				action: '重命名文档',
+				description: '修改文档的名称',
 			},
 		],
 		default: 'createDoc',

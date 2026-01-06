@@ -55,11 +55,13 @@ export const contactDescription: INodeProperties[] = [
 				name: '创建标签',
 				value: 'createTag',
 				action: '创建标签',
+				description: '创建企业标签',
 			},
 			{
 				name: '创建部门',
 				value: 'createDepartment',
 				action: '创建部门',
+				description: '创建企业部门',
 			},
 			{
 				name: '创建成员',
@@ -77,16 +79,19 @@ export const contactDescription: INodeProperties[] = [
 				name: '导出部门',
 				value: 'exportDepartment',
 				action: '导出部门',
+				description: '异步导出部门列表',
 			},
 			{
 				name: '导出成员',
 				value: 'exportSimpleUser',
 				action: '导出成员',
+				description: '异步导出成员列表（简略信息）',
 			},
 			{
 				name: '导出成员详情',
 				value: 'exportUser',
 				action: '导出成员详情',
+				description: '异步导出成员列表（完整信息）',
 			},
 			{
 				name: '更新标签名字',
@@ -134,6 +139,7 @@ export const contactDescription: INodeProperties[] = [
 				name: '获取部门列表',
 				value: 'getDepartment',
 				action: '获取部门列表',
+				description: '获取企业部门列表',
 			},
 			{
 				name: '获取成员信息',
@@ -175,6 +181,7 @@ export const contactDescription: INodeProperties[] = [
 				name: '获取子部门ID列表',
 				value: 'getSubDepartmentIds',
 				action: '获取子部门ID列表',
+				description: '获取指定部门的所有子部门ID',
 			},
 			{
 				name: '临时外部联系人ID转换',
@@ -204,16 +211,19 @@ export const contactDescription: INodeProperties[] = [
 				name: '删除标签',
 				value: 'deleteTag',
 				action: '删除标签',
+				description: '删除企业标签',
 			},
 			{
 				name: '删除标签成员',
 				value: 'delTagUsers',
 				action: '删除标签成员',
+				description: '从标签中移除成员',
 			},
 			{
 				name: '删除部门',
 				value: 'deleteDepartment',
 				action: '删除部门',
+				description: '删除企业部门',
 			},
 			{
 				name: '删除成员',
