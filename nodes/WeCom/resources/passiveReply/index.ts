@@ -8,11 +8,20 @@ export const passiveReplyDescription: INodeProperties[] = [
 	{
 		displayName: '操作',
 		name: 'operation',
-		type: 'hidden',
-		default: 'reply',
+		type: 'options',
+		noDataExpression: true,
 		displayOptions: {
 			show: showOnlyForPassiveReply,
 		},
+		options: [
+			{
+				name: '被动回复',
+				value: 'reply',
+				action: '被动回复',
+				description: '被动回复企业微信消息',
+			},
+		],
+		default: 'reply',
 	},
 	{
 		displayName: '回复消息类型',
