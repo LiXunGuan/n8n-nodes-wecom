@@ -957,18 +957,5 @@ export const passiveReplyDescription: INodeProperties[] = [
 		placeholder: 'replace_name',
 		hint: '如果只需要更新按钮状态，可以只填写此字段而不填写完整卡片内容',
 	},
-	{
-		displayName: '使用说明',
-		name: 'passiveReplyNotice',
-		type: 'notice',
-		displayOptions: {
-			show: {
-				...showOnlyForPassiveReply,
-				operation: ['reply'],
-			},
-		},
-		default: '',
-		description: '工作流结构：企业微信消息接收（被动回复）触发器 → 处理节点（可选）→ 本节点。本节点必须是最后一个节点，须在 5 秒内返回响应。',
-	},
 ];
 

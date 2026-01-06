@@ -126,16 +126,6 @@ export class WeComPassiveTrigger implements INodeType {
 				description: 'Whether to return unparsed raw XML data',
 				hint: '开启后会在输出中包含原始的 XML 字符串',
 			},
-			{
-				displayName: '使用说明',
-				name: 'notice',
-				type: 'notice',
-				default: '',
-				displayOptions: {
-					show: {},
-				},
-				description: '工作流结构：本触发器 → 处理节点（可选）→ 企业微信被动回复节点。被动回复节点必须是最后一个节点，且须在 5 秒内返回响应。',
-			},
 		],
 	};
 
