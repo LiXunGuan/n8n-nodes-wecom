@@ -62,6 +62,7 @@ export const mailDescription: INodeProperties[] = [
 				name: '发送普通邮件',
 				value: 'sendMail',
 				action: '发送普通邮件',
+				description: '发送普通文本或HTML格式邮件',
 			},
 			{
 				name: '发送日程邮件',
@@ -118,6 +119,7 @@ export const mailDescription: INodeProperties[] = [
 				name: '删除邮件群组',
 				value: 'deleteMailGroup',
 				action: '删除邮件群组',
+				description: '删除指定的邮件群组',
 			},
 			{
 				name: '获取邮件群组详情',
@@ -129,6 +131,7 @@ export const mailDescription: INodeProperties[] = [
 				name: '模糊搜索邮件群组',
 				value: 'searchMailGroup',
 				action: '搜索邮件群组',
+				description: '通过关键字模糊搜索邮件群组',
 			},
 			// 管理公共邮箱
 			{
@@ -147,6 +150,7 @@ export const mailDescription: INodeProperties[] = [
 				name: '删除公共邮箱',
 				value: 'deletePublicMailbox',
 				action: '删除公共邮箱',
+				description: '删除指定的公共邮箱',
 			},
 			{
 				name: '获取公共邮箱详情',
@@ -158,17 +162,20 @@ export const mailDescription: INodeProperties[] = [
 				name: '模糊搜索公共邮箱',
 				value: 'searchPublicMailbox',
 				action: '搜索公共邮箱',
+				description: '通过关键字模糊搜索公共邮箱',
 			},
 			// 客户端专用密码
 			{
 				name: '获取客户端专用密码列表',
 				value: 'getClientPasswordList',
 				action: '获取专用密码列表',
+				description: '获取邮箱的客户端专用密码列表',
 			},
 			{
 				name: '删除客户端专用密码',
 				value: 'deleteClientPassword',
 				action: '删除专用密码',
+				description: '删除指定的客户端专用密码',
 			},
 			// 高级功能账号管理
 			{

@@ -80,6 +80,7 @@ export const externalContactDescription: INodeProperties[] = [
 				name: '获取配置了客户联系功能的成员列表',
 				value: 'getFollowUserList',
 				action: '获取配置了客户联系功能的成员列表',
+				description: '获取配置了客户联系功能的成员列表',
 			},
 			// 客户管理
 			{
@@ -104,6 +105,7 @@ export const externalContactDescription: INodeProperties[] = [
 				name: '修改客户备注信息',
 				value: 'updateExternalContactRemark',
 				action: '修改客户备注信息',
+				description: '修改客户的备注信息',
 			},
 			// 客户标签管理
 			{
@@ -128,6 +130,7 @@ export const externalContactDescription: INodeProperties[] = [
 				name: '删除企业客户标签',
 				value: 'delCorpTag',
 				action: '删除企业客户标签',
+				description: '删除企业客户标签',
 			},
 			{
 				name: '编辑客户企业标签',
@@ -171,6 +174,7 @@ export const externalContactDescription: INodeProperties[] = [
 				name: '查询离职成员客户接替状态',
 				value: 'resignedTransferResult',
 				action: '查询离职成员客户接替状态',
+				description: '查询离职成员客户接替的结果',
 			},
 			{
 				name: '分配离职成员的客户群',
@@ -183,11 +187,13 @@ export const externalContactDescription: INodeProperties[] = [
 				name: '获取客户群列表',
 				value: 'getGroupChatList',
 				action: '获取客户群列表',
+				description: '获取客户群列表',
 			},
 			{
 				name: '获取客户群详情',
 				value: 'getGroupChat',
 				action: '获取客户群详情',
+				description: '获取客户群的详细信息',
 			},
 			{
 				name: '客户群Opengid转换',
@@ -206,6 +212,7 @@ export const externalContactDescription: INodeProperties[] = [
 				name: '获取企业已配置的「联系我」方式',
 				value: 'getContactWay',
 				action: '获取企业已配置的「联系我」方式',
+				description: '获取企业已配置的「联系我」方式',
 			},
 			{
 				name: '更新企业已配置的「联系我」方式',
@@ -223,21 +230,25 @@ export const externalContactDescription: INodeProperties[] = [
 				name: '配置客户群进群方式',
 				value: 'addJoinWay',
 				action: '配置客户群进群方式',
+				description: '配置客户群的进群方式',
 			},
 			{
 				name: '获取客户群进群方式配置',
 				value: 'getJoinWay',
 				action: '获取客户群进群方式配置',
+				description: '获取客户群进群方式的配置',
 			},
 			{
 				name: '更新客户群进群方式配置',
 				value: 'updateJoinWay',
 				action: '更新客户群进群方式配置',
+				description: '更新客户群进群方式的配置',
 			},
 			{
 				name: '删除客户群进群方式配置',
 				value: 'delJoinWay',
 				action: '删除客户群进群方式配置',
+				description: '删除客户群进群方式的配置',
 			},
 			// 客户朋友圈
 			{
@@ -250,6 +261,7 @@ export const externalContactDescription: INodeProperties[] = [
 				name: '停止发表企业朋友圈',
 				value: 'cancelMomentTask',
 				action: '停止发表企业朋友圈',
+				description: '停止发表企业客户朋友圈',
 			},
 			{
 				name: '获取企业全部的发表列表',
@@ -274,11 +286,13 @@ export const externalContactDescription: INodeProperties[] = [
 				name: '提醒成员群发',
 				value: 'remindGroupMsgSend',
 				action: '提醒成员群发',
+				description: '提醒成员进行群发消息',
 			},
 			{
 				name: '停止企业群发',
 				value: 'cancelGroupMsgSend',
 				action: '停止企业群发',
+				description: '停止企业群发消息任务',
 			},
 			{
 				name: '获取群发记录列表',
@@ -290,26 +304,31 @@ export const externalContactDescription: INodeProperties[] = [
 				name: '发送新客户欢迎语',
 				value: 'sendWelcomeMsg',
 				action: '发送新客户欢迎语',
+				description: '发送新客户欢迎语消息',
 			},
 			{
 				name: '添加入群欢迎语素材',
 				value: 'addGroupWelcomeTemplate',
 				action: '添加入群欢迎语素材',
+				description: '添加入群欢迎语模板素材',
 			},
 			{
 				name: '编辑入群欢迎语素材',
 				value: 'editGroupWelcomeTemplate',
 				action: '编辑入群欢迎语素材',
+				description: '编辑入群欢迎语模板素材',
 			},
 			{
 				name: '获取入群欢迎语素材',
 				value: 'getGroupWelcomeTemplate',
 				action: '获取入群欢迎语素材',
+				description: '获取入群欢迎语模板素材',
 			},
 			{
 				name: '删除入群欢迎语素材',
 				value: 'delGroupWelcomeTemplate',
 				action: '删除入群欢迎语素材',
+				description: '删除入群欢迎语模板素材',
 			},
 			// 统计管理
 			{
@@ -329,86 +348,103 @@ export const externalContactDescription: INodeProperties[] = [
 				name: '创建商品图册',
 				value: 'addProductAlbum',
 				action: '创建商品图册',
+				description: '创建商品图册',
 			},
 			{
 				name: '获取商品图册列表',
 				value: 'getProductAlbumList',
 				action: '获取商品图册列表',
+				description: '获取商品图册列表',
 			},
 			{
 				name: '获取商品图册',
 				value: 'getProductAlbum',
 				action: '获取商品图册',
+				description: '获取商品图册详情',
 			},
 			{
 				name: '编辑商品图册',
 				value: 'updateProductAlbum',
 				action: '编辑商品图册',
+				description: '编辑商品图册信息',
 			},
 			{
 				name: '删除商品图册',
 				value: 'deleteProductAlbum',
 				action: '删除商品图册',
+				description: '删除商品图册',
 			},
 			{
 				name: '新建敏感词规则',
 				value: 'addInterceptRule',
 				action: '新建敏感词规则',
+				description: '新建敏感词拦截规则',
 			},
 			{
 				name: '获取敏感词规则列表',
 				value: 'getInterceptRuleList',
 				action: '获取敏感词规则列表',
+				description: '获取敏感词拦截规则列表',
 			},
 			{
 				name: '获取敏感词规则详情',
 				value: 'getInterceptRule',
 				action: '获取敏感词规则详情',
+				description: '获取敏感词拦截规则详情',
 			},
 			{
 				name: '修改敏感词规则',
 				value: 'updateInterceptRule',
 				action: '修改敏感词规则',
+				description: '修改敏感词拦截规则',
 			},
 			{
 				name: '删除敏感词规则',
 				value: 'deleteInterceptRule',
 				action: '删除敏感词规则',
+				description: '删除敏感词拦截规则',
 			},
 			{
 				name: '上传附件资源',
 				value: 'uploadAttachment',
 				action: '上传附件资源',
+				description: '上传临时附件素材',
 			},
 			{
 				name: '获取获客链接使用详情',
 				value: 'getCustomerAcquisitionQuota',
 				action: '获取获客链接使用详情',
+				description: '获取获客链接的使用配额详情',
 			},
 			{
 				name: '获取获客链接列表',
 				value: 'listCustomerAcquisitionLink',
 				action: '获取获客链接列表',
+				description: '获取获客链接列表',
 			},
 			{
 				name: '创建获客链接',
 				value: 'createCustomerAcquisitionLink',
 				action: '创建获客链接',
+				description: '创建获客链接',
 			},
 			{
 				name: '编辑获客链接',
 				value: 'updateCustomerAcquisitionLink',
 				action: '编辑获客链接',
+				description: '编辑获客链接配置',
 			},
 			{
 				name: '删除获客链接',
 				value: 'deleteCustomerAcquisitionLink',
 				action: '删除获客链接',
+				description: '删除获客链接',
 			},
 			{
 				name: '获取由获客链接添加的客户信息',
 				value: 'getCustomerAcquisitionCustomer',
 				action: '获取由获客链接添加的客户信息',
+				description: '获取通过获客链接添加的客户列表',
 			},
 			{
 				name: '获取已服务的外部联系人',

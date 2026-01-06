@@ -99,6 +99,7 @@ export const meetingDescription: INodeProperties[] = [
 				name: '获取会议受邀成员列表',
 				value: 'getMeetingInvitees',
 				action: '获取受邀成员',
+				description: '获取会议的受邀成员列表',
 			},
 			{
 				name: '更新会议受邀成员列表',
