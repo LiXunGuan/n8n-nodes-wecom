@@ -777,6 +777,21 @@ export async function executeWedoc(
 						}
 					}
 
+					// 处理 setting_manager_range：将逗号分隔的userid字符串转换为对象数组
+					if (formSetting.setting_manager_range) {
+						const managerRange = formSetting.setting_manager_range as string;
+						if (managerRange && managerRange.trim()) {
+							const userids = managerRange.split(',').map((id) => id.trim()).filter((id) => id);
+							if (userids.length > 0) {
+								formSetting.setting_manager_range = { userids };
+							} else {
+								delete formSetting.setting_manager_range;
+							}
+						} else {
+							delete formSetting.setting_manager_range;
+						}
+					}
+
 					form_info.form_setting = formSetting;
 				}
 
@@ -850,15 +865,29 @@ export async function executeWedoc(
 				}
 
 				response = await weComApiRequest.call(this, 'POST', '/cgi-bin/wedoc/get_form_statistic', body);
-			} else if (operation === 'getFormAnswer') {
-				const formid = this.getNodeParameter('formid', i) as string;
-				const limit = this.getNodeParameter('limit', i, 100) as number;
-				const offset = this.getNodeParameter('offset', i, 0) as number;
+			}
+			// 读取收集表答案
+			else if (operation === 'getFormAnswer') {
+				const repeated_id = this.getNodeParameter('repeated_id', i) as string;
+				const answer_ids_str = this.getNodeParameter('answer_ids', i) as string;
+
+				// 将答案ID字符串转换为数字数组
+				const answer_ids = answer_ids_str
+					.split(',')
+					.map((id) => parseInt(id.trim(), 10))
+					.filter((id) => !isNaN(id));
+
+				// 验证答案ID列表
+				if (answer_ids.length === 0) {
+					throw new NodeOperationError(this.getNode(), '答案ID列表不能为空', { itemIndex: i });
+				}
+				if (answer_ids.length > 100) {
+					throw new NodeOperationError(this.getNode(), '答案ID列表最大不能超过100个', { itemIndex: i });
+				}
 
 				response = await weComApiRequest.call(this, 'POST', '/cgi-bin/wedoc/get_form_answer', {
-					formid,
-					limit,
-					offset,
+					repeated_id,
+					answer_ids,
 				});
 			}
 			// 高级账号管理
