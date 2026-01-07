@@ -1,10 +1,6 @@
 import type { INodeProperties } from 'n8n-workflow';
 const showOnly = { resource: ['wedoc'], operation: ['getFormAnswer'] };
 export const getFormAnswerDescription: INodeProperties[] = [
-	{ displayName: '收集表ID', name: 'formid', type: 'string', required: true, displayOptions: { show: showOnly }, default: '', description: '收集表的formid。', hint: '收集表ID' },
-	{ displayName: '限制数量', name: 'limit', type: 'number',
-		typeOptions: {
-			minValue: 1,
-		}, displayOptions: { show: showOnly }, default: 50, description: 'Max number of results to return', hint: '限制数量' },
-	{ displayName: '偏移量', name: 'offset', type: 'number', displayOptions: { show: showOnly }, default: 0, description: '数据偏移量，用于分页，默认0。', hint: '偏移量' },
+	{ displayName: '收集表周期ID', name: 'repeated_id', type: 'string', required: true, displayOptions: { show: showOnly }, default: '', description: '操作的收集表周期repeated_id', hint: '收集表周期ID' },
+	{ displayName: '答案ID列表', name: 'answer_ids', type: 'string', required: true, displayOptions: { show: showOnly }, default: '', description: '需要拉取的答案列表，多个ID用英文逗号分隔，批次大小最大100', hint: '例如：1,2,3 或单个ID：1', placeholder: '1,2,3' },
 ];
