@@ -159,6 +159,14 @@ export const createFormDescription: INodeProperties[] = [
 				],
 				description: '填写权限。0：所有人；1：企业内指定人/部门；4:家校所有范围。默认为0，所有人可填写',
 			},
+			{
+				displayName: '收集表管理员',
+				name: 'setting_manager_range',
+				type: 'string',
+				default: '',
+				description: '收集表管理员的企业成员userid列表，多个用英文逗号分隔',
+				placeholder: '例如: userid1,userid2,userid3',
+			},
 		],
 	},
 ];
