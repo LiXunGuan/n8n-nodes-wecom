@@ -2,20 +2,396 @@ import type { IExecuteFunctions, INodeExecutionData, IDataObject } from 'n8n-wor
 import { NodeOperationError } from 'n8n-workflow';
 import { weComApiRequest, getAccessToken } from '../../shared/transport';
 
-// 辅助函数：构建单元格值
-function buildCellValue(valueType: string, value: string): IDataObject {
+// 辅助函数：从字段值对象中提取实际值
+function extractFieldValue(cv: IDataObject): string | number | boolean {
+	const valueType = cv.value_type as string;
+
 	switch (valueType) {
-		case 'number':
-			return { number: parseFloat(value) || 0 };
-		case 'url':
-			return { url: { link: value, text: value } };
+		case 'text': {
+			// 文本类型 - 检查输入方式
+			const textInputMode = cv.text_input_mode as string;
+			if (textInputMode === 'json') {
+				// JSON输入模式
+				return (cv.text_json_data as string) || '[]';
+			}
+			// 简单输入模式
+			return (cv.text_value as string) || '';
+		}
+
 		case 'email':
-			return { email: value };
+		case 'phone_number':
+		case 'barcode':
+			return (cv.simple_text_value as string) || '';
+
+		case 'number':
+		case 'progress':
+		case 'currency':
+		case 'percentage':
+			return (cv.number_value as number) || 0;
+
 		case 'checkbox':
-			return { checkbox: value.toLowerCase() === 'true' || value === '1' };
+			return (cv.checkbox_value as boolean) || false;
+
+		case 'date_time':
+			return (cv.date_value as string) || '';
+
+		case 'url':
+			// 构建URL对象
+			return JSON.stringify({
+				link: cv.url_link || '',
+				text: cv.url_text || cv.url_link || '',
+			});
+
+		case 'single_select':
+		case 'select':
+			// 构建选项对象
+			if (cv.option_mode === 'id') {
+				return JSON.stringify({ id: cv.option_id || '' });
+			} else {
+				return JSON.stringify({
+					text: cv.option_text || '',
+					style: cv.option_style || 1,
+				});
+			}
+
+		case 'user': {
+			// 成员类型 - 检查输入方式
+			const userInputMode = cv.user_input_mode as string;
+			if (userInputMode === 'json') {
+				// JSON输入模式
+				return (cv.user_json_data as string) || '[]';
+			}
+			// 简单输入模式 - 构建成员数组
+			const userIds = (cv.user_ids as string || '').split(',').map((id) => id.trim()).filter((id) => id);
+			return JSON.stringify(userIds.map((id) => ({ user_id: id })));
+		}
+
+		case 'location': {
+			// 地点类型 - 检查输入方式
+			const locationInputMode = cv.location_input_mode as string;
+			if (locationInputMode === 'json') {
+				// JSON输入模式
+				return (cv.location_json_data as string) || '{}';
+			}
+			// 表单输入模式 - 构建地点对象
+			return JSON.stringify({
+				source_type: cv.location_source_type || 1,
+				id: cv.location_id || '',
+				latitude: cv.location_latitude || '',
+				longitude: cv.location_longitude || '',
+				title: cv.location_title || '',
+			});
+		}
+
+		case 'image': {
+			// 图片类型 - 检查输入方式
+			const imageInputMode = cv.image_input_mode as string;
+			if (imageInputMode === 'json') {
+				// JSON输入模式
+				return (cv.image_json_data as string) || '[]';
+			}
+			// 表单输入模式 - 构建图片数组
+			const imageList = cv.image_list as IDataObject;
+			if (imageList?.images && Array.isArray(imageList.images)) {
+				return JSON.stringify(
+					(imageList.images as IDataObject[]).map((img: IDataObject) => ({
+						id: img.id || '',
+						title: img.title || '',
+						image_url: img.image_url || '',
+						width: img.width || 0,
+						height: img.height || 0,
+					})),
+				);
+			}
+			return '[]';
+		}
+
+		case 'attachment': {
+			// 文件类型 - 检查输入方式
+			const attachmentInputMode = cv.attachment_input_mode as string;
+			if (attachmentInputMode === 'json') {
+				// JSON输入模式
+				return (cv.attachment_json_data as string) || '[]';
+			}
+			// 表单输入模式 - 构建文件数组
+			const attachmentList = cv.attachment_list as IDataObject;
+			if (attachmentList?.attachments && Array.isArray(attachmentList.attachments)) {
+				return JSON.stringify(
+					(attachmentList.attachments as IDataObject[]).map((att: IDataObject) => {
+						const docType = att.doc_type as string;
+						let fileType = '';
+						let fileExt = '';
+						let docTypeNum = 2; // 默认为文件
+
+						// 判断是文件夹还是文件
+						if (docType === 'folder') {
+							// 文件夹
+							fileType = 'Folder';
+							fileExt = '';
+							docTypeNum = 1;
+						} else {
+							// 文件 - 根据子类型映射
+							docTypeNum = 2;
+							const subtype = att.file_subtype as string;
+
+							switch (subtype) {
+								case 'smartsheet':
+									fileType = '70';
+									fileExt = 'SMARTSHEET';
+									break;
+								case 'doc':
+									fileType = '50';
+									fileExt = 'DOC';
+									break;
+								case 'sheet':
+									fileType = '51';
+									fileExt = 'SHEET';
+									break;
+								case 'slide':
+									fileType = '52';
+									fileExt = 'SLIDE';
+									break;
+								case 'mind':
+									fileType = '54';
+									fileExt = 'MIND';
+									break;
+								case 'flowchart':
+									fileType = '55';
+									fileExt = 'FLOWCHART';
+									break;
+								case 'form':
+									fileType = '30';
+									fileExt = 'FORM';
+									break;
+								case 'wedrive':
+									fileType = 'Wedrive';
+									fileExt = (att.file_ext_custom as string) || '';
+									break;
+								default:
+									fileType = '';
+									fileExt = '';
+							}
+						}
+
+						return {
+							file_id: att.file_id || '',
+							name: att.name || '',
+							file_url: att.file_url || '',
+							file_type: fileType,
+							file_ext: fileExt,
+							doc_type: docTypeNum,
+							size: att.size || 0,
+						};
+					}),
+				);
+			}
+			return '[]';
+		}
+
 		default:
-			return { text: value };
+			// 默认返回空字符串
+			return '';
 	}
+}
+
+// 辅助函数：构建单元格值 (返回数组格式)
+function buildCellValue(valueType: string, value: string): IDataObject[] {
+	let cellValueItem: IDataObject;
+
+	switch (valueType) {
+		case 'text':
+			// 文本类型
+			cellValueItem = { type: 'text', text: value };
+			break;
+
+		case 'number':
+			// 数字类型
+			cellValueItem = { type: 'number', number: parseFloat(value) || 0 };
+			break;
+
+		case 'checkbox':
+			// 复选框类型
+			cellValueItem = { type: 'checkbox', checkbox: value.toLowerCase() === 'true' || value === '1' };
+			break;
+
+		case 'date_time':
+			// 日期类型 - 以毫秒为单位的unix时间戳
+			cellValueItem = { type: 'date_time', date_time: value };
+			break;
+
+		case 'url':
+			// 链接类型 - 支持JSON格式或简单字符串
+			try {
+				const urlData = typeof value === 'string' && value.startsWith('{') ? JSON.parse(value) : null;
+				if (urlData && urlData.link) {
+					// JSON格式：{"link": "https://...", "text": "显示文本"}
+					cellValueItem = {
+						type: 'url',
+						link: urlData.link,
+						text: urlData.text || urlData.link,
+					};
+				} else {
+					// 简单字符串格式：直接使用value作为link和text
+					cellValueItem = { type: 'url', link: value, text: value };
+				}
+			} catch {
+				// 如果JSON解析失败，使用简单格式
+				cellValueItem = { type: 'url', link: value, text: value };
+			}
+			break;
+
+		case 'email':
+			// 邮箱类型
+			cellValueItem = { type: 'email', email: value };
+			break;
+
+		case 'phone_number':
+			// 电话类型
+			cellValueItem = { type: 'phone_number', phone_number: value };
+			break;
+
+		case 'single_select':
+		case 'select':
+			// 单选/多选类型
+			try {
+				const optionData = typeof value === 'string' ? JSON.parse(value) : value;
+				const option: IDataObject = {};
+
+				// id: 选项ID，当选项存在时使用
+				if (optionData.id) {
+					option.id = optionData.id;
+				}
+				// style: 选项颜色，新增选项时填写
+				if (optionData.style !== undefined) {
+					option.style = optionData.style;
+				}
+				// text: 选项内容，新增选项时填写
+				if (optionData.text) {
+					option.text = optionData.text;
+				}
+
+				cellValueItem = { type: valueType, [valueType]: option };
+			} catch (error) {
+				throw new Error(`${valueType}类型值格式错误，请提供有效的JSON格式: ${error.message}`);
+			}
+			break;
+
+		case 'progress':
+			// 进度类型 (0-1之间的数值)
+			cellValueItem = { type: 'progress', progress: parseFloat(value) || 0 };
+			break;
+
+		case 'currency':
+			// 货币类型
+			cellValueItem = { type: 'currency', currency: parseFloat(value) || 0 };
+			break;
+
+		case 'percentage':
+			// 百分数类型
+			cellValueItem = { type: 'percentage', percentage: parseFloat(value) || 0 };
+			break;
+
+		case 'barcode':
+			// 条码类型
+			cellValueItem = { type: 'barcode', barcode: value };
+			break;
+
+		case 'location':
+			// 地理位置类型
+			try {
+				const locationData = typeof value === 'string' ? JSON.parse(value) : value;
+				const location: IDataObject = {
+					source_type: locationData.source_type || 1, // 默认为1（腾讯地图）
+				};
+
+				// 必填字段
+				if (!locationData.id) {
+					throw new Error('地点类型缺少必填字段: id');
+				}
+				if (!locationData.latitude) {
+					throw new Error('地点类型缺少必填字段: latitude');
+				}
+				if (!locationData.longitude) {
+					throw new Error('地点类型缺少必填字段: longitude');
+				}
+				if (!locationData.title) {
+					throw new Error('地点类型缺少必填字段: title');
+				}
+
+				location.id = locationData.id;
+				location.latitude = locationData.latitude;
+				location.longitude = locationData.longitude;
+				location.title = locationData.title;
+
+				cellValueItem = { type: 'location', location };
+			} catch (error) {
+				throw new Error(`地点类型值格式错误: ${error.message}`);
+			}
+			break;
+
+		case 'image':
+			// 图片类型 - 需要JSON数组格式
+			try {
+				const imageData = typeof value === 'string' ? JSON.parse(value) : value;
+				if (!Array.isArray(imageData)) {
+					throw new Error('图片类型需要数组格式');
+				}
+				cellValueItem = { type: 'image', image: imageData };
+			} catch (error) {
+				throw new Error(`图片类型值格式错误: ${error.message}`);
+			}
+			break;
+
+		case 'attachment':
+			// 文件类型 - 需要JSON数组格式
+			try {
+				const attachmentData = typeof value === 'string' ? JSON.parse(value) : value;
+				if (!Array.isArray(attachmentData)) {
+					throw new Error('文件类型需要数组格式');
+				}
+				cellValueItem = { type: 'attachment', attachment: attachmentData };
+			} catch (error) {
+				throw new Error(`文件类型值格式错误: ${error.message}`);
+			}
+			break;
+
+		case 'user': {
+			// 成员类型 - 支持多种格式
+			try {
+				let userData: IDataObject[];
+
+				if (typeof value === 'string' && (value.startsWith('[') || value.startsWith('{'))) {
+					// JSON格式
+					const parsed = JSON.parse(value);
+					if (Array.isArray(parsed)) {
+						// 数组格式：[{"user_id": "userid1"}, {"user_id": "userid2"}]
+						userData = parsed;
+					} else if (parsed.user_id) {
+						// 单个对象格式：{"user_id": "userid1"}
+						userData = [parsed];
+					} else {
+						throw new Error('成员对象必须包含 user_id 字段');
+					}
+				} else {
+					// 简单字符串格式：直接作为user_id
+					userData = [{ user_id: value }];
+				}
+
+				cellValueItem = { type: 'user', user: userData };
+			} catch (error) {
+				throw new Error(`成员类型值格式错误: ${error.message}`);
+			}
+			break;
+		}
+
+		default:
+			// 默认为文本类型
+			cellValueItem = { type: 'text', text: value };
+			break;
+	}
+
+	// 根据文档，值应该是数组格式
+	return [cellValueItem];
 }
 
 // 辅助函数：构建成员信息
@@ -378,8 +754,9 @@ export async function executeWedoc(
 							for (const cv of cellValues.values as IDataObject[]) {
 								const fieldKey = cv.field_key as string;
 								const valueType = cv.value_type as string;
-								const value = cv.value as string;
-								values[fieldKey] = buildCellValue(valueType, value);
+								// 使用新的提取函数从结构化字段中获取值
+								const value = extractFieldValue(cv);
+								values[fieldKey] = buildCellValue(valueType, String(value));
 							}
 						}
 
@@ -419,8 +796,9 @@ export async function executeWedoc(
 							for (const cv of cellValues.values as IDataObject[]) {
 								const fieldKey = cv.field_key as string;
 								const valueType = cv.value_type as string;
-								const value = cv.value as string;
-								values[fieldKey] = buildCellValue(valueType, value);
+								// 使用新的提取函数从结构化字段中获取值
+								const value = extractFieldValue(cv);
+								values[fieldKey] = buildCellValue(valueType, String(value));
 							}
 						}
 
