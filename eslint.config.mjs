@@ -20,6 +20,7 @@ export default [
 			'n8n-nodes-base/node-class-description-display-name-unsuffixed-trigger-node': 'off',
 			'n8n-nodes-base/node-param-placeholder-miscased-id': 'off',
 			'n8n-nodes-base/node-param-option-description-identical-to-name': 'off',
+			'n8n-nodes-base/node-param-collection-type-unsorted-items': 'off',
 		},
 	},
 ];
