@@ -1,6 +1,6 @@
 import type { IExecuteFunctions, INodeExecutionData, IDataObject } from 'n8n-workflow';
 import { NodeOperationError } from 'n8n-workflow';
-import { weComApiRequest, uploadMedia } from '../../shared/transport';
+import { weComApiRequest } from '../../shared/transport';
 import { extractRecipients } from './commonFields';
 
 export async function executeMessage(
@@ -107,24 +107,13 @@ export async function executeMessage(
 					},
 				};
 			} else if (operation === 'sendImage') {
-				const imageSource = this.getNodeParameter('imageSource', i) as string;
-				let mediaId: string;
-
-				if (imageSource === 'mediaId') {
-					mediaId = this.getNodeParameter('media_ID', i) as string;
-				} else {
-					// 上传图片
-					const binaryPropertyName = this.getNodeParameter('binaryPropertyName', i) as string;
-					const binaryData = this.helpers.assertBinaryData(i, binaryPropertyName);
-					const buffer = await this.helpers.getBinaryDataBuffer(i, binaryPropertyName);
-
-					mediaId = await uploadMedia.call(
-						this,
-						'image',
-						buffer,
-						binaryData.fileName || 'image.jpg',
-					);
-				}
+				const mediaId = this.getNodeParameter('media_ID', i) as string;
+				const safe = this.getNodeParameter('safe', i, false) as boolean;
+				const enable_duplicate_check = this.getNodeParameter(
+					'enable_duplicate_check',
+					i,
+					false,
+				) as boolean;
 
 				body = {
 					...body,
@@ -132,26 +121,26 @@ export async function executeMessage(
 					image: {
 						media_id: mediaId,
 					},
+					safe: safe ? 1 : 0,
+					enable_duplicate_check: enable_duplicate_check ? 1 : 0,
 				};
-			} else if (operation === 'sendFile') {
-				const fileSource = this.getNodeParameter('fileSource', i) as string;
-				let mediaId: string;
 
-				if (fileSource === 'mediaId') {
-					mediaId = this.getNodeParameter('media_ID', i) as string;
-				} else {
-					// 上传文件
-					const binaryPropertyName = this.getNodeParameter('binaryPropertyName', i) as string;
-					const binaryData = this.helpers.assertBinaryData(i, binaryPropertyName);
-					const buffer = await this.helpers.getBinaryDataBuffer(i, binaryPropertyName);
-
-					mediaId = await uploadMedia.call(
-						this,
-						'file',
-						buffer,
-						binaryData.fileName || 'file.bin',
-					);
+				if (enable_duplicate_check) {
+					const duplicate_check_interval = this.getNodeParameter(
+						'duplicate_check_interval',
+						i,
+						1800,
+					) as number;
+					body.duplicate_check_interval = duplicate_check_interval;
 				}
+			} else if (operation === 'sendFile') {
+				const mediaId = this.getNodeParameter('media_ID', i) as string;
+				const safe = this.getNodeParameter('safe', i, false) as boolean;
+				const enable_duplicate_check = this.getNodeParameter(
+					'enable_duplicate_check',
+					i,
+					false,
+				) as boolean;
 
 				body = {
 					...body,
@@ -159,33 +148,25 @@ export async function executeMessage(
 					file: {
 						media_id: mediaId,
 					},
+					safe: safe ? 1 : 0,
+					enable_duplicate_check: enable_duplicate_check ? 1 : 0,
 				};
+
+				if (enable_duplicate_check) {
+					const duplicate_check_interval = this.getNodeParameter(
+						'duplicate_check_interval',
+						i,
+						1800,
+					) as number;
+					body.duplicate_check_interval = duplicate_check_interval;
+				}
 			} else if (operation === 'sendVoice') {
-				const voiceSource = this.getNodeParameter('voiceSource', i) as string;
-				const safe = this.getNodeParameter('safe', i, false) as boolean;
-				const enable_id_trans = this.getNodeParameter('enable_id_trans', i, false) as boolean;
+				const mediaId = this.getNodeParameter('media_ID', i) as string;
 				const enable_duplicate_check = this.getNodeParameter(
 					'enable_duplicate_check',
 					i,
 					false,
 				) as boolean;
-				let mediaId: string;
-
-				if (voiceSource === 'mediaId') {
-					mediaId = this.getNodeParameter('media_ID', i) as string;
-				} else {
-					// 上传语音
-					const binaryPropertyName = this.getNodeParameter('binaryPropertyName', i) as string;
-					const binaryData = this.helpers.assertBinaryData(i, binaryPropertyName);
-					const buffer = await this.helpers.getBinaryDataBuffer(i, binaryPropertyName);
-
-					mediaId = await uploadMedia.call(
-						this,
-						'voice',
-						buffer,
-						binaryData.fileName || 'voice.amr',
-					);
-				}
 
 				body = {
 					...body,
@@ -193,8 +174,6 @@ export async function executeMessage(
 					voice: {
 						media_id: mediaId,
 					},
-					safe: safe ? 1 : 0,
-					enable_id_trans: enable_id_trans ? 1 : 0,
 					enable_duplicate_check: enable_duplicate_check ? 1 : 0,
 				};
 
@@ -207,44 +186,33 @@ export async function executeMessage(
 					body.duplicate_check_interval = duplicate_check_interval;
 				}
 			} else if (operation === 'sendVideo') {
-				const videoSource = this.getNodeParameter('videoSource', i) as string;
+				const mediaId = this.getNodeParameter('media_ID', i) as string;
 				const title = this.getNodeParameter('title', i, '') as string;
 				const description = this.getNodeParameter('description', i, '') as string;
 				const safe = this.getNodeParameter('safe', i, false) as boolean;
-				const enable_id_trans = this.getNodeParameter('enable_id_trans', i, false) as boolean;
 				const enable_duplicate_check = this.getNodeParameter(
 					'enable_duplicate_check',
 					i,
 					false,
 				) as boolean;
-				let mediaId: string;
 
-				if (videoSource === 'mediaId') {
-					mediaId = this.getNodeParameter('media_ID', i) as string;
-				} else {
-					// 上传视频
-					const binaryPropertyName = this.getNodeParameter('binaryPropertyName', i) as string;
-					const binaryData = this.helpers.assertBinaryData(i, binaryPropertyName);
-					const buffer = await this.helpers.getBinaryDataBuffer(i, binaryPropertyName);
+				const videoData: IDataObject = {
+					media_id: mediaId,
+				};
 
-					mediaId = await uploadMedia.call(
-						this,
-						'video',
-						buffer,
-						binaryData.fileName || 'video.mp4',
-					);
+				if (title) {
+					videoData.title = title;
+				}
+
+				if (description) {
+					videoData.description = description;
 				}
 
 				body = {
 					...body,
 					msgtype: 'video',
-					video: {
-						media_id: mediaId,
-						title,
-						description,
-					},
+					video: videoData,
 					safe: safe ? 1 : 0,
-					enable_id_trans: enable_id_trans ? 1 : 0,
 					enable_duplicate_check: enable_duplicate_check ? 1 : 0,
 				};
 

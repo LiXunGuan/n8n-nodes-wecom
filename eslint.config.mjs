@@ -21,6 +21,8 @@ export default [
 			'n8n-nodes-base/node-param-placeholder-miscased-id': 'off',
 			'n8n-nodes-base/node-param-option-description-identical-to-name': 'off',
 			'n8n-nodes-base/node-param-collection-type-unsorted-items': 'off',
+			'n8n-nodes-base/node-param-operation-option-action-miscased': 'off',
+			'n8n-nodes-base/node-param-display-name-miscased': 'off',
 		},
 	},
 ];

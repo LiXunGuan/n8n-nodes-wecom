@@ -1,5 +1,5 @@
 import type { IExecuteFunctions, INodeExecutionData, IDataObject } from 'n8n-workflow';
-import { weComApiRequest, uploadMedia } from '../../shared/transport';
+import { weComApiRequest } from '../../shared/transport';
 
 export async function executeAppChat(
 	this: IExecuteFunctions,
@@ -127,25 +127,8 @@ export async function executeAppChat(
 						safe: safe ? 1 : 0,
 					};
 				} else if (operation === 'sendImage') {
-					const imageSource = this.getNodeParameter('imageSource', i) as string;
+					const mediaId = this.getNodeParameter('media_ID', i) as string;
 					const safe = this.getNodeParameter('safe', i, false) as boolean;
-					let mediaId: string;
-
-					if (imageSource === 'mediaId') {
-						mediaId = this.getNodeParameter('media_ID', i) as string;
-					} else {
-						// 上传图片
-						const binaryPropertyName = this.getNodeParameter('binaryPropertyName', i) as string;
-						const binaryData = this.helpers.assertBinaryData(i, binaryPropertyName);
-						const buffer = await this.helpers.getBinaryDataBuffer(i, binaryPropertyName);
-
-						mediaId = await uploadMedia.call(
-							this,
-							'image',
-							buffer,
-							binaryData.fileName || 'image.jpg',
-						);
-					}
 
 					body = {
 						...body,
@@ -156,25 +139,8 @@ export async function executeAppChat(
 						safe: safe ? 1 : 0,
 					};
 				} else if (operation === 'sendFile') {
-					const fileSource = this.getNodeParameter('fileSource', i) as string;
+					const mediaId = this.getNodeParameter('media_ID', i) as string;
 					const safe = this.getNodeParameter('safe', i, false) as boolean;
-					let mediaId: string;
-
-					if (fileSource === 'mediaId') {
-						mediaId = this.getNodeParameter('media_ID', i) as string;
-					} else {
-						// 上传文件
-						const binaryPropertyName = this.getNodeParameter('binaryPropertyName', i) as string;
-						const binaryData = this.helpers.assertBinaryData(i, binaryPropertyName);
-						const buffer = await this.helpers.getBinaryDataBuffer(i, binaryPropertyName);
-
-						mediaId = await uploadMedia.call(
-							this,
-							'file',
-							buffer,
-							binaryData.fileName || 'file.bin',
-						);
-					}
 
 					body = {
 						...body,
@@ -197,6 +163,7 @@ export async function executeAppChat(
 				} else if (operation === 'sendNews') {
 					const articles = this.getNodeParameter('articles', i, {}) as IDataObject;
 					const articleList = (articles.article as IDataObject[]) || [];
+					const safe = this.getNodeParameter('safe', i, false) as boolean;
 
 					body = {
 						...body,
@@ -204,6 +171,72 @@ export async function executeAppChat(
 						news: {
 							articles: articleList,
 						},
+						safe: safe ? 1 : 0,
+					};
+				} else if (operation === 'sendVoice') {
+					const mediaId = this.getNodeParameter('media_ID', i) as string;
+
+					body = {
+						...body,
+						msgtype: 'voice',
+						voice: {
+							media_id: mediaId,
+						},
+					};
+				} else if (operation === 'sendVideo') {
+					const mediaId = this.getNodeParameter('media_ID', i) as string;
+					const title = this.getNodeParameter('title', i, '') as string;
+					const description = this.getNodeParameter('description', i, '') as string;
+					const safe = this.getNodeParameter('safe', i, false) as boolean;
+
+					const videoData: IDataObject = {
+						media_id: mediaId,
+					};
+
+					if (title) {
+						videoData.title = title;
+					}
+
+					if (description) {
+						videoData.description = description;
+					}
+
+					body = {
+						...body,
+						msgtype: 'video',
+						video: videoData,
+						safe: safe ? 1 : 0,
+					};
+				} else if (operation === 'sendTextCard') {
+					const title = this.getNodeParameter('title', i) as string;
+					const description = this.getNodeParameter('description', i) as string;
+					const url = this.getNodeParameter('url', i) as string;
+					const btntxt = this.getNodeParameter('btntxt', i, '详情') as string;
+					const safe = this.getNodeParameter('safe', i, false) as boolean;
+
+					body = {
+						...body,
+						msgtype: 'textcard',
+						textcard: {
+							title,
+							description,
+							url,
+							btntxt,
+						},
+						safe: safe ? 1 : 0,
+					};
+				} else if (operation === 'sendMpNews') {
+					const articles = this.getNodeParameter('articles', i, {}) as IDataObject;
+					const articleList = (articles.article as IDataObject[]) || [];
+					const safe = this.getNodeParameter('safe', i, false) as boolean;
+
+					body = {
+						...body,
+						msgtype: 'mpnews',
+						mpnews: {
+							articles: articleList,
+						},
+						safe: safe ? 1 : 0,
 					};
 				}
 

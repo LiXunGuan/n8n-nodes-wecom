@@ -45,6 +45,7 @@ export const sendNewsDescription: INodeProperties[] = [
 						type: 'string',
 						default: '',
 						placeholder: '图文标题',
+						required: true,
 						description:
 							'图文消息的标题。<a href="https://developer.work.weixin.qq.com/document/path/90248" target="_blank">官方文档</a>',
 						hint: '不超过128个字节',
@@ -68,6 +69,7 @@ export const sendNewsDescription: INodeProperties[] = [
 						type: 'string',
 						default: '',
 						placeholder: 'https://example.com',
+						required: true,
 						description:
 							'点击后跳转的链接。<a href="https://developer.work.weixin.qq.com/document/path/90248" target="_blank">官方文档</a>',
 						hint: '必须是http或https开头',
@@ -80,10 +82,21 @@ export const sendNewsDescription: INodeProperties[] = [
 						placeholder: 'https://example.com/image.jpg',
 						description:
 							'可选。图文消息的图片链接。<a href="https://developer.work.weixin.qq.com/document/path/90248" target="_blank">官方文档</a>',
-						hint: '支持JPG、PNG格式，较好的效果为大图640*320，小图80*80',
+						hint: '支持JPG、PNG格式，较好的效果为大图1068*455，小图150*150',
 					},
 				],
 			},
 		],
+	},
+	{
+		displayName: '保密消息',
+		name: 'safe',
+		type: 'boolean',
+		displayOptions: {
+			show: showOnlyForSendNews,
+		},
+		default: false,
+		description:
+			'表示是否是保密消息，0表示否，1表示是，默认0。<a href="https://developer.work.weixin.qq.com/document/path/90248" target="_blank">官方文档</a>',
 	},
 ];

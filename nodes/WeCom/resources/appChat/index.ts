@@ -4,9 +4,13 @@ import { createAppChatDescription } from './createAppChat';
 import { updateAppChatDescription } from './updateAppChat';
 import { sendTextDescription } from './sendText';
 import { sendImageDescription } from './sendImage';
+import { sendVoiceDescription } from './sendVoice';
+import { sendVideoDescription } from './sendVideo';
 import { sendFileDescription } from './sendFile';
+import { sendTextCardDescription } from './sendTextCard';
 import { sendMarkdownDescription } from './sendMarkdown';
 import { sendNewsDescription } from './sendNews';
+import { sendMpNewsDescription } from './sendMpNews';
 
 const showOnlyForAppChat = {
 	resource: ['appChat'],
@@ -47,16 +51,40 @@ export const appChatDescription: INodeProperties[] = [
 			description: '向群聊会话发送图文消息',
 		},
 		{
-			name: '发送文本消息',
-			value: 'sendText',
-			action: '发送文本消息',
-			description: '向群聊会话发送文本消息',
+			name: '发送图文消息 (mpnews)',
+			value: 'sendMpNews',
+			action: '发送图文消息 mpnews',
+			description: '向群聊会话发送图文消息（内容存储在企业微信）',
 		},
 		{
 			name: '发送文件消息',
 			value: 'sendFile',
 			action: '发送文件消息',
 			description: '向群聊会话发送文件消息',
+		},
+		{
+			name: '发送文本卡片消息',
+			value: 'sendTextCard',
+			action: '发送文本卡片消息',
+			description: '向群聊会话发送文本卡片消息',
+		},
+		{
+			name: '发送文本消息',
+			value: 'sendText',
+			action: '发送文本消息',
+			description: '向群聊会话发送文本消息',
+		},
+		{
+			name: '发送视频消息',
+			value: 'sendVideo',
+			action: '发送视频消息',
+			description: '向群聊会话发送视频消息',
+		},
+		{
+			name: '发送语音消息',
+			value: 'sendVoice',
+			action: '发送语音消息',
+			description: '向群聊会话发送语音消息',
 		},
 		{
 			name: '获取群聊会话',
@@ -78,8 +106,12 @@ export const appChatDescription: INodeProperties[] = [
 	...updateAppChatDescription,
 	...sendTextDescription,
 	...sendImageDescription,
+	...sendVoiceDescription,
+	...sendVideoDescription,
 	...sendFileDescription,
+	...sendTextCardDescription,
 	...sendMarkdownDescription,
 	...sendNewsDescription,
+	...sendMpNewsDescription,
 ];
 

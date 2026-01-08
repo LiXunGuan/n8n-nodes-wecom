@@ -130,25 +130,16 @@ export async function executePushMessage(
 
 			} else if (operation === 'sendImage') {
 				// 发送图片消息
-				const imageSource = this.getNodeParameter('imageSource', i) as string;
+				const base64 = this.getNodeParameter('base64', i) as string;
+				const md5 = this.getNodeParameter('md5', i) as string;
 
-				if (imageSource === 'base64') {
-					const base64 = this.getNodeParameter('base64', i) as string;
-					body = {
-						msgtype: 'image',
-						image: {
-							base64,
-						},
-					};
-				} else {
-					const md5 = this.getNodeParameter('md5', i) as string;
-					body = {
-						msgtype: 'image',
-						image: {
-							md5,
-						},
-					};
-				}
+				body = {
+					msgtype: 'image',
+					image: {
+						base64,
+						md5,
+					},
+				};
 
 			} else if (operation === 'sendNews') {
 				// 发送图文消息

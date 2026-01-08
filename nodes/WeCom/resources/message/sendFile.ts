@@ -9,30 +9,6 @@ const showOnlySendFile = {
 export const sendFileDescription: INodeProperties[] = [
 	...getRecipientFields('sendFile'),
 	{
-		displayName: '文件来源',
-		name: 'fileSource',
-		type: 'options',
-		required: true,
-		default: 'mediaId',
-		displayOptions: {
-			show: showOnlySendFile,
-		},
-		options: [
-			{
-				name: 'Media ID',
-				value: 'mediaId',
-				description: '使用已上传的文件媒体ID',
-			},
-			{
-				name: '上传文件',
-				value: 'upload',
-				description: '从工作流输入数据中上传文件',
-			},
-		],
-		description:
-			'选择文件来源方式。<a href="https://developer.work.weixin.qq.com/document/path/90236#文件消息" target="_blank">官方文档</a>',
-	},
-	{
 		displayName: 'Media ID',
 		name: 'media_ID',
 		type: 'string',
@@ -40,30 +16,47 @@ export const sendFileDescription: INodeProperties[] = [
 		required: true,
 		placeholder: '请输入文件的Media ID',
 		displayOptions: {
-			show: {
-				...showOnlySendFile,
-				fileSource: ['mediaId'],
-			},
+			show: showOnlySendFile,
 		},
 		description:
 			'文件媒体文件ID，可以通过素材管理接口上传文件获取。<a href="https://developer.work.weixin.qq.com/document/path/90236#文件消息" target="_blank">官方文档</a>',
 	},
 	{
-		displayName: '输入数据字段名',
-		name: 'binaryPropertyName',
-		type: 'string',
-		default: 'data',
-		required: true,
-		placeholder: 'data',
+		displayName: '保密消息',
+		name: 'safe',
+		type: 'boolean',
+		default: false,
+		displayOptions: {
+			show: showOnlySendFile,
+		},
+		description:
+			'表示是否是保密消息，0表示可对外分享，1表示不能分享且内容显示水印。<a href="https://developer.work.weixin.qq.com/document/path/90236#文件消息" target="_blank">官方文档</a>',
+		hint: '保密消息支持以下格式文件：txt、pdf、doc、docx、ppt、pptx、xls、xlsx、xml、jpg、jpeg、png、bmp、gif',
+	},
+	{
+		displayName: '开启重复消息检查',
+		name: 'enable_duplicate_check',
+		type: 'boolean',
+		default: false,
+		displayOptions: {
+			show: showOnlySendFile,
+		},
+		description:
+			'表示是否开启重复消息检查，0表示否，1表示是。<a href="https://developer.work.weixin.qq.com/document/path/90236#文件消息" target="_blank">官方文档</a>',
+	},
+	{
+		displayName: '重复消息检查间隔（秒）',
+		name: 'duplicate_check_interval',
+		type: 'number',
+		default: 1800,
 		displayOptions: {
 			show: {
 				...showOnlySendFile,
-				fileSource: ['upload'],
+				enable_duplicate_check: [true],
 			},
 		},
-		hint: '二进制数据属性名，通常为 data',
 		description:
-			'包含文件数据的二进制属性名称。文件最大20MB。<a href="https://developer.work.weixin.qq.com/document/path/90236#文件消息" target="_blank">官方文档</a>',
+			'表示重复消息检查的时间间隔，默认1800秒，最大不超过4小时。<a href="https://developer.work.weixin.qq.com/document/path/90236#文件消息" target="_blank">官方文档</a>',
 	},
 ];
 
