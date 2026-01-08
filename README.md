@@ -797,38 +797,113 @@ npm install n8n-nodes-wecom
 
 ### 家校应用
 
-> 家校应用接口（健康上报、上课直播、班级收款）
-
 #### 健康上报
 
-- ✅ 获取健康上报使用统计（`/cgi-bin/health/get_health_report_stat`）
-- ✅ 获取健康上报任务ID列表（`/cgi-bin/health/get_report_jobids`）
-- ✅ 获取健康上报任务详情（`/cgi-bin/health/get_report_job_info`）
-- ✅ 获取用户填写答案（`/cgi-bin/health/get_report_answer`）
+- ✅ [获取健康上报使用统计](https://developer.work.weixin.qq.com/document/path/93676)
+- ✅ [获取健康上报任务ID列表](https://developer.work.weixin.qq.com/document/path/93677)
+- ✅ [获取健康上报任务详情](https://developer.work.weixin.qq.com/document/path/93678)
+- ✅ [获取用户填写答案](https://developer.work.weixin.qq.com/document/path/93679)
 
 #### 上课直播
 
-- ✅ 获取老师直播ID列表（`/cgi-bin/living/get_user_livingid`）
-- ✅ 获取直播详情（`/cgi-bin/living/get_living_info`）
-- ✅ 获取观看直播统计（旧版）（`/cgi-bin/living/get_watch_stat`）
-- ✅ 获取未观看直播统计（旧版）（`/cgi-bin/living/get_unwatch_stat`）
-- ✅ 删除直播回放（`/cgi-bin/living/delete_replay_data`）
-- ✅ 获取观看直播统计V2（`/cgi-bin/school/living/get_watch_stat`）
-- ✅ 获取未观看直播统计V2（`/cgi-bin/school/living/get_unwatch_stat`）
+- ✅ [获取老师直播ID列表](https://developer.work.weixin.qq.com/document/path/93739)
+- ✅ [获取直播详情](https://developer.work.weixin.qq.com/document/path/93740)
+- ✅ [获取观看直播统计（旧版）](https://developer.work.weixin.qq.com/document/path/93741)
+- ✅ [获取未观看直播统计（旧版）](https://developer.work.weixin.qq.com/document/path/93742)
+- ✅ [删除直播回放](https://developer.work.weixin.qq.com/document/path/93743)
+- ✅ [获取观看直播统计V2](https://developer.work.weixin.qq.com/document/path/95793)
+- ✅ [获取未观看直播统计V2](https://developer.work.weixin.qq.com/document/path/95795)
 
 #### 班级收款
 
-- ✅ 获取学生付款结果（`/cgi-bin/externalcontact/get_trade_result`）
-- ✅ 获取订单详情（`/cgi-bin/externalcontact/get_trade_detail`）
+- ✅ [获取学生付款结果](https://developer.work.weixin.qq.com/document/path/94470)
+- ✅ [获取订单详情](https://developer.work.weixin.qq.com/document/path/94471)
+
+#### 家校沟通 - 基础接口
+
+- ✅ [获取「学校通知」二维码](https://developer.work.weixin.qq.com/document/path/92320)
+- ✅ [管理「学校通知」的关注模式](https://developer.work.weixin.qq.com/document/path/92318)
+- ✅ [发送「学校通知」](https://developer.work.weixin.qq.com/document/path/92321)
+- ✅ [管理「班级群创建方式」](https://developer.work.weixin.qq.com/document/path/92430)
+- ✅ [外部联系人openid转换](https://developer.work.weixin.qq.com/document/path/92323)
+- ✅ [获取可使用的家长范围](https://developer.work.weixin.qq.com/document/path/94895)
+
+#### 家校沟通 - 网页授权登录
+
+- ✅ [开始开发](https://developer.work.weixin.qq.com/document/path/91856)
+- ✅ [构造网页授权链接](https://developer.work.weixin.qq.com/document/path/91857)
+- ✅ [获取访问用户身份](https://developer.work.weixin.qq.com/document/path/91707)
+- ✅ [获取家校访问用户身份](https://developer.work.weixin.qq.com/document/path/95791)
+
+#### 家校沟通 - 学生与家长管理
+
+- ✅ [创建学生](https://developer.work.weixin.qq.com/document/path/92325)
+- ✅ [删除学生](https://developer.work.weixin.qq.com/document/path/92326)
+- ✅ [更新学生](https://developer.work.weixin.qq.com/document/path/92327)
+- ✅ [批量创建学生](https://developer.work.weixin.qq.com/document/path/92328)
+- ✅ [批量删除学生](https://developer.work.weixin.qq.com/document/path/92329)
+- ✅ [批量更新学生](https://developer.work.weixin.qq.com/document/path/92330)
+- ✅ [创建家长](https://developer.work.weixin.qq.com/document/path/92331)
+- ✅ [删除家长](https://developer.work.weixin.qq.com/document/path/92332)
+- ✅ [更新家长](https://developer.work.weixin.qq.com/document/path/92333)
+- ✅ [批量创建家长](https://developer.work.weixin.qq.com/document/path/92334)
+- ✅ [批量删除家长](https://developer.work.weixin.qq.com/document/path/92335)
+- ✅ [批量更新家长](https://developer.work.weixin.qq.com/document/path/92336)
+- ✅ [读取学生或家长](https://developer.work.weixin.qq.com/document/path/92337)
+- ✅ [获取部门学生详情](https://developer.work.weixin.qq.com/document/path/92338)
+- ✅ [设置家校通讯录自动同步模式](https://developer.work.weixin.qq.com/document/path/92345)
+- ✅ [获取部门家长详情](https://developer.work.weixin.qq.com/document/path/92446)
+
+#### 家校沟通 - 部门管理
+
+- ✅ [创建部门](https://developer.work.weixin.qq.com/document/path/92340)
+- ✅ [更新部门](https://developer.work.weixin.qq.com/document/path/92341)
+- ✅ [删除部门](https://developer.work.weixin.qq.com/document/path/92342)
+- ✅ [获取部门列表](https://developer.work.weixin.qq.com/document/path/92343)
+- ✅ [标准年级对照表](https://developer.work.weixin.qq.com/document/path/92344)
+- ✅ [修改自动升年级的配置](https://developer.work.weixin.qq.com/document/path/92949)
+
+#### 家校沟通 - 通讯录变更回调
+
+- ✅ [成员变更事件](https://developer.work.weixin.qq.com/document/path/92032)
+- ✅ [部门变更事件](https://developer.work.weixin.qq.com/document/path/92052)
 
 ### 政民沟通
 
-> [官方文档：政民沟通](https://developer.work.weixin.qq.com/document/path/94557)
+#### 配置网格结构
 
-- ✅ 网格结构管理（添加/编辑/删除/列表/用户网格） [文档](https://developer.work.weixin.qq.com/document/path/94557)
-- ✅ 事件类别管理（添加/修改/删除/列表） [文档](https://developer.work.weixin.qq.com/document/path/94557)
-- ✅ 巡查上报（网格负责人信息/统计/分类统计/事件列表/详情） [文档](https://developer.work.weixin.qq.com/document/path/94557)
-- ✅ 居民上报（网格负责人信息/统计/分类统计/事件列表/详情） [文档](https://developer.work.weixin.qq.com/document/path/94557)
+- ✅ [添加网格](https://developer.work.weixin.qq.com/document/path/94478)
+- ✅ [编辑网格](https://developer.work.weixin.qq.com/document/path/94479)
+- ✅ [删除网格](https://developer.work.weixin.qq.com/document/path/94480)
+- ✅ [获取网格列表](https://developer.work.weixin.qq.com/document/path/94481)
+- ✅ [获取用户负责及参与的网格列表](https://developer.work.weixin.qq.com/document/path/94482)
+
+#### 配置事件类别
+
+- ✅ [添加事件类别](https://developer.work.weixin.qq.com/document/path/94536)
+- ✅ [修改事件类别](https://developer.work.weixin.qq.com/document/path/94537)
+- ✅ [删除事件类别](https://developer.work.weixin.qq.com/document/path/94538)
+- ✅ [获取事件类别列表](https://developer.work.weixin.qq.com/document/path/94540)
+
+#### 巡查上报
+
+- ✅ [概述](https://developer.work.weixin.qq.com/document/path/93520)
+- ✅ [获取配置的网格及网格负责人](https://developer.work.weixin.qq.com/document/path/93531)
+- ✅ [获取单位巡查上报数据统计](https://developer.work.weixin.qq.com/document/path/93532)
+- ✅ [获取个人巡查上报数据统计](https://developer.work.weixin.qq.com/document/path/93533)
+- ✅ [获取上报事件分类统计](https://developer.work.weixin.qq.com/document/path/93534)
+- ✅ [获取巡查上报事件列表](https://developer.work.weixin.qq.com/document/path/93536)
+- ✅ [获取巡查上报的事件详情信息](https://developer.work.weixin.qq.com/document/path/93535)
+
+#### 居民上报
+
+- ✅ [概述](https://developer.work.weixin.qq.com/document/path/93513)
+- ✅ [获取配置的网格及网格负责人](https://developer.work.weixin.qq.com/document/path/93514)
+- ✅ [获取单位居民上报数据统计](https://developer.work.weixin.qq.com/document/path/93515)
+- ✅ [获取个人居民上报数据统计](https://developer.work.weixin.qq.com/document/path/93516)
+- ✅ [获取上报事件分类统计](https://developer.work.weixin.qq.com/document/path/93517)
+- ✅ [获取居民上报事件列表](https://developer.work.weixin.qq.com/document/path/93518)
+- ✅ [获取居民上报的事件详情信息](https://developer.work.weixin.qq.com/document/path/93519)
 
 ---
 
