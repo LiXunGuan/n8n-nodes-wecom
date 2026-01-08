@@ -7,6 +7,7 @@ import { sendNewsDescription } from './sendNews';
 import { sendFileDescription } from './sendFile';
 import { sendVoiceDescription } from './sendVoice';
 import { sendTemplateCardDescription } from './sendTemplateCard';
+import { uploadMediaDescription } from './uploadMedia';
 
 const showOnlyForPushMessage = {
 	resource: ['pushMessage'],
@@ -23,6 +24,12 @@ export const pushMessageDescription: INodeProperties[] = [
 		},
 		 
 		options: [
+		{
+			name: '上传媒体文件',
+			value: 'uploadMedia',
+			action: '上传媒体文件',
+			description: '上传文件或语音素材用于消息推送（3天有效）',
+		},
 		{
 			name: '发送 Markdown V2 消息',
 			value: 'sendMarkdownV2',
@@ -74,6 +81,7 @@ export const pushMessageDescription: INodeProperties[] = [
 	],
 		default: 'sendText',
 	},
+	...uploadMediaDescription,
 	...sendTextDescription,
 	...sendMarkdownDescription,
 	...sendMarkdownV2Description,

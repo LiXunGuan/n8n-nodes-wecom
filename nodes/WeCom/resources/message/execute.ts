@@ -130,7 +130,7 @@ export async function executeMessage(
 					...body,
 					msgtype: 'image',
 					image: {
-						media_ID: mediaId,
+						media_id: mediaId,
 					},
 				};
 			} else if (operation === 'sendFile') {
@@ -157,7 +157,7 @@ export async function executeMessage(
 					...body,
 					msgtype: 'file',
 					file: {
-						media_ID: mediaId,
+						media_id: mediaId,
 					},
 				};
 			} else if (operation === 'sendVoice') {
@@ -191,7 +191,7 @@ export async function executeMessage(
 					...body,
 					msgtype: 'voice',
 					voice: {
-						media_ID: mediaId,
+						media_id: mediaId,
 					},
 					safe: safe ? 1 : 0,
 					enable_id_trans: enable_id_trans ? 1 : 0,
@@ -239,7 +239,7 @@ export async function executeMessage(
 					...body,
 					msgtype: 'video',
 					video: {
-						media_ID: mediaId,
+						media_id: mediaId,
 						title,
 						description,
 					},

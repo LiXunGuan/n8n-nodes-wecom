@@ -151,7 +151,7 @@ export async function executeAppChat(
 						...body,
 						msgtype: 'image',
 						image: {
-							media_ID: mediaId,
+							media_id: mediaId,
 						},
 						safe: safe ? 1 : 0,
 					};
@@ -180,7 +180,7 @@ export async function executeAppChat(
 						...body,
 						msgtype: 'file',
 						file: {
-							media_ID: mediaId,
+							media_id: mediaId,
 						},
 						safe: safe ? 1 : 0,
 					};

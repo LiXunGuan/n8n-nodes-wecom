@@ -10,6 +10,52 @@ export async function executePushMessage(
 
 	for (let i = 0; i < items.length; i++) {
 		try {
+			// 上传媒体文件操作不需要获取 webhook 凭证
+			if (operation === 'uploadMedia') {
+				const webhookKey = this.getNodeParameter('webhookKey', i) as string;
+				const mediaType = this.getNodeParameter('mediaType', i) as string;
+				const binaryPropertyName = this.getNodeParameter('binaryProperty', i) as string;
+
+				const binaryData = this.helpers.assertBinaryData(i, binaryPropertyName);
+				const dataBuffer = await this.helpers.getBinaryDataBuffer(i, binaryPropertyName);
+
+				const uploadOptions = {
+					method: 'POST' as const,
+					url: 'https://qyapi.weixin.qq.com/cgi-bin/webhook/upload_media',
+					qs: {
+						key: webhookKey,
+						type: mediaType,
+					},
+					formData: {
+						media: {
+							value: dataBuffer,
+							options: {
+								filename: binaryData.fileName || 'file',
+								contentType: binaryData.mimeType || 'application/octet-stream',
+								knownLength: dataBuffer.length,
+							},
+						},
+					},
+					json: true,
+				};
+
+				const response = (await this.helpers.httpRequest(uploadOptions)) as IDataObject;
+
+				if (response.errcode !== undefined && response.errcode !== 0) {
+					throw new NodeOperationError(
+						this.getNode(),
+						`上传媒体文件失败: ${response.errmsg} (错误码: ${response.errcode})`,
+						{ itemIndex: i },
+					);
+				}
+
+				returnData.push({
+					json: response,
+					pairedItem: { item: i },
+				});
+				continue;
+			}
+
 			const credentials = await this.getCredentials('weComWebhookApi');
 			const webhookUrl = credentials.webhookUrl as string;
 
@@ -114,7 +160,7 @@ export async function executePushMessage(
 				body = {
 					msgtype: 'file',
 					file: {
-						media_ID: mediaId,
+						media_id: mediaId,
 					},
 				};
 
@@ -125,7 +171,7 @@ export async function executePushMessage(
 				body = {
 					msgtype: 'voice',
 					voice: {
-						media_ID: mediaId,
+						media_id: mediaId,
 					},
 				};
 
