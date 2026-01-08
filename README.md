@@ -794,6 +794,15 @@ npm install n8n-nodes-wecom
 - ✅ [知识库分组管理](https://developer.work.weixin.qq.com/document/path/95971)
 - ✅ [知识库问答管理](https://developer.work.weixin.qq.com/document/path/95972)
 
+### 政民沟通
+
+> [官方文档：政民沟通](https://developer.work.weixin.qq.com/document/path/94557)
+
+- ✅ 网格结构管理（添加/编辑/删除/列表/用户网格） [文档](https://developer.work.weixin.qq.com/document/path/94557)
+- ✅ 事件类别管理（添加/修改/删除/列表） [文档](https://developer.work.weixin.qq.com/document/path/94557)
+- ✅ 巡查上报（网格负责人信息/统计/分类统计/事件列表/详情） [文档](https://developer.work.weixin.qq.com/document/path/94557)
+- ✅ 居民上报（网格负责人信息/统计/分类统计/事件列表/详情） [文档](https://developer.work.weixin.qq.com/document/path/94557)
+
 ---
 
 ## 参考资源
