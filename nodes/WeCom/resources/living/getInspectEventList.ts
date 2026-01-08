@@ -76,11 +76,12 @@ export const getInspectEventListDescription: INodeProperties[] = [
 		type: 'number',
 		typeOptions: {
 			minValue: 1,
+			maxValue: 100,
 		},
 		displayOptions: {
 			show: showOnlyForGetInspectEventList,
 		},
 		default: 50,
-		description: '返回数量，默认 20，最大 100',
+		description: '返回数量，默认 50，最大 100',
 	},
 ];

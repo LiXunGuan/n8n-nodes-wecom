@@ -77,6 +77,7 @@
 
 - **客户联系** - 客户管理、标签、继承、客户群、朋友圈、群发等
 - **微信客服** - 客服账号、接待人员、消息收发、统计管理
+- **家校应用** - 健康上报、上课直播、班级收款
 
 
 ### 4. 企业微信消息接收触发器
@@ -793,6 +794,32 @@ npm install n8n-nodes-wecom
 
 - ✅ [知识库分组管理](https://developer.work.weixin.qq.com/document/path/95971)
 - ✅ [知识库问答管理](https://developer.work.weixin.qq.com/document/path/95972)
+
+### 家校应用
+
+> 家校应用接口（健康上报、上课直播、班级收款）
+
+#### 健康上报
+
+- ✅ 获取健康上报使用统计（`/cgi-bin/health/get_health_report_stat`）
+- ✅ 获取健康上报任务ID列表（`/cgi-bin/health/get_report_jobids`）
+- ✅ 获取健康上报任务详情（`/cgi-bin/health/get_report_job_info`）
+- ✅ 获取用户填写答案（`/cgi-bin/health/get_report_answer`）
+
+#### 上课直播
+
+- ✅ 获取老师直播ID列表（`/cgi-bin/living/get_user_livingid`）
+- ✅ 获取直播详情（`/cgi-bin/living/get_living_info`）
+- ✅ 获取观看直播统计（旧版）（`/cgi-bin/living/get_watch_stat`）
+- ✅ 获取未观看直播统计（旧版）（`/cgi-bin/living/get_unwatch_stat`）
+- ✅ 删除直播回放（`/cgi-bin/living/delete_replay_data`）
+- ✅ 获取观看直播统计V2（`/cgi-bin/school/living/get_watch_stat`）
+- ✅ 获取未观看直播统计V2（`/cgi-bin/school/living/get_unwatch_stat`）
+
+#### 班级收款
+
+- ✅ 获取学生付款结果（`/cgi-bin/externalcontact/get_trade_result`）
+- ✅ 获取订单详情（`/cgi-bin/externalcontact/get_trade_detail`）
 
 ### 政民沟通
 
