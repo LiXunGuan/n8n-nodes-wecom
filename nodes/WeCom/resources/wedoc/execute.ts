@@ -1290,40 +1290,38 @@ export async function executeWedoc(
 
 				response = await weComApiRequest.call(this, 'POST', '/cgi-bin/wedoc/vip_list', body);
 			}
-			// 素材管理
 			else if (operation === 'uploadDocImage') {
 				const docid = this.getNodeParameter('docid', i) as string;
-				const binaryPropertyName = this.getNodeParameter('file', i, 'data') as string;
-				const filename = this.getNodeParameter('filename', i, '') as string;
+				const imageSource = this.getNodeParameter('imageSource', i) as string;
 
-				const binaryData = this.helpers.assertBinaryData(i, binaryPropertyName);
-				const dataBuffer = await this.helpers.getBinaryDataBuffer(i, binaryPropertyName);
+				let base64Content: string;
+
+				if (imageSource === 'binary') {
+					// 从二进制数据读取并转换为 base64
+					const binaryPropertyName = this.getNodeParameter('binaryProperty', i) as string;
+					const dataBuffer = await this.helpers.getBinaryDataBuffer(i, binaryPropertyName);
+					base64Content = dataBuffer.toString('base64');
+				} else {
+					// 直接使用用户提供的 base64 字符串
+					base64Content = this.getNodeParameter('base64Content', i) as string;
+				}
 
 				const accessToken = await getAccessToken.call(this);
 
-				const uploadOptions = {
-					method: 'POST' as const,
-					url: 'https://qyapi.weixin.qq.com/cgi-bin/wedoc/upload_img',
-					qs: {
-						access_token: accessToken,
-						docid,
-					},
-					formData: {
-						media: {
-							value: dataBuffer,
-							options: {
-								filename: filename || binaryData.fileName || 'image.jpg',
-								contentType: binaryData.mimeType,
-							},
-						},
-					},
-					json: true,
+				const requestBody = {
+					docid,
+					base64_content: base64Content,
 				};
 
-				response = await this.helpers.httpRequest(uploadOptions) as IDataObject;
+				response = (await this.helpers.httpRequest({
+					method: 'POST',
+					url: `https://qyapi.weixin.qq.com/cgi-bin/wedoc/image_upload?access_token=${accessToken}`,
+					body: requestBody,
+					json: true,
+				})) as IDataObject;
 
 				if (response.errcode !== undefined && response.errcode !== 0) {
-					throw new Error(`企业微信 API 错误: ${response.errmsg} (错误码: ${response.errcode})`);
+					throw new Error(`上传文档图片失败: ${response.errmsg} (错误码: ${response.errcode})`);
 				}
 			} else {
 				response = {};

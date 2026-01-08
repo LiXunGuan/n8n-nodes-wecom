@@ -2,17 +2,6 @@ import type { IExecuteFunctions, INodeExecutionData, IDataObject } from 'n8n-wor
 import { NodeOperationError } from 'n8n-workflow';
 import { getAccessToken } from '../../shared/transport';
 
-/**
- * 素材管理操作执行函数
- * 官方文档：https://developer.work.weixin.qq.com/document/path/91054
- *
- * 实现的功能：
- * - uploadTemp: 上传临时素材（https://developer.work.weixin.qq.com/document/path/90253）
- * - uploadImage: 上传图片获取URL（https://developer.work.weixin.qq.com/document/path/90256）
- * - getTemp: 获取临时素材（https://developer.work.weixin.qq.com/document/path/90254）
- * - getHighQualityVoice: 获取高清语音素材（https://developer.work.weixin.qq.com/document/path/90255）
- * - uploadTempAsync: 异步上传临时素材（https://developer.work.weixin.qq.com/document/path/96219）
- */
 export async function executeMaterial(
 	this: IExecuteFunctions,
 	operation: string,
@@ -32,28 +21,44 @@ export async function executeMaterial(
 				const binaryData = this.helpers.assertBinaryData(i, binaryPropertyName);
 				const dataBuffer = await this.helpers.getBinaryDataBuffer(i, binaryPropertyName);
 
+				// 文件名避免特殊字符，可能导致解析问题
+				// filename标识文件展示的名称，使用该media_id发消息时，展示的文件名由该字段控制
+				const fileName = (binaryData.fileName || 'file').replace(/[^\w.-]/g, '_');
+				const contentType = binaryData.mimeType || 'application/octet-stream';
+				const fileLength = dataBuffer.length;
+
+				// 文件大小校验（所有文件size必须大于5个字节）
+				if (fileLength <= 5) {
+					throw new NodeOperationError(
+						this.getNode(),
+						'文件大小必须大于5个字节',
+					);
+				}
+
 				const accessToken = await getAccessToken.call(this);
 
-				const uploadOptions = {
-					method: 'POST' as const,
-					url: 'https://qyapi.weixin.qq.com/cgi-bin/media/upload',
-					qs: {
-						access_token: accessToken,
-						type,
-					},
-					formData: {
-						media: {
-							value: dataBuffer,
-							options: {
-								filename: binaryData.fileName || 'file',
-								contentType: binaryData.mimeType,
-							},
-						},
-					},
-					json: true,
-				};
+				// 手动构建 multipart/form-data 请求体
+				const boundary = '----WebKitFormBoundary' + Math.random().toString(36).substring(2);
+				const CRLF = '\r\n';
 
-				response = (await this.helpers.httpRequest(uploadOptions)) as IDataObject;
+				const header = `--${boundary}${CRLF}Content-Disposition: form-data; name="media";filename="${fileName}"; filelength=${fileLength}${CRLF}Content-Type: ${contentType}${CRLF}${CRLF}`;
+				const footer = `${CRLF}--${boundary}--${CRLF}`;
+
+				const headerBuffer = Buffer.from(header, 'utf-8');
+				const footerBuffer = Buffer.from(footer, 'utf-8');
+				const bodyBuffer = Buffer.concat([headerBuffer, dataBuffer, footerBuffer]);
+
+				const uploadUrl = `https://qyapi.weixin.qq.com/cgi-bin/media/upload?access_token=${accessToken}&type=${type}`;
+
+				response = (await this.helpers.httpRequest({
+					method: 'POST',
+					url: uploadUrl,
+					body: bodyBuffer,
+					headers: {
+						'Content-Type': `multipart/form-data; boundary=${boundary}`,
+						'Content-Length': bodyBuffer.length.toString(),
+					},
+				})) as IDataObject;
 
 				if (response.errcode !== undefined && response.errcode !== 0) {
 					throw new NodeOperationError(
@@ -70,27 +75,50 @@ export async function executeMaterial(
 				const binaryData = this.helpers.assertBinaryData(i, binaryPropertyName);
 				const dataBuffer = await this.helpers.getBinaryDataBuffer(i, binaryPropertyName);
 
+				// 文件名避免特殊字符，可能导致解析问题
+				const finalFilename = (filename || binaryData.fileName || 'image.png').replace(/[^\w.-]/g, '_');
+				const contentType = binaryData.mimeType || 'image/png';
+				const fileLength = dataBuffer.length;
+
+				// 图片文件大小限制：5B ~ 2MB
+				if (fileLength <= 5) {
+					throw new NodeOperationError(
+						this.getNode(),
+						'图片文件大小必须大于5个字节',
+					);
+				}
+				const maxSize = 2 * 1024 * 1024; // 2MB
+				if (fileLength > maxSize) {
+					throw new NodeOperationError(
+						this.getNode(),
+						`图片文件大小不能超过2MB，当前文件大小: ${(fileLength / 1024 / 1024).toFixed(2)}MB`,
+					);
+				}
+
 				const accessToken = await getAccessToken.call(this);
 
-				const uploadOptions = {
-					method: 'POST' as const,
-					url: 'https://qyapi.weixin.qq.com/cgi-bin/media/uploadimg',
-					qs: {
-						access_token: accessToken,
-					},
-					formData: {
-						media: {
-							value: dataBuffer,
-							options: {
-								filename: filename || binaryData.fileName || 'image',
-								contentType: binaryData.mimeType,
-							},
-						},
-					},
-					json: true,
-				};
+				// 手动构建 multipart/form-data 请求体
+				const boundary = '----WebKitFormBoundary' + Math.random().toString(36).substring(2);
+				const CRLF = '\r\n';
 
-				response = (await this.helpers.httpRequest(uploadOptions)) as IDataObject;
+				const header = `--${boundary}${CRLF}Content-Disposition: form-data; name="media";filename="${finalFilename}"${CRLF}Content-Type: ${contentType}${CRLF}${CRLF}`;
+				const footer = `${CRLF}--${boundary}--${CRLF}`;
+
+				const headerBuffer = Buffer.from(header, 'utf-8');
+				const footerBuffer = Buffer.from(footer, 'utf-8');
+				const bodyBuffer = Buffer.concat([headerBuffer, dataBuffer, footerBuffer]);
+
+				const uploadUrl = `https://qyapi.weixin.qq.com/cgi-bin/media/uploadimg?access_token=${accessToken}`;
+
+				response = (await this.helpers.httpRequest({
+					method: 'POST',
+					url: uploadUrl,
+					body: bodyBuffer,
+					headers: {
+						'Content-Type': `multipart/form-data; boundary=${boundary}`,
+						'Content-Length': bodyBuffer.length.toString(),
+					},
+				})) as IDataObject;
 
 				if (response.errcode !== undefined && response.errcode !== 0) {
 					throw new NodeOperationError(
@@ -106,20 +134,19 @@ export async function executeMaterial(
 
 				const accessToken = await getAccessToken.call(this);
 
-			const downloadOptions = {
-				method: 'GET' as const,
-				url: 'https://qyapi.weixin.qq.com/cgi-bin/media/get',
-				qs: {
-					access_token: accessToken,
-					media_id,
-				},
-				encoding: 'arraybuffer' as const,
-				returnFullResponse: true,
-			};
+				const downloadOptions = {
+					method: 'GET' as const,
+					url: 'https://qyapi.weixin.qq.com/cgi-bin/media/get',
+					qs: {
+						access_token: accessToken,
+						media_id,
+					},
+					encoding: 'arraybuffer' as const,
+					returnFullResponse: true,
+				};
 
 				const downloadResponse = await this.helpers.httpRequest(downloadOptions);
 
-				// 检查是否返回了错误（JSON格式）
 				const contentType =
 					(downloadResponse.headers?.['content-type'] ||
 						downloadResponse.headers?.['Content-Type'] ||
@@ -172,6 +199,7 @@ export async function executeMaterial(
 				}
 
 				// 尝试从响应头获取文件名
+				// 响应头示例：Content-disposition: attachment; filename="MEDIA_ID.jpg"
 				if (downloadResponse.headers) {
 					const contentDisposition =
 						downloadResponse.headers['content-disposition'] ||
@@ -207,16 +235,16 @@ export async function executeMaterial(
 
 				const accessToken = await getAccessToken.call(this);
 
-			const downloadOptions = {
-				method: 'GET' as const,
-				url: 'https://qyapi.weixin.qq.com/cgi-bin/media/get/jssdk',
-				qs: {
-					access_token: accessToken,
-					media_id,
-				},
-				encoding: 'arraybuffer' as const,
-				returnFullResponse: true,
-			};
+				const downloadOptions = {
+					method: 'GET' as const,
+					url: 'https://qyapi.weixin.qq.com/cgi-bin/media/get/jssdk',
+					qs: {
+						access_token: accessToken,
+						media_id,
+					},
+					encoding: 'arraybuffer' as const,
+					returnFullResponse: true,
+				};
 
 				const voiceResponse = await this.helpers.httpRequest(downloadOptions);
 
@@ -254,7 +282,8 @@ export async function executeMaterial(
 
 				// 处理二进制响应
 				let buffer: Buffer;
-				let filename = 'voice.amr';
+				// 默认文件名使用 .speex 扩展名（格式为speex，16K采样率）
+				let filename = 'voice.speex';
 
 				if (voiceResponse.body) {
 					if (Buffer.isBuffer(voiceResponse.body)) {
@@ -273,6 +302,7 @@ export async function executeMaterial(
 				}
 
 				// 尝试从响应头获取文件名
+				// 响应头示例：Content-disposition: attachment; filename="XXX"
 				if (voiceResponse.headers) {
 					const contentDisposition =
 						voiceResponse.headers['content-disposition'] ||
@@ -301,46 +331,56 @@ export async function executeMaterial(
 				});
 				continue;
 			}
-			// 异步上传临时素材
+			// 异步上传临时素材（生成异步上传任务）
 			else if (operation === 'uploadTempAsync') {
+				const scene = this.getNodeParameter('scene', i) as number;
 				const type = this.getNodeParameter('type', i) as string;
-				const binaryPropertyName = this.getNodeParameter('file', i, 'data') as string;
-				const filename = this.getNodeParameter('filename', i, '') as string;
-				const attachment_type = this.getNodeParameter('attachment_type', i, 1) as number;
-				const scene = this.getNodeParameter('scene', i, 1) as number;
-
-				const binaryData = this.helpers.assertBinaryData(i, binaryPropertyName);
-				const dataBuffer = await this.helpers.getBinaryDataBuffer(i, binaryPropertyName);
+				const filename = this.getNodeParameter('filename', i) as string;
+				const url = this.getNodeParameter('url', i) as string;
+				const md5 = this.getNodeParameter('md5', i) as string;
 
 				const accessToken = await getAccessToken.call(this);
 
-				const uploadOptions = {
-					method: 'POST' as const,
-					url: 'https://qyapi.weixin.qq.com/cgi-bin/media/upload_by_url',
-					qs: {
-						access_token: accessToken,
-						type,
-						attachment_type,
-						scene,
-					},
-					formData: {
-						media: {
-							value: dataBuffer,
-							options: {
-								filename: filename || binaryData.fileName || 'file',
-								contentType: binaryData.mimeType,
-							},
-						},
-					},
-					json: true,
+				// 请求体为 JSON 格式
+				const requestBody = {
+					scene,
+					type,
+					filename,
+					url,
+					md5,
 				};
 
-				response = (await this.helpers.httpRequest(uploadOptions)) as IDataObject;
+				response = (await this.helpers.httpRequest({
+					method: 'POST',
+					url: `https://qyapi.weixin.qq.com/cgi-bin/media/upload_by_url?access_token=${accessToken}`,
+					body: requestBody,
+					json: true,
+				})) as IDataObject;
 
 				if (response.errcode !== undefined && response.errcode !== 0) {
 					throw new NodeOperationError(
 						this.getNode(),
-						`异步上传临时素材失败: ${response.errmsg} (错误码: ${response.errcode})`,
+						`生成异步上传任务失败: ${response.errmsg} (错误码: ${response.errcode})`,
+					);
+				}
+			}
+			// 查询异步任务结果
+			else if (operation === 'getUploadByUrlResult') {
+				const jobid = this.getNodeParameter('jobid', i) as string;
+
+				const accessToken = await getAccessToken.call(this);
+
+				response = (await this.helpers.httpRequest({
+					method: 'POST',
+					url: `https://qyapi.weixin.qq.com/cgi-bin/media/get_upload_by_url_result?access_token=${accessToken}`,
+					body: { jobid },
+					json: true,
+				})) as IDataObject;
+
+				if (response.errcode !== undefined && response.errcode !== 0) {
+					throw new NodeOperationError(
+						this.getNode(),
+						`查询异步任务结果失败: ${response.errmsg} (错误码: ${response.errcode})`,
 					);
 				}
 			} else {

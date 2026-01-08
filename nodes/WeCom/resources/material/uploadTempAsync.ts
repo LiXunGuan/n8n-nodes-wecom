@@ -1,19 +1,29 @@
 import type { INodeProperties } from 'n8n-workflow';
 
-/**
- * 异步上传临时素材参数定义
- * 官方文档：https://developer.work.weixin.qq.com/document/path/96219
- *
- * 本接口为异步上传接口，主要用于文件较大或上传时间较长的场景
- * 返回jobid，可用于后续查询上传结果
- */
-
 const showOnlyForUploadAsync = {
 	resource: ['material'],
 	operation: ['uploadTempAsync'],
 };
 
 export const uploadTempAsyncDescription: INodeProperties[] = [
+	{
+		displayName: '场景值',
+		name: 'scene',
+		type: 'options',
+		required: true,
+		displayOptions: {
+			show: showOnlyForUploadAsync,
+		},
+		options: [
+			{
+				name: '客户联系入群欢迎语素材',
+				value: 1,
+				description: '目前仅支持此场景',
+			},
+		],
+		default: 1,
+		description: '场景值。每个场景值有对应的使用范围。<a href="https://developer.work.weixin.qq.com/document/path/96219" target="_blank">官方文档</a>',
+	},
 	{
 		displayName: '素材类型',
 		name: 'type',
@@ -24,82 +34,53 @@ export const uploadTempAsyncDescription: INodeProperties[] = [
 		},
 		options: [
 			{
-				name: '图片',
-				value: 'image',
-				description: '图片文件',
-			},
-			{
-				name: '语音',
-				value: 'voice',
-				description: '语音文件',
-			},
-			{
 				name: '视频',
 				value: 'video',
-				description: '视频文件',
+				description: '视频文件，最大200MB，仅支持MP4格式',
 			},
 			{
 				name: '文件',
 				value: 'file',
-				description: '普通文件',
+				description: '普通文件，最大200MB',
 			},
 		],
-		default: 'image',
-		description: '媒体文件类型',
-	},
-	{
-		displayName: '二进制数据属性',
-		name: 'file',
-		type: 'string',
-		required: true,
-		displayOptions: {
-			show: showOnlyForUploadAsync,
-		},
-		default: 'data',
-		description: '要上传的文件的二进制属性名称',
-		placeholder: 'data',
+		default: 'video',
+		description: '媒体文件类型。目前仅支持video（视频）和file（普通文件）',
 	},
 	{
 		displayName: '文件名',
 		name: 'filename',
 		type: 'string',
+		required: true,
 		displayOptions: {
 			show: showOnlyForUploadAsync,
 		},
 		default: '',
-		description: '文件名称（可选）。如不指定，将使用二进制数据的原始文件名。',
-		placeholder: 'file.pdf',
+		description: '文件名，标识文件展示的名称。使用该media_id发消息时，展示的文件名由该字段控制。不超过128字节。',
+		placeholder: 'video.mp4',
 	},
 	{
-		displayName: '附件类型',
-		name: 'attachment_type',
-		type: 'options',
+		displayName: '文件CDN URL',
+		name: 'url',
+		type: 'string',
+		required: true,
 		displayOptions: {
 			show: showOnlyForUploadAsync,
 		},
-		options: [
-			{
-				name: '临时素材',
-				value: 1,
-			},
-		],
-		default: 1,
-		description: '附件类型，1表示临时素材（默认）',
+		default: '',
+		description: '文件CDN链接。URL要求支持Range分块下载，不超过1024字节。如果为腾讯云cos链接，则需要设置为「公有读」权限。',
+		placeholder: 'https://example.com/video.mp4',
 	},
 	{
-		displayName: '场景值',
-		name: 'scene',
-		type: 'options',
+		displayName: '文件MD5',
+		name: 'md5',
+		type: 'string',
+		required: true,
 		displayOptions: {
 			show: showOnlyForUploadAsync,
 		},
-		options: [
-			{
-				name: '客服消息',
-				value: 1,
-			},
-		],
-		default: 1,
-		description: '上传场景值，1表示客服消息（默认）',
+		default: '',
+		description: '文件MD5值。用于校验从URL下载的文件内容是否一致。不超过32字节。',
+		placeholder: 'd41d8cd98f00b204e9800998ecf8427e',
 	},
 ];
