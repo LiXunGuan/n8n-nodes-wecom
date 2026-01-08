@@ -2,6 +2,43 @@
 
 这是一个 n8n 社区节点，让你可以在 [n8n](https://n8n.io/) 工作流中使用企业微信（WeChat Work）API。
 
+## 重要提示
+
+> **关于版本更新**
+>
+> 本插件的设计理念是让开发者和非开发者都可以简单使用，参考 N8N 官方的 Telegram 和 Notion 等节点，让操作尽可能简单直观。为了持续优化用户体验，我们会不断改进节点内部的交互结构。
+>
+> **请注意：** 版本更新时，节点参数配置可能会发生变化，部分工作流可能需要重新配置参数。
+>
+> **建议：** 更新前请查看 [Release 日志](https://github.com/funcodingdev/n8n-nodes-wecom/releases)，了解具体变更内容，以便快速调整你的工作流配置。
+
+## 交流与支持
+
+如果你在使用过程中遇到问题，或者想要与其他用户交流使用经验，欢迎加入我们的交流群。
+
+### 加入交流群
+
+你可以通过以下方式加入：
+
+**1. 扫描群二维码直接加入**
+
+<img src="./wechat_group_qrcode.jpg" width="200" alt="微信群二维码" />
+
+**2. 如果群二维码过期，可以添加我的微信号，备注「n8n-wecom」后拉你入群**
+
+<img src="./wechat_qrcode.jpg" width="200" alt="微信号二维码" />
+
+### 参与贡献
+
+我们非常欢迎社区贡献！如果你发现了 bug、有新功能建议或想要改进代码：
+
+- **提交 Issue**：[GitHub Issues](https://github.com/funcodingdev/n8n-nodes-wecom/issues) - 报告问题或提出功能建议
+- **提交 Pull Request**：[GitHub Pull Requests](https://github.com/funcodingdev/n8n-nodes-wecom/pulls) - 贡献代码改进
+
+无论是代码贡献、文档改进还是功能建议，我们都非常感谢！
+
+---
+
 ## 节点分类
 
 本插件按照企业微信官方文档的分类结构，提供以下节点：
@@ -767,22 +804,6 @@ npm install n8n-nodes-wecom
 - [n8n 官方文档](https://docs.n8n.io/)
 - [n8n 社区节点开发文档](https://docs.n8n.io/integrations/creating-nodes/overview/)
 - [n8n 社区节点开发示例](https://docs.n8n.io/integrations/creating-nodes/build/declarative-style-node/)
-
-## 交流与支持
-
-如果你在使用过程中遇到问题，或者想要与其他用户交流使用经验，欢迎加入我们的交流群。
-
-### 加入交流群
-
-你可以通过以下方式加入：
-
-**1. 扫描群二维码直接加入**
-
-<img src="./wechat_group_qrcode.jpg" width="200" alt="微信群二维码" />
-
-**2. 如果群二维码过期，可以添加我的微信号，备注「n8n-wecom」后拉你入群**
-
-<img src="./wechat_qrcode.jpg" width="200" alt="微信号二维码" />
 
 ## 许可证
 
