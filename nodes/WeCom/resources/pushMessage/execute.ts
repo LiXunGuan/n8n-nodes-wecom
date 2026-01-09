@@ -44,8 +44,7 @@ export async function executePushMessage(
 
 				const binaryData = this.helpers.assertBinaryData(i, binaryPropertyName);
 				const dataBuffer = await this.helpers.getBinaryDataBuffer(i, binaryPropertyName);
-				// 文件名避免中文字符，可能导致解析问题
-				const fileName = (binaryData.fileName || 'file').replace(/[^\w.-]/g, '_');
+				const fileName = (binaryData.fileName || 'file');
 				const contentType = binaryData.mimeType || 'application/octet-stream';
 				const fileLength = dataBuffer.length;
 

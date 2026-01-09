@@ -21,9 +21,7 @@ export async function executeMaterial(
 				const binaryData = this.helpers.assertBinaryData(i, binaryPropertyName);
 				const dataBuffer = await this.helpers.getBinaryDataBuffer(i, binaryPropertyName);
 
-				// 文件名避免特殊字符，可能导致解析问题
-				// filename标识文件展示的名称，使用该media_id发消息时，展示的文件名由该字段控制
-				const fileName = (binaryData.fileName || 'file').replace(/[^\w.-]/g, '_');
+				const fileName = (binaryData.fileName || 'file');
 				const contentType = binaryData.mimeType || 'application/octet-stream';
 				const fileLength = dataBuffer.length;
 
@@ -75,8 +73,7 @@ export async function executeMaterial(
 				const binaryData = this.helpers.assertBinaryData(i, binaryPropertyName);
 				const dataBuffer = await this.helpers.getBinaryDataBuffer(i, binaryPropertyName);
 
-				// 文件名避免特殊字符，可能导致解析问题
-				const finalFilename = (filename || binaryData.fileName || 'image.png').replace(/[^\w.-]/g, '_');
+				const finalFilename = (filename || binaryData.fileName || 'image.png');
 				const contentType = binaryData.mimeType || 'image/png';
 				const fileLength = dataBuffer.length;
 
