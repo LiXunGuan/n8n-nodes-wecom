@@ -545,53 +545,144 @@ export async function executeExternalContact(
 			// 消息推送
 			else if (operation === 'addMsgTemplate') {
 				const chat_type = this.getNodeParameter('chat_type', i, 'single') as string;
-				const senderCollection = this.getNodeParameter('senderCollection', i, {}) as IDataObject;
-				const msgContentType = this.getNodeParameter('msgContentType', i) as string;
-				const allow_select = this.getNodeParameter('allow_select', i, false) as boolean;
+				const sender = this.getNodeParameter('sender', i, '') as string;
+				const text_content = this.getNodeParameter('text_content', i, '') as string;
+				const enableAttachments = this.getNodeParameter('enableAttachments', i, false) as boolean;
 
-				const body: IDataObject = {
-					chat_type,
-					allow_select: allow_select ? 1 : 0,
-				};
+				const body: IDataObject = { chat_type };
 
-				// 构建发送范围
-				if (senderCollection.senders) {
-					const sendersList = senderCollection.senders as IDataObject[];
-					if (sendersList.length > 0 && sendersList[0].sender_list) {
-						const senderListStr = sendersList[0].sender_list as string;
-						body.sender_list = senderListStr.split(',').map((id) => id.trim());
+				// 发送成员（群聊时必填）
+				if (sender) {
+					body.sender = sender;
+				}
+
+				// 单聊场景参数
+				if (chat_type === 'single') {
+					const external_userid = this.getNodeParameter('external_userid', i, '') as string;
+					const allow_select = this.getNodeParameter('allow_select', i, false) as boolean;
+					const enableTagFilter = this.getNodeParameter('enableTagFilter', i, false) as boolean;
+
+					// 客户列表
+					if (external_userid) {
+						body.external_userid = external_userid.split(',').map((id) => id.trim());
+					}
+
+					// 是否允许成员重新选择
+					if (allow_select) {
+						body.allow_select = true;
+					}
+
+					// 标签过滤
+					if (enableTagFilter) {
+						const tagFilterGroups = this.getNodeParameter('tagFilterGroups', i, {}) as IDataObject;
+						if (tagFilterGroups.groups) {
+							const groupsList = tagFilterGroups.groups as IDataObject[];
+							const group_list: IDataObject[] = [];
+							for (const group of groupsList) {
+								if (group.tag_list) {
+									const tagListStr = group.tag_list as string;
+									group_list.push({
+										tag_list: tagListStr.split(',').map((id) => id.trim()),
+									});
+								}
+							}
+							if (group_list.length > 0) {
+								body.tag_filter = { group_list };
+							}
+						}
 					}
 				}
 
-				// 构建消息内容
-				if (msgContentType === 'text') {
-					const content = this.getNodeParameter('text_content', i, '') as string;
-					if (content) body.text = { content };
-				} else if (msgContentType === 'image') {
-					const media_id = this.getNodeParameter('image_media_id', i, '') as string;
-					if (media_id) body.attachments = [{ msgtype: 'image', image: { media_id } }];
-				} else if (msgContentType === 'link') {
-					const link: IDataObject = {};
-					const title = this.getNodeParameter('link_title', i, '') as string;
-					const picurl = this.getNodeParameter('link_picurl', i, '') as string;
-					const desc = this.getNodeParameter('link_desc', i, '') as string;
-					const url = this.getNodeParameter('link_url', i, '') as string;
-					if (title) link.title = title;
-					if (picurl) link.picurl = picurl;
-					if (desc) link.desc = desc;
-					if (url) link.url = url;
-					if (Object.keys(link).length > 0) body.attachments = [{ msgtype: 'link', link }];
-				} else if (msgContentType === 'miniprogram') {
-					const miniprogram: IDataObject = {};
-					const title = this.getNodeParameter('miniprogram_title', i, '') as string;
-					const appid = this.getNodeParameter('miniprogram_appid', i, '') as string;
-					const pagepath = this.getNodeParameter('miniprogram_pagepath', i, '') as string;
-					const pic_media_id = this.getNodeParameter('miniprogram_pic_media_id', i, '') as string;
-					if (title) miniprogram.title = title;
-					if (appid) miniprogram.appid = appid;
-					if (pagepath) miniprogram.pagepath = pagepath;
-					if (pic_media_id) miniprogram.pic_media_id = pic_media_id;
-					if (Object.keys(miniprogram).length > 0) body.attachments = [{ msgtype: 'miniprogram', miniprogram }];
+				// 群聊场景参数
+				if (chat_type === 'group') {
+					const chat_id_list = this.getNodeParameter('chat_id_list', i, '') as string;
+					if (chat_id_list) {
+						body.chat_id_list = chat_id_list.split(',').map((id) => id.trim());
+					}
+				}
+
+				// 文本内容
+				if (text_content) {
+					body.text = { content: text_content };
+				}
+
+				// 附件列表
+				if (enableAttachments) {
+					const attachmentsCollection = this.getNodeParameter('attachments', i, {}) as IDataObject;
+					const attachments: IDataObject[] = [];
+
+					// 处理图片附件
+					if (attachmentsCollection.images) {
+						const imagesList = attachmentsCollection.images as IDataObject[];
+						for (const img of imagesList) {
+							const image: IDataObject = {};
+							if (img.media_id) image.media_id = img.media_id;
+							if (img.pic_url) image.pic_url = img.pic_url;
+							if (Object.keys(image).length > 0) {
+								attachments.push({ msgtype: 'image', image });
+							}
+						}
+					}
+
+					// 处理链接附件
+					if (attachmentsCollection.links) {
+						const linksList = attachmentsCollection.links as IDataObject[];
+						for (const lnk of linksList) {
+							const link: IDataObject = {};
+							if (lnk.title) link.title = lnk.title;
+							if (lnk.picurl) link.picurl = lnk.picurl;
+							if (lnk.desc) link.desc = lnk.desc;
+							if (lnk.url) link.url = lnk.url;
+							if (Object.keys(link).length > 0) {
+								attachments.push({ msgtype: 'link', link });
+							}
+						}
+					}
+
+					// 处理小程序附件
+					if (attachmentsCollection.miniprograms) {
+						const miniprogramsList = attachmentsCollection.miniprograms as IDataObject[];
+						for (const mp of miniprogramsList) {
+							const miniprogram: IDataObject = {};
+							if (mp.title) miniprogram.title = mp.title;
+							if (mp.pic_media_id) miniprogram.pic_media_id = mp.pic_media_id;
+							if (mp.appid) miniprogram.appid = mp.appid;
+							if (mp.page) miniprogram.page = mp.page;
+							if (Object.keys(miniprogram).length > 0) {
+								attachments.push({ msgtype: 'miniprogram', miniprogram });
+							}
+						}
+					}
+
+					// 处理视频附件
+					if (attachmentsCollection.videos) {
+						const videosList = attachmentsCollection.videos as IDataObject[];
+						for (const vid of videosList) {
+							if (vid.media_id) {
+								attachments.push({
+									msgtype: 'video',
+									video: { media_id: vid.media_id },
+								});
+							}
+						}
+					}
+
+					// 处理文件附件
+					if (attachmentsCollection.files) {
+						const filesList = attachmentsCollection.files as IDataObject[];
+						for (const file of filesList) {
+							if (file.media_id) {
+								attachments.push({
+									msgtype: 'file',
+									file: { media_id: file.media_id },
+								});
+							}
+						}
+					}
+
+					if (attachments.length > 0) {
+						body.attachments = attachments;
+					}
 				}
 
 				response = await weComApiRequest.call(
@@ -623,11 +714,13 @@ export async function executeExternalContact(
 				const start_time = this.getNodeParameter('start_time', i) as number;
 				const end_time = this.getNodeParameter('end_time', i) as number;
 				const creator = this.getNodeParameter('creator', i, '') as string;
+				const filter_type = this.getNodeParameter('filter_type', i, 2) as number;
+				const limit = this.getNodeParameter('limit', i, 50) as number;
 				const cursor = this.getNodeParameter('cursor', i, '') as string;
-				const limit = this.getNodeParameter('limit', i, 100) as number;
 
 				const body: IDataObject = { chat_type, start_time, end_time, limit };
 				if (creator) body.creator = creator;
+				if (filter_type !== 2) body.filter_type = filter_type;
 				if (cursor) body.cursor = cursor;
 
 				response = await weComApiRequest.call(
@@ -636,40 +729,124 @@ export async function executeExternalContact(
 					'/cgi-bin/externalcontact/get_groupmsg_list_v2',
 					body,
 				);
+			} else if (operation === 'getGroupMsgTask') {
+				const msgid = this.getNodeParameter('msgid', i) as string;
+				const limit = this.getNodeParameter('limit', i, 500) as number;
+				const cursor = this.getNodeParameter('cursor', i, '') as string;
+
+				const body: IDataObject = { msgid, limit };
+				if (cursor) body.cursor = cursor;
+
+				response = await weComApiRequest.call(
+					this,
+					'POST',
+					'/cgi-bin/externalcontact/get_groupmsg_task',
+					body,
+				);
+			} else if (operation === 'getGroupMsgSendResult') {
+				const msgid = this.getNodeParameter('msgid', i) as string;
+				const userid = this.getNodeParameter('userid', i) as string;
+				const limit = this.getNodeParameter('limit', i, 500) as number;
+				const cursor = this.getNodeParameter('cursor', i, '') as string;
+
+				const body: IDataObject = { msgid, userid, limit };
+				if (cursor) body.cursor = cursor;
+
+				response = await weComApiRequest.call(
+					this,
+					'POST',
+					'/cgi-bin/externalcontact/get_groupmsg_send_result',
+					body,
+				);
 			} else if (operation === 'sendWelcomeMsg') {
 				const welcome_code = this.getNodeParameter('welcome_code', i) as string;
-				const msgContentType = this.getNodeParameter('msgContentType', i, 'text') as string;
+				const text_content = this.getNodeParameter('text_content', i, '') as string;
+				const enableAttachments = this.getNodeParameter('enableAttachments', i, false) as boolean;
 
 				const body: IDataObject = { welcome_code };
 
-				if (msgContentType === 'text') {
-					const content = this.getNodeParameter('text_content', i, '') as string;
-					if (content) body.text = { content };
-				} else if (msgContentType === 'image') {
-					const media_id = this.getNodeParameter('image_media_id', i, '') as string;
-					if (media_id) body.attachments = [{ msgtype: 'image', image: { media_id } }];
-				} else if (msgContentType === 'link') {
-					const link: IDataObject = {};
-					const title = this.getNodeParameter('link_title', i, '') as string;
-					const picurl = this.getNodeParameter('link_picurl', i, '') as string;
-					const desc = this.getNodeParameter('link_desc', i, '') as string;
-					const url = this.getNodeParameter('link_url', i, '') as string;
-					if (title) link.title = title;
-					if (picurl) link.picurl = picurl;
-					if (desc) link.desc = desc;
-					if (url) link.url = url;
-					if (Object.keys(link).length > 0) body.attachments = [{ msgtype: 'link', link }];
-				} else if (msgContentType === 'miniprogram') {
-					const miniprogram: IDataObject = {};
-					const title = this.getNodeParameter('miniprogram_title', i, '') as string;
-					const appid = this.getNodeParameter('miniprogram_appid', i, '') as string;
-					const pagepath = this.getNodeParameter('miniprogram_pagepath', i, '') as string;
-					const pic_media_id = this.getNodeParameter('miniprogram_pic_media_id', i, '') as string;
-					if (title) miniprogram.title = title;
-					if (appid) miniprogram.appid = appid;
-					if (pagepath) miniprogram.pagepath = pagepath;
-					if (pic_media_id) miniprogram.pic_media_id = pic_media_id;
-					if (Object.keys(miniprogram).length > 0) body.attachments = [{ msgtype: 'miniprogram', miniprogram }];
+				// 文本内容
+				if (text_content) {
+					body.text = { content: text_content };
+				}
+
+				// 附件列表
+				if (enableAttachments) {
+					const attachmentsCollection = this.getNodeParameter('attachments', i, {}) as IDataObject;
+					const attachments: IDataObject[] = [];
+
+					// 处理图片附件
+					if (attachmentsCollection.images) {
+						const imagesList = attachmentsCollection.images as IDataObject[];
+						for (const img of imagesList) {
+							const image: IDataObject = {};
+							if (img.media_id) image.media_id = img.media_id;
+							if (img.pic_url) image.pic_url = img.pic_url;
+							if (Object.keys(image).length > 0) {
+								attachments.push({ msgtype: 'image', image });
+							}
+						}
+					}
+
+					// 处理链接附件
+					if (attachmentsCollection.links) {
+						const linksList = attachmentsCollection.links as IDataObject[];
+						for (const lnk of linksList) {
+							const link: IDataObject = {};
+							if (lnk.title) link.title = lnk.title;
+							if (lnk.picurl) link.picurl = lnk.picurl;
+							if (lnk.desc) link.desc = lnk.desc;
+							if (lnk.url) link.url = lnk.url;
+							if (Object.keys(link).length > 0) {
+								attachments.push({ msgtype: 'link', link });
+							}
+						}
+					}
+
+					// 处理小程序附件
+					if (attachmentsCollection.miniprograms) {
+						const miniprogramsList = attachmentsCollection.miniprograms as IDataObject[];
+						for (const mp of miniprogramsList) {
+							const miniprogram: IDataObject = {};
+							if (mp.title) miniprogram.title = mp.title;
+							if (mp.pic_media_id) miniprogram.pic_media_id = mp.pic_media_id;
+							if (mp.appid) miniprogram.appid = mp.appid;
+							if (mp.page) miniprogram.page = mp.page;
+							if (Object.keys(miniprogram).length > 0) {
+								attachments.push({ msgtype: 'miniprogram', miniprogram });
+							}
+						}
+					}
+
+					// 处理视频附件
+					if (attachmentsCollection.videos) {
+						const videosList = attachmentsCollection.videos as IDataObject[];
+						for (const vid of videosList) {
+							if (vid.media_id) {
+								attachments.push({
+									msgtype: 'video',
+									video: { media_id: vid.media_id },
+								});
+							}
+						}
+					}
+
+					// 处理文件附件
+					if (attachmentsCollection.files) {
+						const filesList = attachmentsCollection.files as IDataObject[];
+						for (const file of filesList) {
+							if (file.media_id) {
+								attachments.push({
+									msgtype: 'file',
+									file: { media_id: file.media_id },
+								});
+							}
+						}
+					}
+
+					if (attachments.length > 0) {
+						body.attachments = attachments;
+					}
 				}
 
 				response = await weComApiRequest.call(
@@ -679,19 +856,27 @@ export async function executeExternalContact(
 					body,
 				);
 			} else if (operation === 'addGroupWelcomeTemplate') {
-				const msgContentType = this.getNodeParameter('msgContentType', i) as string;
+				const text_content = this.getNodeParameter('text_content', i, '') as string;
+				const attachmentType = this.getNodeParameter('attachmentType', i, 'none') as string;
 				const agentid = this.getNodeParameter('agentid', i, 0) as number;
-				const notify = this.getNodeParameter('notify', i, false) as boolean;
+				const notify = this.getNodeParameter('notify', i, 1) as number;
 
 				const body: IDataObject = {};
 
-				if (msgContentType === 'text') {
-					const content = this.getNodeParameter('text_content', i, '') as string;
-					if (content) body.text = { content };
-				} else if (msgContentType === 'image') {
+				// 文本内容
+				if (text_content) {
+					body.text = { content: text_content };
+				}
+
+				// 附件（只能有一个）
+				if (attachmentType === 'image') {
 					const media_id = this.getNodeParameter('image_media_id', i, '') as string;
-					if (media_id) body.image = { media_id };
-				} else if (msgContentType === 'link') {
+					const pic_url = this.getNodeParameter('image_pic_url', i, '') as string;
+					const image: IDataObject = {};
+					if (media_id) image.media_id = media_id;
+					if (pic_url) image.pic_url = pic_url;
+					if (Object.keys(image).length > 0) body.image = image;
+				} else if (attachmentType === 'link') {
 					const link: IDataObject = {};
 					const title = this.getNodeParameter('link_title', i, '') as string;
 					const picurl = this.getNodeParameter('link_picurl', i, '') as string;
@@ -702,21 +887,27 @@ export async function executeExternalContact(
 					if (desc) link.desc = desc;
 					if (url) link.url = url;
 					if (Object.keys(link).length > 0) body.link = link;
-				} else if (msgContentType === 'miniprogram') {
+				} else if (attachmentType === 'miniprogram') {
 					const miniprogram: IDataObject = {};
 					const title = this.getNodeParameter('miniprogram_title', i, '') as string;
 					const appid = this.getNodeParameter('miniprogram_appid', i, '') as string;
-					const pagepath = this.getNodeParameter('miniprogram_pagepath', i, '') as string;
+					const page = this.getNodeParameter('miniprogram_page', i, '') as string;
 					const pic_media_id = this.getNodeParameter('miniprogram_pic_media_id', i, '') as string;
 					if (title) miniprogram.title = title;
 					if (appid) miniprogram.appid = appid;
-					if (pagepath) miniprogram.pagepath = pagepath;
+					if (page) miniprogram.page = page;
 					if (pic_media_id) miniprogram.pic_media_id = pic_media_id;
 					if (Object.keys(miniprogram).length > 0) body.miniprogram = miniprogram;
+				} else if (attachmentType === 'file') {
+					const media_id = this.getNodeParameter('file_media_id', i, '') as string;
+					if (media_id) body.file = { media_id };
+				} else if (attachmentType === 'video') {
+					const media_id = this.getNodeParameter('video_media_id', i, '') as string;
+					if (media_id) body.video = { media_id };
 				}
 
 				if (agentid) body.agentid = agentid;
-				if (notify) body.notify = 1;
+				body.notify = notify;
 
 				response = await weComApiRequest.call(
 					this,
@@ -726,17 +917,26 @@ export async function executeExternalContact(
 				);
 			} else if (operation === 'editGroupWelcomeTemplate') {
 				const template_id = this.getNodeParameter('template_id', i) as string;
-				const msgContentType = this.getNodeParameter('msgContentType', i, 'text') as string;
+				const text_content = this.getNodeParameter('text_content', i, '') as string;
+				const attachmentType = this.getNodeParameter('attachmentType', i, 'none') as string;
+				const agentid = this.getNodeParameter('agentid', i, 0) as number;
 
 				const body: IDataObject = { template_id };
 
-				if (msgContentType === 'text') {
-					const content = this.getNodeParameter('text_content', i, '') as string;
-					if (content) body.text = { content };
-				} else if (msgContentType === 'image') {
+				// 文本内容
+				if (text_content) {
+					body.text = { content: text_content };
+				}
+
+				// 附件（只能有一个）
+				if (attachmentType === 'image') {
 					const media_id = this.getNodeParameter('image_media_id', i, '') as string;
-					if (media_id) body.image = { media_id };
-				} else if (msgContentType === 'link') {
+					const pic_url = this.getNodeParameter('image_pic_url', i, '') as string;
+					const image: IDataObject = {};
+					if (media_id) image.media_id = media_id;
+					if (pic_url) image.pic_url = pic_url;
+					if (Object.keys(image).length > 0) body.image = image;
+				} else if (attachmentType === 'link') {
 					const link: IDataObject = {};
 					const title = this.getNodeParameter('link_title', i, '') as string;
 					const picurl = this.getNodeParameter('link_picurl', i, '') as string;
@@ -747,18 +947,26 @@ export async function executeExternalContact(
 					if (desc) link.desc = desc;
 					if (url) link.url = url;
 					if (Object.keys(link).length > 0) body.link = link;
-				} else if (msgContentType === 'miniprogram') {
+				} else if (attachmentType === 'miniprogram') {
 					const miniprogram: IDataObject = {};
 					const title = this.getNodeParameter('miniprogram_title', i, '') as string;
 					const appid = this.getNodeParameter('miniprogram_appid', i, '') as string;
-					const pagepath = this.getNodeParameter('miniprogram_pagepath', i, '') as string;
+					const page = this.getNodeParameter('miniprogram_page', i, '') as string;
 					const pic_media_id = this.getNodeParameter('miniprogram_pic_media_id', i, '') as string;
 					if (title) miniprogram.title = title;
 					if (appid) miniprogram.appid = appid;
-					if (pagepath) miniprogram.pagepath = pagepath;
+					if (page) miniprogram.page = page;
 					if (pic_media_id) miniprogram.pic_media_id = pic_media_id;
 					if (Object.keys(miniprogram).length > 0) body.miniprogram = miniprogram;
+				} else if (attachmentType === 'file') {
+					const media_id = this.getNodeParameter('file_media_id', i, '') as string;
+					if (media_id) body.file = { media_id };
+				} else if (attachmentType === 'video') {
+					const media_id = this.getNodeParameter('video_media_id', i, '') as string;
+					if (media_id) body.video = { media_id };
 				}
+
+				if (agentid) body.agentid = agentid;
 
 				response = await weComApiRequest.call(
 					this,

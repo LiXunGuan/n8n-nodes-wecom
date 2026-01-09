@@ -35,6 +35,8 @@ import { addMsgTemplateDescription } from './addMsgTemplate';
 import { remindGroupMsgSendDescription } from './remindGroupMsgSend';
 import { cancelGroupMsgSendDescription } from './cancelGroupMsgSend';
 import { getGroupMsgListV2Description } from './getGroupMsgListV2';
+import { getGroupMsgTaskDescription } from './getGroupMsgTask';
+import { getGroupMsgSendResultDescription } from './getGroupMsgSendResult';
 import { sendWelcomeMsgDescription } from './sendWelcomeMsg';
 import { addGroupWelcomeTemplateDescription } from './addGroupWelcomeTemplate';
 import { editGroupWelcomeTemplateDescription } from './editGroupWelcomeTemplate';
@@ -301,6 +303,18 @@ export const externalContactDescription: INodeProperties[] = [
 				description: '获取企业的全部群发记录',
 			},
 			{
+				name: '获取群发成员发送任务列表',
+				value: 'getGroupMsgTask',
+				action: '获取群发成员发送任务列表',
+				description: '获取群发成员的发送任务列表',
+			},
+			{
+				name: '获取企业群发成员执行结果',
+				value: 'getGroupMsgSendResult',
+				action: '获取企业群发成员执行结果',
+				description: '获取企业群发成员的执行结果',
+			},
+			{
 				name: '发送新客户欢迎语',
 				value: 'sendWelcomeMsg',
 				action: '发送新客户欢迎语',
@@ -491,6 +505,8 @@ export const externalContactDescription: INodeProperties[] = [
 	...remindGroupMsgSendDescription,
 	...cancelGroupMsgSendDescription,
 	...getGroupMsgListV2Description,
+	...getGroupMsgTaskDescription,
+	...getGroupMsgSendResultDescription,
 	...sendWelcomeMsgDescription,
 	...addGroupWelcomeTemplateDescription,
 	...editGroupWelcomeTemplateDescription,

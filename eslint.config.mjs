@@ -23,6 +23,7 @@ export default [
 			'n8n-nodes-base/node-param-collection-type-unsorted-items': 'off',
 			'n8n-nodes-base/node-param-operation-option-action-miscased': 'off',
 			'n8n-nodes-base/node-param-display-name-miscased': 'off',
+			'n8n-nodes-base/node-param-default-wrong-for-limit': 'off',
 		},
 	},
 ];
