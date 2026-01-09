@@ -1155,16 +1155,11 @@ export async function executeWedoc(
 						}
 					}
 
-					// 处理 setting_manager_range：将逗号分隔的userid字符串转换为对象数组
+					// 处理 setting_manager_range：从多选下拉框获取userid数组
 					if (formSetting.setting_manager_range) {
-						const managerRange = formSetting.setting_manager_range as string;
-						if (managerRange && managerRange.trim()) {
-							const userids = managerRange.split(',').map((id) => id.trim()).filter((id) => id);
-							if (userids.length > 0) {
-								formSetting.setting_manager_range = { userids };
-							} else {
-								delete formSetting.setting_manager_range;
-							}
+						const managerRange = formSetting.setting_manager_range as string[];
+						if (Array.isArray(managerRange) && managerRange.length > 0) {
+							formSetting.setting_manager_range = { userids: managerRange };
 						} else {
 							delete formSetting.setting_manager_range;
 						}

@@ -1,10 +1,13 @@
 import type {
 	IExecuteFunctions,
+	ILoadOptionsFunctions,
 	INodeExecutionData,
+	INodePropertyOptions,
 	INodeType,
 	INodeTypeDescription,
 } from 'n8n-workflow';
 import { NodeConnectionTypes } from 'n8n-workflow';
+import { weComApiRequest } from '../WeCom/shared/transport';
 import { wedocDescription } from '../WeCom/resources/wedoc';
 import { wefileDescription } from '../WeCom/resources/wefile';
 import { mailDescription } from '../WeCom/resources/mail';
@@ -143,6 +146,42 @@ export class WeComOffice implements INodeType {
 			...emergencyDescription,
 		],
 		usableAsTool: true,
+	};
+
+	methods = {
+		loadOptions: {
+			// 获取所有成员列表
+			async getAllUsers(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+				try {
+					const response = await weComApiRequest.call(this, 'GET', '/cgi-bin/user/list', {}, {
+						department_id: 1,
+						fetch_child: 1,
+					});
+					const users = response.userlist as Array<{ userid: string; name: string }>;
+
+					if (!users || !Array.isArray(users) || users.length === 0) {
+						return [
+							{
+								name: '暂无成员，请先添加',
+								value: '',
+							},
+						];
+					}
+
+					return users.map((user) => ({
+						name: `${user.name} (${user.userid})`,
+						value: user.userid,
+					}));
+				} catch {
+					return [
+						{
+							name: '获取成员列表失败',
+							value: '',
+						},
+					];
+				}
+			},
+		},
 	};
 
 	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
