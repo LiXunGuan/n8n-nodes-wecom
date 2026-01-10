@@ -116,7 +116,7 @@ export const replyStreamWithTemplateCardDescription: INodeProperties[] = [
 		displayOptions: {
 			show: showOnlyForReplyStreamWithTemplateCard,
 		},
-		default: '',
+		default: '{}',
 		description: '模板卡片结构体（JSON格式）',
 	},
 	{
