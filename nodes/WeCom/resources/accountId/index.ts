@@ -164,7 +164,6 @@ export const accountIdDescription: INodeProperties[] = [
 			},
 		],
 		default: 1,
-		hint: '1-会议 2-收集表 3-文档',
 	},
 	{
 		displayName: '用户类型',
@@ -201,7 +200,6 @@ export const accountIdDescription: INodeProperties[] = [
 		],
 		default: 1,
 		description: '转换的目标用户类型',
-		hint: '1-客户 2-企业互联 3-上下游 4-互联企业（圈子）',
 	},
 	{
 		displayName: 'Tmp External Userid列表',
@@ -355,7 +353,6 @@ export const accountIdDescription: INodeProperties[] = [
 			},
 		],
 		default: 0,
-		hint: '0-企业 1-服务商',
 	},
 	{
 		displayName: 'External Userid列表',
@@ -484,6 +481,6 @@ export const accountIdDescription: INodeProperties[] = [
 		],
 		default: 1,
 		description: 'ID类型：1-userid与corpid; 3-external_userid',
-		hint: '1-userid与corpid（只能同时设置）; 3-external_userid（可单独设置），多个值请使用"Add Value"按钮添加',
+		hint: '多个值请使用"Add Value"按钮添加',
 	},
 ];

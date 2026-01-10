@@ -38,7 +38,6 @@ export const batchUpdateInvoiceStatusDescription: INodeProperties[] = [
 		required: true,
 		default: 'INVOICE_REIMBURSE_INIT',
 		displayOptions: { show: showOnly },
-		hint: '必填。发票报销状态：INVOICE_REIMBURSE_INIT-发票初始状态（未锁定），INVOICE_REIMBURSE_LOCK-发票已锁定，INVOICE_REIMBURSE_CLOSURE-发票已核销。注意，报销状态为不可逆状态，请开发者慎重调用',
 		description: '发票报销状态。发票平台可以通过该接口对某个成员的一批发票进行锁定、解锁和报销操作。注意，报销状态为不可逆状态，请开发者慎重调用。批量更新发票状态接口为事务性操作，如果其中一张发票更新失败，列表中的其它发票状态更新也会无法执行，恢复到接口调用前的状态。<a href="https://developer.work.weixin.qq.com/document/path/90285" target="_blank">官方文档</a>',
 	},
 	{
@@ -50,7 +49,6 @@ export const batchUpdateInvoiceStatusDescription: INodeProperties[] = [
 		default: {},
 		placeholder: '添加发票',
 		typeOptions: { multipleValues: true },
-		hint: '必填。发票列表，必须全部属于同一个openid',
 		description: '发票列表。必须全部属于同一个openid。批量更新发票状态接口为事务性操作，如果其中一张发票更新失败，列表中的其它发票状态更新也会无法执行，恢复到接口调用前的状态',
 		options: [
 			{

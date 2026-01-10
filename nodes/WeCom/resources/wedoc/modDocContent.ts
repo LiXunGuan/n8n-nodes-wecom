@@ -51,7 +51,6 @@ export const modDocContentDescription: INodeProperties[] = [
 						default: 1,
 						displayOptions: { show: { request_type: ['insert_text', 'insert_paragraph'] } },
 						description: '在文档中的位置索引（从1开始）',
-						hint: '1 表示文档开头',
 					},
 					{
 						displayName: '文本内容',

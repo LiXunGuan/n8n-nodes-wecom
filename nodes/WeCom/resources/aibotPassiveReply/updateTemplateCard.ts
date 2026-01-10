@@ -31,7 +31,6 @@ export const updateTemplateCardDescription: INodeProperties[] = [
 		default: '',
 		required: true,
 		description: '要替换的模版卡片结构体（JSON格式）',
-		hint: '必填。要替换的模版卡片结构体（JSON格式），支持以下类型：\n- text_notice：文本通知模版卡片\n- news_notice：图文展示模版卡片\n- button_interaction：按钮交互模版卡片\n- vote_interaction：投票选择模版卡片\n- multiple_interaction：多项选择模版卡片\n\n重要提示：\n- 模板卡片中的task_id需跟回调收到的task_id一致\n- 更新模版卡片时，可通过disable字段控制选择器是否可选\n- 更新模版卡片会覆盖原先消息的反馈信息（如果设置了feedback.id）\n\n主要字段说明：\n- card_type：模版类型（必填）\n- task_id：任务id（必填，需与回调事件中的task_id一致）\n- checkbox.disable：投票选择框是否不可选（更新时有效）\n- button_selection.disable：下拉选择器是否不可选（更新时有效）\n\n详细结构体说明请参考官方文档',
 	},
 	{
 		displayName: '反馈ID',

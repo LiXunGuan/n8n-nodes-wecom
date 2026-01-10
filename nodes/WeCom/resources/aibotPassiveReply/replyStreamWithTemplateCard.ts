@@ -118,7 +118,6 @@ export const replyStreamWithTemplateCardDescription: INodeProperties[] = [
 		},
 		default: '',
 		description: '模板卡片结构体（JSON格式）',
-		hint: '可选。模板卡片结构体（JSON格式），支持以下类型：\n- text_notice：文本通知模版卡片（card_action必填）\n- news_notice：图文展示模版卡片（main_title和card_action必填，card_image和image_text_area至少填一个）\n- button_interaction：按钮交互模版卡片（main_title、button_list、task_id必填，需要设置回调URL）\n- vote_interaction：投票选择模版卡片（main_title、checkbox、submit_button、task_id必填，需要设置回调URL）\n- multiple_interaction：多项选择模版卡片（main_title、select_list、submit_button必填，需要设置回调URL）\n\n重要提示：\n- template_card可首次回复，也可在收到流式消息刷新事件时回复\n- 但是同一个消息只能回复一次\n- 首次回复时必须返回stream的id\n\n主要字段说明：\n- card_type：模版类型（必填）\n- source：卡片来源样式（可选）\n- main_title：主要内容（title、desc）\n- task_id：任务id（当有action_menu或交互功能时必填）\n\n详细结构体说明请参考官方文档',
 	},
 	{
 		displayName: '模板卡片反馈ID',

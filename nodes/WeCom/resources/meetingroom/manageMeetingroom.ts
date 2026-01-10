@@ -27,7 +27,6 @@ export const manageMeetingroomDescription: INodeProperties[] = [
 		displayOptions: { show: { ...showOnly, action: ['list'] } },
 		default: '',
 		description: '按城市筛选会议室',
-		hint: '城市名称（可选）',
 	},
 	{
 		displayName: '楼宇',
@@ -36,7 +35,6 @@ export const manageMeetingroomDescription: INodeProperties[] = [
 		displayOptions: { show: { ...showOnly, action: ['list'] } },
 		default: '',
 		description: '按楼宇筛选会议室',
-		hint: '楼宇名称（可选）',
 	},
 	{
 		displayName: '楼层',
@@ -45,7 +43,6 @@ export const manageMeetingroomDescription: INodeProperties[] = [
 		displayOptions: { show: { ...showOnly, action: ['list'] } },
 		default: '',
 		description: '按楼层筛选会议室',
-		hint: '楼层名称（可选）',
 	},
 	{
 		displayName: '设备类型',
@@ -71,7 +68,6 @@ export const manageMeetingroomDescription: INodeProperties[] = [
 		displayOptions: { show: { ...showOnly, action: ['get', 'edit', 'delete'] } },
 		default: '',
 		description: '会议室的唯一标识ID',
-		hint: '会议室ID',
 	},
 	// 添加/编辑会议室参数
 	{
@@ -82,7 +78,6 @@ export const manageMeetingroomDescription: INodeProperties[] = [
 		displayOptions: { show: { ...showOnly, action: ['add'] } },
 		default: '',
 		description: '会议室的名称',
-		hint: '会议室名称',
 	},
 	{
 		displayName: '会议室名称',
@@ -91,7 +86,6 @@ export const manageMeetingroomDescription: INodeProperties[] = [
 		displayOptions: { show: { ...showOnly, action: ['edit'] } },
 		default: '',
 		description: '新的会议室名称，留空则不修改',
-		hint: '新会议室名称（可选）',
 	},
 	{
 		displayName: '容纳人数',
@@ -119,7 +113,6 @@ export const manageMeetingroomDescription: INodeProperties[] = [
 		displayOptions: { show: { ...showOnly, action: ['add', 'edit'] } },
 		default: '',
 		description: '会议室所在城市',
-		hint: '城市（可选）',
 	},
 	{
 		displayName: '所在楼宇',
@@ -128,7 +121,6 @@ export const manageMeetingroomDescription: INodeProperties[] = [
 		displayOptions: { show: { ...showOnly, action: ['add', 'edit'] } },
 		default: '',
 		description: '会议室所在楼宇',
-		hint: '楼宇（可选）',
 	},
 	{
 		displayName: '所在楼层',
@@ -137,7 +129,6 @@ export const manageMeetingroomDescription: INodeProperties[] = [
 		displayOptions: { show: { ...showOnly, action: ['add', 'edit'] } },
 		default: '',
 		description: '会议室所在楼层',
-		hint: '楼层（可选）',
 	},
 	{
 		displayName: '设备类型',

@@ -114,7 +114,6 @@ export const paytoolDescription: INodeProperties[] = [
 			},
 		],
 		default: 1,
-		hint: '1-普通第三方应用；2-代开发应用；3-行业解决方案',
 	},
 	{
 		displayName: '支付方式',
@@ -145,7 +144,6 @@ export const paytoolDescription: INodeProperties[] = [
 			},
 		],
 		default: 0,
-		hint: '0-客户支付；1-服务商代支付；2-免支付',
 	},
 	{
 		displayName: '客户企业corpid',
@@ -230,7 +228,6 @@ export const paytoolDescription: INodeProperties[] = [
 					},
 				],
 				default: 0,
-				hint: '特殊的，当第三方应用有剩余有效时长且不超过1年，支持新购购买类型',
 			},
 			{
 				displayName: '购买应用列表',
@@ -322,7 +319,6 @@ export const paytoolDescription: INodeProperties[] = [
 											},
 										],
 										default: 1,
-										hint: '如果不是新购，必须指定了客户企业custom_corpid，才能选择固定优惠',
 									},
 									{
 										displayName: '优惠金额（分）',
@@ -330,7 +326,6 @@ export const paytoolDescription: INodeProperties[] = [
 										type: 'number',
 										default: 0,
 										description: '优惠金额，单位分',
-										hint: '当优惠类型为"固定优惠"时必填。取值范围：1 ~ 10000000',
 									},
 									{
 										displayName: '优惠折扣（%）',
@@ -338,7 +333,6 @@ export const paytoolDescription: INodeProperties[] = [
 										type: 'number',
 										default: 0,
 										description: '优惠折扣，单位%，如填75，表示75%优惠价，即7.5折',
-										hint: '当优惠类型为"价格折扣"时必填。取值范围：10 ~ 99',
 									},
 									{
 										displayName: '优惠原因',
@@ -346,7 +340,6 @@ export const paytoolDescription: INodeProperties[] = [
 										type: 'string',
 										required: true,
 										default: '',
-										hint: '不多于256字节',
 									},
 								],
 							},
@@ -369,7 +362,6 @@ export const paytoolDescription: INodeProperties[] = [
 					},
 				],
 				default: 1,
-				hint: '0-否；1-是，不填默认是。有指定企业且指定企业与服务商存在应用授权关系才可通知成功',
 			},
 		],
 	},
@@ -414,7 +406,6 @@ export const paytoolDescription: INodeProperties[] = [
 					},
 				],
 				default: 0,
-				hint: '特殊的，当代开发应用有剩余有效时长且不超过1年，支持新购购买类型',
 			},
 			{
 				displayName: '购买应用列表',
@@ -426,7 +417,6 @@ export const paytoolDescription: INodeProperties[] = [
 				},
 				default: {},
 				placeholder: '添加应用',
-				hint: '可填充个数：1 ~ 20',
 				options: [
 					{
 						displayName: '应用',
@@ -492,7 +482,6 @@ export const paytoolDescription: INodeProperties[] = [
 					},
 				],
 				default: 1,
-				hint: '0-否；1-是，不填默认是。有指定企业且指定企业与服务商存在应用授权关系才可通知成功',
 			},
 		],
 	},
@@ -544,7 +533,6 @@ export const paytoolDescription: INodeProperties[] = [
 				type: 'string',
 				required: true,
 				default: '',
-				hint: '不多于64字节',
 			},
 			{
 				displayName: '行业方案版本名',
@@ -552,7 +540,6 @@ export const paytoolDescription: INodeProperties[] = [
 				type: 'string',
 				required: true,
 				default: '',
-				hint: '不多于128字节',
 			},
 			{
 				displayName: '购买时长（天）',
@@ -560,7 +547,6 @@ export const paytoolDescription: INodeProperties[] = [
 				type: 'number',
 				default: 0,
 				description: '应用的购买时长，单位天',
-				hint: '当购买类型是新购或续期时必填。取值范围：1 ~ 1825',
 			},
 			{
 				displayName: '生效日期',
@@ -568,7 +554,6 @@ export const paytoolDescription: INodeProperties[] = [
 				type: 'string',
 				default: '',
 				description: '生效日期，格式如：20221212',
-				hint: '只能是当天之后的日期，最迟不能超过一年。不填表示立即生效。不多于8字节',
 			},
 			{
 				displayName: '购买应用列表',
@@ -579,7 +564,6 @@ export const paytoolDescription: INodeProperties[] = [
 				},
 				default: {},
 				placeholder: '添加应用',
-				hint: '可填充个数：1 ~ 20',
 				options: [
 					{
 						displayName: '应用',
@@ -627,7 +611,6 @@ export const paytoolDescription: INodeProperties[] = [
 					},
 				],
 				default: 1,
-				hint: '0-否；1-是，不填默认是。有指定企业且指定企业与服务商存在应用授权关系才可通知成功',
 			},
 		],
 	},
@@ -694,7 +677,6 @@ export const paytoolDescription: INodeProperties[] = [
 			},
 		],
 		default: 1,
-		hint: '1-普通第三方应用；2-代开发应用；3-行业解决方案',
 	},
 	{
 		displayName: '起始时间',

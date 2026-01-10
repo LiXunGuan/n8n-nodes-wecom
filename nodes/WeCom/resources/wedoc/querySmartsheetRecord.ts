@@ -58,7 +58,6 @@ export const querySmartsheetRecordDescription: INodeProperties[] = [
 		default: '',
 		description: '指定要查询的记录ID列表，用逗号分隔。不填则查询所有符合条件的记录。',
 		placeholder: '如: record_001,record_002',
-		hint: '留空查询所有记录',
 	},
 	{
 		displayName: '筛选条件',

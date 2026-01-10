@@ -654,14 +654,12 @@ export const licenseDescription: INodeProperties[] = [
 						name: 'baseCount',
 						type: 'number',
 						default: 0,
-						hint: '最多1000000个。若企业为服务商测试企业，最多购买1000个。基础账号跟互通账号不能同时为0',
 					},
 					{
 						displayName: '互通账号个数',
 						name: 'externalContactCount',
 						type: 'number',
 						default: 0,
-						hint: '最多1000000个。若企业为服务商测试企业，最多购买1000个。基础账号跟互通账号不能同时为0',
 					},
 					{
 						displayName: '购买月数',
@@ -669,7 +667,6 @@ export const licenseDescription: INodeProperties[] = [
 						type: 'number',
 						default: 1,
 						description: '购买的月数',
-						hint: '每个月按照31天计算。总购买时长为(months*31+days)天，最少购买1个月(31天)，最多购买60个月(1860天)',
 					},
 					{
 						displayName: '购买天数',
@@ -677,7 +674,6 @@ export const licenseDescription: INodeProperties[] = [
 						type: 'number',
 						default: 0,
 						description: '购买的天数',
-						hint: '总购买时长为(months*31+days)天，最少购买1个月(31天)，最多购买60个月(1860天)',
 					},
 					{
 						displayName: '是否开启自动激活',
@@ -694,7 +690,6 @@ export const licenseDescription: INodeProperties[] = [
 								value: 0,
 							},
 						],
-						hint: '不填默认开启',
 					},
 				],
 			},
@@ -936,7 +931,6 @@ export const licenseDescription: INodeProperties[] = [
 						type: 'string',
 						default: '',
 						required: true,
-						hint: '通过"获取订单中的账号列表"接口获取的账号激活码',
 					},
 					{
 						displayName: '企业成员userid',
@@ -945,7 +939,6 @@ export const licenseDescription: INodeProperties[] = [
 						default: '',
 						required: true,
 						description: '待绑定激活的企业成员userid',
-						hint: '一个userid允许激活一个基础账号以及一个互通账号',
 					},
 				],
 			},
@@ -1187,7 +1180,6 @@ export const licenseDescription: INodeProperties[] = [
 						default: '',
 						required: true,
 						description: '转移成员的userid',
-						hint: '转移成员的账号已激活，且在有效期',
 					},
 					{
 						displayName: '接收成员userid',
@@ -1196,7 +1188,6 @@ export const licenseDescription: INodeProperties[] = [
 						default: '',
 						required: true,
 						description: '接收成员的userid',
-						hint: '接收成员与转移成员属于同一个企业',
 					},
 				],
 			},
@@ -1259,7 +1250,6 @@ export const licenseDescription: INodeProperties[] = [
 						default: '',
 						required: true,
 						description: '分配的激活码',
-						hint: '分配给下游/下级企业的激活码，当前未激活，且属于上游/上级企业的',
 					},
 				],
 			},
@@ -1371,7 +1361,7 @@ export const licenseDescription: INodeProperties[] = [
 			},
 		],
 		default: 1,
-		hint: '0：关闭，1：打开。设置为自动激活后，对应授权企业的员工使用服务商应用时，接口许可表现为自动激活',
+		hint: '设置为自动激活后，对应授权企业的员工使用服务商应用时，接口许可表现为自动激活',
 	},
 	{
 		displayName: '企业ID',

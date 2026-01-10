@@ -111,7 +111,6 @@ export const sendTemplateCardDescription: INodeProperties[] = [
 						required: true,
 						placeholder: '请输入主标题...',
 						description: '一级标题，必填。<a href="https://developer.work.weixin.qq.com/document/path/99110#%E6%A8%A1%E6%9D%BF%E5%8D%A1%E7%89%87%E7%B1%BB%E5%9E%8B" target="_blank">官方文档</a>',
-						hint: '建议不超过26个汉字',
 					},
 					{
 						displayName: '标题描述',
@@ -120,7 +119,6 @@ export const sendTemplateCardDescription: INodeProperties[] = [
 						default: '',
 						placeholder: '标题辅助信息',
 						description: '可选。标题辅助信息。<a href="https://developer.work.weixin.qq.com/document/path/99110#%E6%A8%A1%E6%9D%BF%E5%8D%A1%E7%89%87%E7%B1%BB%E5%9E%8B" target="_blank">官方文档</a>',
-						hint: '建议不超过30个汉字',
 					},
 				],
 			},
@@ -152,7 +150,6 @@ export const sendTemplateCardDescription: INodeProperties[] = [
 						default: '',
 						placeholder: '99.99%',
 						description: '可选。关键数据内容，通常用于突出显示重要数据。<a href="https://developer.work.weixin.qq.com/document/path/99110#%E6%A8%A1%E6%9D%BF%E5%8D%A1%E7%89%87%E7%B1%BB%E5%9E%8B" target="_blank">官方文档</a>',
-						hint: '建议不超过10个汉字',
 					},
 					{
 						displayName: '关键数据描述',
@@ -161,7 +158,6 @@ export const sendTemplateCardDescription: INodeProperties[] = [
 						default: '',
 						placeholder: '完成率',
 						description: '可选。关键数据辅助信息。<a href="https://developer.work.weixin.qq.com/document/path/99110#%E6%A8%A1%E6%9D%BF%E5%8D%A1%E7%89%87%E7%B1%BB%E5%9E%8B" target="_blank">官方文档</a>',
-						hint: '建议不超过15个汉字',
 					},
 				],
 			},

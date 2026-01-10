@@ -27,7 +27,6 @@ export const manageBookingDescription: INodeProperties[] = [
 		displayOptions: { show: { ...showOnly, action: ['list'] } },
 		default: '',
 		description: '要查询预定列表的会议室ID',
-		hint: '会议室ID',
 	},
 	{
 		displayName: '开始时间',
@@ -37,7 +36,6 @@ export const manageBookingDescription: INodeProperties[] = [
 		displayOptions: { show: { ...showOnly, action: ['list', 'book'] } },
 		default: 0,
 		description: '查询或预定的开始时间（Unix时间戳秒）',
-		hint: '开始时间',
 	},
 	{
 		displayName: '结束时间',
@@ -47,7 +45,6 @@ export const manageBookingDescription: INodeProperties[] = [
 		displayOptions: { show: { ...showOnly, action: ['list', 'book'] } },
 		default: 0,
 		description: '查询或预定的结束时间（Unix时间戳秒）',
-		hint: '结束时间',
 	},
 	// 查询单个预定参数
 	{
@@ -58,7 +55,6 @@ export const manageBookingDescription: INodeProperties[] = [
 		displayOptions: { show: { ...showOnly, action: ['get', 'cancel'] } },
 		default: '',
 		description: '会议室预定的唯一标识ID',
-		hint: '预定ID',
 	},
 	// 预定会议室参数
 	{
@@ -69,7 +65,6 @@ export const manageBookingDescription: INodeProperties[] = [
 		displayOptions: { show: { ...showOnly, action: ['book'] } },
 		default: '',
 		description: '要预定的会议室ID',
-		hint: '会议室ID',
 	},
 	{
 		displayName: '会议主题',
@@ -79,7 +74,6 @@ export const manageBookingDescription: INodeProperties[] = [
 		displayOptions: { show: { ...showOnly, action: ['book'] } },
 		default: '',
 		description: '会议的主题',
-		hint: '会议主题',
 	},
 	{
 		displayName: '预定人UserID',
@@ -89,7 +83,6 @@ export const manageBookingDescription: INodeProperties[] = [
 		displayOptions: { show: { ...showOnly, action: ['book'] } },
 		default: '',
 		description: '预定人的企业微信UserID',
-		hint: '预定人UserID',
 	},
 	{
 		displayName: '参会人员',
@@ -98,6 +91,5 @@ export const manageBookingDescription: INodeProperties[] = [
 		displayOptions: { show: { ...showOnly, action: ['book'] } },
 		default: '',
 		description: '参会人员UserID列表，多个用逗号分隔',
-		hint: '参会人员UserID（可选）',
 	},
 ];

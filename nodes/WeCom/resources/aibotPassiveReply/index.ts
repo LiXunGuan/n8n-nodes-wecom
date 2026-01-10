@@ -49,7 +49,6 @@ export const aibotPassiveReplyDescription: INodeProperties[] = [
 		],
 		default: 'replyWelcome',
 		description: '选择回复操作类型',
-		hint: '支持的操作类型：\n- 回复欢迎语：用户当天首次进入单聊会话时回复（被动回复）\n- 回复用户消息：回复用户发送的消息（被动回复，支持流式消息、模板卡片等）\n- 更新模板卡片：更新模板卡片消息（被动回复）\n- 主动回复消息：使用response_url主动回复消息（支持markdown、模板卡片）\n\n注意：\n- 被动回复：在webhook响应中直接回复，需要加密\n- 主动回复：使用response_url主动调用接口回复，明文JSON，每个response_url只能调用一次，有效期1小时',
 	},
 	{
 		displayName: '回复类型',

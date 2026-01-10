@@ -624,7 +624,7 @@ export const appAuthDescription: INodeProperties[] = [
 		],
 		default: 0,
 		description: '指定拉取正式或测试授权的订单',
-		hint: '0-正式授权，1-测试授权。默认值为0',
+		hint: '默认正式授权',
 	},
 	{
 		displayName: 'Suite Access Token',

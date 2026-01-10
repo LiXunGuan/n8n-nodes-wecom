@@ -142,7 +142,6 @@ export const updateTemplateCardDescription: INodeProperties[] = [
 						type: 'string',
 						default: '',
 						placeholder: '欢迎使用',
-						hint: '建议不超过36个字（支持ID转译），文本通知型卡片本字段非必填，但不可本字段和sub_title_text都不填',
 						description: '一级标题，建议不超过36个字，文本通知型卡片本字段非必填，但不可本字段和sub_title_text都不填（支持ID转译）',
 					},
 					{
@@ -151,7 +150,6 @@ export const updateTemplateCardDescription: INodeProperties[] = [
 						type: 'string',
 						default: '',
 						placeholder: '点击查看详情',
-						hint: '建议不超过44个字（支持ID转译）',
 						description: '标题辅助信息，建议不超过44个字（支持ID转译）',
 					},
 				],
@@ -227,7 +225,6 @@ export const updateTemplateCardDescription: INodeProperties[] = [
 							},
 						],
 						default: 0,
-						hint: '0或不填代表没有点击事件，1代表跳转url，2代表跳转小程序',
 						description: '引用文献样式区域点击事件，0或不填代表没有点击事件，1代表跳转URL，2代表跳转小程序',
 					},
 					{
@@ -241,7 +238,6 @@ export const updateTemplateCardDescription: INodeProperties[] = [
 								type: [2],
 							},
 						},
-						hint: '必须是与当前应用关联的小程序',
 						description: '点击跳转的小程序的appid，必须是与当前应用关联的小程序，quote_area.type是2时必填',
 					},
 					{
@@ -367,7 +363,6 @@ export const updateTemplateCardDescription: INodeProperties[] = [
 							},
 						],
 						default: 0,
-						hint: '0或不填代表不是链接，1代表跳转url，2代表下载附件，3代表点击跳转成员详情',
 						description: '链接类型，0或不填代表不是链接，1代表跳转URL，2代表下载附件，3代表点击跳转成员详情',
 					},
 					{
@@ -376,7 +371,6 @@ export const updateTemplateCardDescription: INodeProperties[] = [
 						type: 'string',
 						default: '',
 						placeholder: 'https://example.com',
-						hint: 'horizontal_content_list.type是1时必填',
 						description: '链接跳转的URL，horizontal_content_list.type是1时必填',
 						displayOptions: {
 							show: {
@@ -453,7 +447,6 @@ export const updateTemplateCardDescription: INodeProperties[] = [
 							},
 						],
 						default: 0,
-						hint: '0或不填代表不是链接，1代表跳转url，2代表跳转小程序',
 						description: '跳转链接类型，0或不填代表不是链接，1代表跳转URL，2代表跳转小程序',
 					},
 					{
@@ -463,7 +456,6 @@ export const updateTemplateCardDescription: INodeProperties[] = [
 						required: true,
 						default: '',
 						placeholder: '查看详情',
-						hint: '建议不超过18个字',
 						description: '跳转链接样式的文案内容，建议不超过18个字',
 					},
 					{
@@ -472,7 +464,6 @@ export const updateTemplateCardDescription: INodeProperties[] = [
 						type: 'string',
 						default: '',
 						placeholder: 'https://example.com',
-						hint: 'jump_list.type是1时必填',
 						description: '跳转链接的URL，jump_list.type是1时必填',
 						displayOptions: {
 							show: {
@@ -546,7 +537,6 @@ export const updateTemplateCardDescription: INodeProperties[] = [
 							},
 						],
 						default: 1,
-						hint: 'text_notice必填本字段，取值范围为[1,2]；news_notice必填本字段，取值范围为[1,2]；button_interaction可选，取值范围为[0,1,2]',
 						description: '跳转事件类型，1代表跳转URL，2代表打开小程序。text_notice必填本字段，取值范围为[1,2]；news_notice必填本字段，取值范围为[1,2]；button_interaction可选，取值范围为[0,1,2]',
 					},
 					{
@@ -555,7 +545,6 @@ export const updateTemplateCardDescription: INodeProperties[] = [
 						type: 'string',
 						default: '',
 						placeholder: 'https://example.com',
-						hint: 'card_action.type是1时必填',
 						description: '跳转事件的URL，card_action.type是1时必填',
 						displayOptions: {
 							show: {
@@ -762,7 +751,6 @@ export const updateTemplateCardDescription: INodeProperties[] = [
 							},
 						],
 						default: 0,
-						hint: '0或不填代表回调点击事件，1代表跳转url',
 						description: '按钮点击事件类型，0或不填代表回调点击事件，1代表跳转URL',
 					},
 					{
@@ -772,7 +760,6 @@ export const updateTemplateCardDescription: INodeProperties[] = [
 						required: true,
 						default: '',
 						placeholder: '同意',
-						hint: '建议不超过10个字',
 						description: '按钮文案，建议不超过10个字',
 					},
 					{
@@ -798,7 +785,6 @@ export const updateTemplateCardDescription: INodeProperties[] = [
 							},
 						],
 						default: 1,
-						hint: '目前可填1~4，不填或错填默认1',
 						description: '按钮样式，目前可填1~4，不填或错填默认1',
 					},
 					{
@@ -807,7 +793,6 @@ export const updateTemplateCardDescription: INodeProperties[] = [
 						type: 'string',
 						default: '',
 						placeholder: 'btn_agree',
-						hint: '最长支持1024字节，不可重复，button_list.type是0时必填',
 						description: '按钮key值，用户点击后，会产生回调事件将本参数作为EventKey返回，回调事件会带上该key值，最长支持1024字节，不可重复，button_list.type是0时必填',
 						displayOptions: {
 							show: {
@@ -821,7 +806,6 @@ export const updateTemplateCardDescription: INodeProperties[] = [
 						type: 'string',
 						default: '',
 						placeholder: 'https://example.com',
-						hint: 'button_list.type是1时必填',
 						description: '跳转事件的URL，button_list.type是1时必填',
 						displayOptions: {
 							show: {
@@ -1163,7 +1147,6 @@ export const updateTemplateCardDescription: INodeProperties[] = [
 							},
 						],
 						default: 0,
-						hint: '0或不填代表没有点击事件，1代表跳转url，2代表跳转小程序',
 						description: '左图右文样式区域点击事件，0或不填代表没有点击事件，1代表跳转URL，2代表跳转小程序',
 					},
 					{
@@ -1181,7 +1164,6 @@ export const updateTemplateCardDescription: INodeProperties[] = [
 						type: 'string',
 						default: '',
 						placeholder: 'https://example.com',
-						hint: 'image_text_area.type是1时必填',
 						description: '点击跳转的URL，image_text_area.type是1时必填',
 						displayOptions: {
 							show: {

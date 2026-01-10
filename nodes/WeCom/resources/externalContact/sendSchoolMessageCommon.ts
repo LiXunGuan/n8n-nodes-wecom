@@ -89,7 +89,6 @@ export const sendSchoolMessageCommonDescription: INodeProperties[] = [
 		default: 0,
 		description:
 			'可选。指定发送对象，0表示发送给家长，1表示发送给学生，2表示发送给家长和学生，默认为0。<a href="https://developer.work.weixin.qq.com/document/path/92320" target="_blank">官方文档</a>',
-		hint: '可选。指定发送对象，0=家长，1=学生，2=家长和学生，默认0',
 	},
 	{
 		displayName: '家长列表',
