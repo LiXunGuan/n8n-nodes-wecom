@@ -60,6 +60,7 @@
 - **第三方应用接口调用许可** - 接口调用许可管理（下单购买账号）
 - **第三方应用收银台** - 第三方应用收银台（创建收款订单）
 - **第三方应用推广二维码** - 第三方应用推广二维码（获取注册码）
+- **账号 ID** - 自建应用与第三方应用的对接（userid转换、external_userid转换）
 
 ### 2. 企业微信-办公
 
@@ -180,77 +181,6 @@ npm install n8n-nodes-wecom
 
 ## 一、基础功能（企业微信-基础 节点）
 
-### 第三方应用授权
-
-> [官方文档：应用授权](https://developer.work.weixin.qq.com/document/path/90600)
-
-- ✅ [获取第三方应用凭证](https://developer.work.weixin.qq.com/document/path/90600)
-- ✅ [获取预授权码](https://developer.work.weixin.qq.com/document/path/90601)
-- ✅ [设置授权配置](https://developer.work.weixin.qq.com/document/path/90602)
-- ✅ [获取企业永久授权码](https://developer.work.weixin.qq.com/document/path/100776)
-- ✅ [获取企业授权信息](https://developer.work.weixin.qq.com/document/path/100779)
-- ✅ [获取企业凭证](https://developer.work.weixin.qq.com/document/path/90605)
-- ✅ [获取应用二维码](https://developer.work.weixin.qq.com/document/path/95430)
-- ✅ [明文corpid转换为加密corpid](https://developer.work.weixin.qq.com/document/path/95604)
-- ✅ [获取应用权限详情](https://developer.work.weixin.qq.com/document/path/99052)
-- ✅ [获取应用管理员列表](https://developer.work.weixin.qq.com/document/path/100073)
-- ✅ [获取订单列表](https://developer.work.weixin.qq.com/document/path/90600)
-- ✅ [获取订单详情](https://developer.work.weixin.qq.com/document/path/90600)
-- ✅ [延长试用期](https://developer.work.weixin.qq.com/document/path/90600)
-
-### 第三方应用接口调用许可
-
-> [官方文档：接口调用许可](https://developer.work.weixin.qq.com/document/path/95652)
-
-- ✅ [下单购买账号](https://developer.work.weixin.qq.com/document/path/95644)
-- ✅ [下单续期账号](https://developer.work.weixin.qq.com/document/path/95646)（创建续期任务、提交续期订单）
-- ✅ [获取订单列表](https://developer.work.weixin.qq.com/document/path/95647)
-- ✅ [获取订单详情](https://developer.work.weixin.qq.com/document/path/95648)
-- ✅ [获取订单中的账号列表](https://developer.work.weixin.qq.com/document/path/95649)
-- ✅ [取消订单](https://developer.work.weixin.qq.com/document/path/96106)
-- ✅ [下单购买多企业账号](https://developer.work.weixin.qq.com/document/path/98892)（创建多企业新购任务、提交多企业新购订单、获取多企业新购订单提交结果）
-- ✅ [获取多企业订单详情](https://developer.work.weixin.qq.com/document/path/98893)
-
-### 第三方应用收银台
-
-> [官方文档：第三方应用收银台](https://developer.work.weixin.qq.com/document/path/97654)
-
-- ✅ [创建收款订单](https://developer.work.weixin.qq.com/document/path/98045)（支持普通第三方应用、代开发应用、行业解决方案三种业务类型）
-- ✅ [取消收款订单](https://developer.work.weixin.qq.com/document/path/98046)
-- ✅ [获取收款订单列表](https://developer.work.weixin.qq.com/document/path/98053)
-- ✅ [获取收款订单详情](https://developer.work.weixin.qq.com/document/path/98054)
-- ✅ [获取发票列表](https://developer.work.weixin.qq.com/document/path/99436)
-- ✅ [标记开票状态](https://developer.work.weixin.qq.com/document/path/99437)
-- ✅ [签名算法](https://developer.work.weixin.qq.com/document/path/98768)
-- ✅ [使用余额支付订单](https://developer.work.weixin.qq.com/document/path/99415)（提交余额支付订单任务、获取订单支付结果）
-
-### 第三方应用推广二维码
-
-> [官方文档：第三方应用推广二维码](https://developer.work.weixin.qq.com/document/path/90578)
-
-- ✅ [获取注册码](https://developer.work.weixin.qq.com/document/path/90581)（根据注册推广包生成注册码）
-- ✅ [查询注册状态](https://developer.work.weixin.qq.com/document/path/90582)（查询通过注册定制化新创建的企业注册状态）
-- ✅ [设置授权应用可见范围](https://developer.work.weixin.qq.com/document/path/90583)（设置授权应用的可见范围，包括成员、部门、标签）
-- ✅ [设置通讯录同步完成](https://developer.work.weixin.qq.com/document/path/90584)（设置通讯录同步完成，解除通讯录锁定状态）
-- ✅ [激活账号](https://developer.work.weixin.qq.com/document/path/95553)（激活账号、批量激活账号、指定账号类型激活）
-- ✅ [获取激活码详情](https://developer.work.weixin.qq.com/document/path/95552)（获取激活码详情、批量获取激活码详情）
-- ✅ [获取企业的账号列表](https://developer.work.weixin.qq.com/document/path/95544)
-- ✅ [获取成员的激活详情](https://developer.work.weixin.qq.com/document/path/95555)
-- ✅ [账号继承](https://developer.work.weixin.qq.com/document/path/95673)
-- ✅ [分配激活码给下游/下级企业](https://developer.work.weixin.qq.com/document/path/96059)
-- ✅ [获取应用的接口许可状态](https://developer.work.weixin.qq.com/document/path/95844)
-- ✅ [设置企业的许可自动激活状态](https://developer.work.weixin.qq.com/document/path/95873)
-- ✅ [查询企业的许可自动激活状态](https://developer.work.weixin.qq.com/document/path/95874)
-- ✅ [充值账户余额查询](https://developer.work.weixin.qq.com/document/path/100137)
-- ✅ [民生优惠条件查询](https://developer.work.weixin.qq.com/document/path/96515)（注：民生行业接口许可优惠政策于2023年3月31日到期，到期后不再支持查询）
-
-**接口调用许可事件通知：**
-
-- ✅ [接口许可失效通知](https://developer.work.weixin.qq.com/document/path/95716)（unlicensed_notify - 当许可账号失效的企业成员访问应用时触发）
-- ✅ [支付成功通知](https://developer.work.weixin.qq.com/document/path/95804)（license_pay_success - 当服务商购买接口调用许可账号并完成付款后推送）
-- ✅ [退款结果通知](https://developer.work.weixin.qq.com/document/path/95805)（license_refund - 当服务商提交退款申请的订单发生状态变更时推送）
-- ✅ [自动激活回调通知](https://developer.work.weixin.qq.com/document/path/95994)（auto_activate - 当企业成员满足自动激活条件并触发自动激活后推送）
-
 ### 消息接收（触发器节点）
 
 > [官方文档：接收消息与事件](https://developer.work.weixin.qq.com/document/path/90238)
@@ -353,6 +283,14 @@ npm install n8n-nodes-wecom
 - ✅ 发送模板卡片消息
   - 文本通知模板卡片
   - 图文展示模板卡片
+
+### 账号 ID
+
+> [官方文档：账号 ID](https://developer.work.weixin.qq.com/document/path/98728)
+
+- ✅ [userid转换](https://developer.work.weixin.qq.com/document/path/98728)（将代开发应用或第三方应用获取的密文open_userid转换为明文userid）
+- ✅ [external_userid转换](https://developer.work.weixin.qq.com/document/path/98728)（将代开发应用或第三方应用获取的externaluserid转换成自建应用的externaluserid）
+- ✅ [tmp_external_userid转换](https://developer.work.weixin.qq.com/document/path/98728)（将应用获取的外部用户临时id转换为external_userid，支持会议、收集表、文档等业务类型）
 
 ### 应用消息发送
 
@@ -517,6 +455,77 @@ npm install n8n-nodes-wecom
 - ✅ [批量查询电子发票](https://developer.work.weixin.qq.com/document/path/90287)
 
 ---
+
+### 第三方应用授权
+
+> [官方文档：应用授权](https://developer.work.weixin.qq.com/document/path/90600)
+
+- ✅ [获取第三方应用凭证](https://developer.work.weixin.qq.com/document/path/90600)
+- ✅ [获取预授权码](https://developer.work.weixin.qq.com/document/path/90601)
+- ✅ [设置授权配置](https://developer.work.weixin.qq.com/document/path/90602)
+- ✅ [获取企业永久授权码](https://developer.work.weixin.qq.com/document/path/100776)
+- ✅ [获取企业授权信息](https://developer.work.weixin.qq.com/document/path/100779)
+- ✅ [获取企业凭证](https://developer.work.weixin.qq.com/document/path/90605)
+- ✅ [获取应用二维码](https://developer.work.weixin.qq.com/document/path/95430)
+- ✅ [明文corpid转换为加密corpid](https://developer.work.weixin.qq.com/document/path/95604)
+- ✅ [获取应用权限详情](https://developer.work.weixin.qq.com/document/path/99052)
+- ✅ [获取应用管理员列表](https://developer.work.weixin.qq.com/document/path/100073)
+- ✅ [获取订单列表](https://developer.work.weixin.qq.com/document/path/90600)
+- ✅ [获取订单详情](https://developer.work.weixin.qq.com/document/path/90600)
+- ✅ [延长试用期](https://developer.work.weixin.qq.com/document/path/90600)
+
+### 第三方应用接口调用许可
+
+> [官方文档：接口调用许可](https://developer.work.weixin.qq.com/document/path/95652)
+
+- ✅ [下单购买账号](https://developer.work.weixin.qq.com/document/path/95644)
+- ✅ [下单续期账号](https://developer.work.weixin.qq.com/document/path/95646)（创建续期任务、提交续期订单）
+- ✅ [获取订单列表](https://developer.work.weixin.qq.com/document/path/95647)
+- ✅ [获取订单详情](https://developer.work.weixin.qq.com/document/path/95648)
+- ✅ [获取订单中的账号列表](https://developer.work.weixin.qq.com/document/path/95649)
+- ✅ [取消订单](https://developer.work.weixin.qq.com/document/path/96106)
+- ✅ [下单购买多企业账号](https://developer.work.weixin.qq.com/document/path/98892)（创建多企业新购任务、提交多企业新购订单、获取多企业新购订单提交结果）
+- ✅ [获取多企业订单详情](https://developer.work.weixin.qq.com/document/path/98893)
+
+### 第三方应用收银台
+
+> [官方文档：第三方应用收银台](https://developer.work.weixin.qq.com/document/path/97654)
+
+- ✅ [创建收款订单](https://developer.work.weixin.qq.com/document/path/98045)（支持普通第三方应用、代开发应用、行业解决方案三种业务类型）
+- ✅ [取消收款订单](https://developer.work.weixin.qq.com/document/path/98046)
+- ✅ [获取收款订单列表](https://developer.work.weixin.qq.com/document/path/98053)
+- ✅ [获取收款订单详情](https://developer.work.weixin.qq.com/document/path/98054)
+- ✅ [获取发票列表](https://developer.work.weixin.qq.com/document/path/99436)
+- ✅ [标记开票状态](https://developer.work.weixin.qq.com/document/path/99437)
+- ✅ [签名算法](https://developer.work.weixin.qq.com/document/path/98768)
+- ✅ [使用余额支付订单](https://developer.work.weixin.qq.com/document/path/99415)（提交余额支付订单任务、获取订单支付结果）
+
+### 第三方应用推广二维码
+
+> [官方文档：第三方应用推广二维码](https://developer.work.weixin.qq.com/document/path/90578)
+
+- ✅ [获取注册码](https://developer.work.weixin.qq.com/document/path/90581)（根据注册推广包生成注册码）
+- ✅ [查询注册状态](https://developer.work.weixin.qq.com/document/path/90582)（查询通过注册定制化新创建的企业注册状态）
+- ✅ [设置授权应用可见范围](https://developer.work.weixin.qq.com/document/path/90583)（设置授权应用的可见范围，包括成员、部门、标签）
+- ✅ [设置通讯录同步完成](https://developer.work.weixin.qq.com/document/path/90584)（设置通讯录同步完成，解除通讯录锁定状态）
+- ✅ [激活账号](https://developer.work.weixin.qq.com/document/path/95553)（激活账号、批量激活账号、指定账号类型激活）
+- ✅ [获取激活码详情](https://developer.work.weixin.qq.com/document/path/95552)（获取激活码详情、批量获取激活码详情）
+- ✅ [获取企业的账号列表](https://developer.work.weixin.qq.com/document/path/95544)
+- ✅ [获取成员的激活详情](https://developer.work.weixin.qq.com/document/path/95555)
+- ✅ [账号继承](https://developer.work.weixin.qq.com/document/path/95673)
+- ✅ [分配激活码给下游/下级企业](https://developer.work.weixin.qq.com/document/path/96059)
+- ✅ [获取应用的接口许可状态](https://developer.work.weixin.qq.com/document/path/95844)
+- ✅ [设置企业的许可自动激活状态](https://developer.work.weixin.qq.com/document/path/95873)
+- ✅ [查询企业的许可自动激活状态](https://developer.work.weixin.qq.com/document/path/95874)
+- ✅ [充值账户余额查询](https://developer.work.weixin.qq.com/document/path/100137)
+- ✅ [民生优惠条件查询](https://developer.work.weixin.qq.com/document/path/96515)（注：民生行业接口许可优惠政策于2023年3月31日到期，到期后不再支持查询）
+
+**接口调用许可事件通知：**
+
+- ✅ [接口许可失效通知](https://developer.work.weixin.qq.com/document/path/95716)（unlicensed_notify - 当许可账号失效的企业成员访问应用时触发）
+- ✅ [支付成功通知](https://developer.work.weixin.qq.com/document/path/95804)（license_pay_success - 当服务商购买接口调用许可账号并完成付款后推送）
+- ✅ [退款结果通知](https://developer.work.weixin.qq.com/document/path/95805)（license_refund - 当服务商提交退款申请的订单发生状态变更时推送）
+- ✅ [自动激活回调通知](https://developer.work.weixin.qq.com/document/path/95994)（auto_activate - 当企业成员满足自动激活条件并触发自动激活后推送）
 
 ## 二、办公功能（企业微信-办公 节点）
 

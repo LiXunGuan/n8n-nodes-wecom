@@ -21,6 +21,7 @@ import { appAuthDescription } from '../WeCom/resources/appAuth';
 import { licenseDescription } from '../WeCom/resources/license';
 import { paytoolDescription } from '../WeCom/resources/paytool';
 import { promotionQrcodeDescription } from '../WeCom/resources/promotionQrcode';
+import { accountIdDescription } from '../WeCom/resources/accountId';
 import { executeMessage } from '../WeCom/resources/message/execute';
 import { executeContact } from '../WeCom/resources/contact/execute';
 import { executeMaterial } from '../WeCom/resources/material/execute';
@@ -35,6 +36,7 @@ import { executeAppAuth } from '../WeCom/resources/appAuth/execute';
 import { executeLicense } from '../WeCom/resources/license/execute';
 import { executePaytool } from '../WeCom/resources/paytool/execute';
 import { executePromotionQrcode } from '../WeCom/resources/promotionQrcode/execute';
+import { executeAccountId } from '../WeCom/resources/accountId/execute';
 import { weComApiRequest } from '../WeCom/shared/transport';
 
 export class WeComBase implements INodeType {
@@ -46,7 +48,7 @@ export class WeComBase implements INodeType {
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{$parameter["resource"] === "passiveReply" ? "reply: " + $parameter["resource"] : ($parameter["resource"] === "system" ? $parameter["resource"] : $parameter["operation"] + ": " + $parameter["resource"])}}',
-		description: '企业微信基础功能 - 通讯录、应用消息、群聊、消息推送、企业互联、素材、系统、电子发票、第三方应用授权、第三方应用接口调用许可、第三方应用收银台、第三方应用推广二维码',
+		description: '企业微信基础功能 - 通讯录、应用消息、群聊、消息推送、企业互联、素材、系统、电子发票、第三方应用授权、第三方应用接口调用许可、第三方应用收银台、第三方应用推广二维码、账号ID',
 		defaults: {
 			name: '企业微信-基础',
 		},
@@ -67,6 +69,7 @@ export class WeComBase implements INodeType {
 							'system',
 							'invoice',
 							'agent',
+							'accountId',
 						],
 					},
 				},
@@ -216,6 +219,11 @@ export class WeComBase implements INodeType {
 						value: 'promotionQrcode',
 						description: '第三方应用推广二维码（获取注册码）',
 					},
+					{
+						name: '账号 ID',
+						value: 'accountId',
+						description: '自建应用与第三方应用的对接（userid转换、external_userid转换）',
+					},
 				],
 				default: 'pushMessage',
 			},
@@ -233,6 +241,7 @@ export class WeComBase implements INodeType {
 		...licenseDescription,
 		...paytoolDescription,
 		...promotionQrcodeDescription,
+		...accountIdDescription,
 	],
 	usableAsTool: true,
 };
@@ -392,6 +401,8 @@ export class WeComBase implements INodeType {
 				returnData = await executePaytool.call(this, operation, items);
 			} else if (resource === 'promotionQrcode') {
 				returnData = await executePromotionQrcode.call(this, operation, items);
+			} else if (resource === 'accountId') {
+				returnData = await executeAccountId.call(this, operation, items);
 			}
 		}
 
