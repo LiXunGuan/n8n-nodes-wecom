@@ -1,0 +1,66 @@
+import type { INodeProperties } from 'n8n-workflow';
+
+const showOnly = {
+	resource: ['wedoc'],
+	operation: ['updateSmartsheetGroupChat'],
+};
+
+export const updateSmartsheetGroupChatDescription: INodeProperties[] = [
+	{
+		displayName: '智能表格ID',
+		name: 'docid',
+		type: 'string',
+		displayOptions: {
+			show: showOnly,
+		},
+		default: '',
+		placeholder: 'DOCID',
+		required: true,
+		hint: '必填。智能表格ID，需为当前应用创建的智能表格',
+	},
+	{
+		displayName: '群聊ID',
+		name: 'chat_id',
+		type: 'string',
+		displayOptions: {
+			show: showOnly,
+		},
+		default: '',
+		placeholder: 'CHATID',
+		required: true,
+		hint: '必填。群聊ID，需为对应智能表自动规则创建群聊的ID',
+	},
+	{
+		displayName: '新群主ID',
+		name: 'owner',
+		type: 'string',
+		displayOptions: {
+			show: showOnly,
+		},
+		default: '',
+		placeholder: 'userid',
+		hint: '可选。新群主的id，若不需更新请忽略。注意：del_user_list包含群主时本字段必填。群主需为本企业成员',
+	},
+	{
+		displayName: '添加成员列表',
+		name: 'add_user_list',
+		type: 'string',
+		displayOptions: {
+			show: showOnly,
+		},
+		default: '',
+		placeholder: 'userid1,userid2,userid3',
+		hint: '可选。添加成员的id列表，用逗号分隔，一次最多传入500人。操作的成员需为对应的智能表格中的成员',
+	},
+	{
+		displayName: '删除成员列表',
+		name: 'del_user_list',
+		type: 'string',
+		displayOptions: {
+			show: showOnly,
+		},
+		default: '',
+		placeholder: 'userid3,userid4',
+		hint: '可选。踢出成员的id列表，用逗号分隔，一次最多传入500人。注意：如果删除列表中包含群主，则owner字段必填',
+	},
+];

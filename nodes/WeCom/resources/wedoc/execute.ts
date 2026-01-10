@@ -1057,6 +1057,80 @@ export async function executeWedoc(
 				}
 
 				response = await weComApiRequest.call(this, 'POST', '/cgi-bin/wedoc/mod_doc_join_rule', body);
+			} else if (operation === 'getSmartsheetGroupChatList') {
+				const docid = this.getNodeParameter('docid', i) as string;
+				const cursor = this.getNodeParameter('cursor', i, '') as string;
+				const limit = this.getNodeParameter('limit', i, 100) as number;
+
+				const body: IDataObject = {
+					docid,
+				};
+
+				if (cursor) {
+					body.cursor = cursor;
+				}
+
+				if (limit) {
+					body.limit = limit;
+				}
+
+				response = await weComApiRequest.call(
+					this,
+					'POST',
+					'/cgi-bin/wedoc/smartsheet/groupchat/list',
+					body,
+				);
+			} else if (operation === 'getSmartsheetGroupChat') {
+				const docid = this.getNodeParameter('docid', i) as string;
+				const chat_id = this.getNodeParameter('chat_id', i) as string;
+
+				const body: IDataObject = {
+					docid,
+					chat_id,
+				};
+
+				response = await weComApiRequest.call(
+					this,
+					'POST',
+					'/cgi-bin/wedoc/smartsheet/groupchat/get',
+					body,
+				);
+			} else if (operation === 'updateSmartsheetGroupChat') {
+				const docid = this.getNodeParameter('docid', i) as string;
+				const chat_id = this.getNodeParameter('chat_id', i) as string;
+				const owner = this.getNodeParameter('owner', i, '') as string;
+				const add_user_list_str = this.getNodeParameter('add_user_list', i, '') as string;
+				const del_user_list_str = this.getNodeParameter('del_user_list', i, '') as string;
+
+				const body: IDataObject = {
+					docid,
+					chat_id,
+				};
+
+				if (owner) {
+					body.owner = owner;
+				}
+
+				if (add_user_list_str) {
+					body.add_user_list = add_user_list_str
+						.split(',')
+						.map((id) => id.trim())
+						.filter((id) => id);
+				}
+
+				if (del_user_list_str) {
+					body.del_user_list = del_user_list_str
+						.split(',')
+						.map((id) => id.trim())
+						.filter((id) => id);
+				}
+
+				response = await weComApiRequest.call(
+					this,
+					'POST',
+					'/cgi-bin/wedoc/smartsheet/groupchat/update',
+					body,
+				);
 			} else if (operation === 'manageSmartsheetAuth') {
 				const docid = this.getNodeParameter('docid', i) as string;
 				const sheet_id = this.getNodeParameter('sheet_id', i) as string;

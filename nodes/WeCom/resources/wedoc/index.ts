@@ -35,6 +35,9 @@ import { querySmartsheetSheetDescription } from './querySmartsheetSheet';
 import { querySmartsheetViewDescription } from './querySmartsheetView';
 import { querySmartsheetFieldDescription } from './querySmartsheetField';
 import { querySmartsheetRecordDescription } from './querySmartsheetRecord';
+import { getSmartsheetGroupChatListDescription } from './getSmartsheetGroupChatList';
+import { getSmartsheetGroupChatDescription } from './getSmartsheetGroupChat';
+import { updateSmartsheetGroupChatDescription } from './updateSmartsheetGroupChat';
 
 // 权限设置
 import { getDocAuthDescription } from './getDocAuth';
@@ -211,6 +214,24 @@ export const wedocDescription: INodeProperties[] = [
 				description: '获取文档内容数据',
 			},
 			{
+				name: '获取群聊列表',
+				value: 'getSmartsheetGroupChatList',
+				action: '获取群聊列表',
+				description: '查询通过智能表格自动化创建的群聊列表',
+			},
+			{
+				name: '获取群聊会话',
+				value: 'getSmartsheetGroupChat',
+				action: '获取群聊会话',
+				description: '查询通过智能表格自动化创建的群聊信息',
+			},
+			{
+				name: '修改群聊会话',
+				value: 'updateSmartsheetGroupChat',
+				action: '修改群聊会话',
+				description: '修改通过智能表格自动化创建的群聊的群成员',
+			},
+			{
 				name: '取消高级功能账号',
 				value: 'deallocateAdvancedAccount',
 				action: '取消高级账号',
@@ -341,6 +362,9 @@ export const wedocDescription: INodeProperties[] = [
 	...querySmartsheetViewDescription,
 	...querySmartsheetFieldDescription,
 	...querySmartsheetRecordDescription,
+	...getSmartsheetGroupChatListDescription,
+	...getSmartsheetGroupChatDescription,
+	...updateSmartsheetGroupChatDescription,
 	...getDocAuthDescription,
 	...modDocSafeRuleDescription,
 	...modDocMemberRuleDescription,
