@@ -163,6 +163,18 @@ export function extractRecipients(
 	toparty_manual?: string,
 	totag_manual?: string,
 ): { touser?: string; toparty?: string; totag?: string } {
+	const normalizeRecipientValue = (value?: string | string[]): string | undefined => {
+		if (Array.isArray(value)) {
+			const trimmed = value.map((item) => item.trim()).filter(Boolean);
+			return trimmed.length > 0 ? trimmed.join('|') : undefined;
+		}
+		if (typeof value === 'string') {
+			const trimmed = value.trim();
+			return trimmed ? trimmed : undefined;
+		}
+		return undefined;
+	};
+
 	if (recipientType === 'all') {
 		return { touser: '@all' };
 	}
@@ -177,16 +189,16 @@ export function extractRecipients(
 
 	const result: { touser?: string; toparty?: string; totag?: string } = {};
 
-	if (recipientType === 'users' && Array.isArray(touser) && touser.length > 0) {
-		result.touser = touser.join('|');
+	if (recipientType === 'users') {
+		result.touser = normalizeRecipientValue(touser);
 	}
 
-	if (recipientType === 'departments' && Array.isArray(toparty) && toparty.length > 0) {
-		result.toparty = toparty.join('|');
+	if (recipientType === 'departments') {
+		result.toparty = normalizeRecipientValue(toparty);
 	}
 
-	if (recipientType === 'tags' && Array.isArray(totag) && totag.length > 0) {
-		result.totag = totag.join('|');
+	if (recipientType === 'tags') {
+		result.totag = normalizeRecipientValue(totag);
 	}
 
 	return result;
