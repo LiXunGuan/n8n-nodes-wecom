@@ -430,12 +430,25 @@ export async function executeWedoc(
 			if (operation === 'createDoc') {
 				const doc_type = this.getNodeParameter('doctype', i) as number;
 				const doc_name = this.getNodeParameter('doc_name', i) as string;
-				const admin_users = this.getNodeParameter('admin_users', i, '') as string;
 				const useSpaceId = this.getNodeParameter('useSpaceId', i, false) as boolean;
 
 				const body: IDataObject = { doc_type, doc_name };
-				if (admin_users) {
-					body.admin_users = admin_users.split(',').map((id) => id.trim());
+
+				// 处理管理员用户列表 (multiOptions类型,返回string[])
+				const adminUsersParam = this.getNodeParameter('admin_users', i, []) as string | string[];
+				if (adminUsersParam) {
+					const adminUsers = Array.isArray(adminUsersParam)
+						? (adminUsersParam as string[])
+							.map((id) => id.trim())
+							.filter((id) => id)
+						: (adminUsersParam as string)
+							.split(',')
+							.map((id) => id.trim())
+							.filter((id) => id);
+
+					if (adminUsers.length > 0) {
+						body.admin_users = adminUsers;
+					}
 				}
 
 				if (useSpaceId) {
@@ -447,17 +460,28 @@ export async function executeWedoc(
 
 				response = await weComApiRequest.call(this, 'POST', '/cgi-bin/wedoc/create_doc', body);
 			} else if (operation === 'renameDoc') {
-				const docid = this.getNodeParameter('docid', i) as string;
 				const new_name = this.getNodeParameter('new_name', i) as string;
+				const docType = this.getNodeParameter('docType', i, 'docid') as string;
+				const request: IDataObject = {new_name};
 
-				response = await weComApiRequest.call(this, 'POST', '/cgi-bin/wedoc/rename_doc', {
-					docid,
-					new_name,
-				});
+				if (docType === 'formid') {
+					request.formid = this.getNodeParameter('formid', i) as string;
+				} else {
+					request.docid = this.getNodeParameter('docid', i) as string;
+				}
+
+				response = await weComApiRequest.call(this, 'POST', '/cgi-bin/wedoc/rename_doc', request);
 			} else if (operation === 'deleteDoc') {
-				const docid = this.getNodeParameter('docid', i) as string;
+				const docType = this.getNodeParameter('docType', i, 'docid') as string;
+				const request: IDataObject = {};
 
-				response = await weComApiRequest.call(this, 'POST', '/cgi-bin/wedoc/del_doc', { docid });
+				if (docType === 'formid') {
+					request.formid = this.getNodeParameter('formid', i) as string;
+				} else {
+					request.docid = this.getNodeParameter('docid', i) as string;
+				}
+
+				response = await weComApiRequest.call(this, 'POST', '/cgi-bin/wedoc/del_doc', request);
 			} else if (operation === 'getDocInfo') {
 				const docid = this.getNodeParameter('docid', i) as string;
 

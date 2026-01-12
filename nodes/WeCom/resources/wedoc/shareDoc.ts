@@ -39,8 +39,6 @@ export const shareDocDescription: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: '文档的docid',
-		hint: '文档ID',
 	},
 	{
 		displayName: '收集表ID',
@@ -54,7 +52,5 @@ export const shareDocDescription: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: '收集表的formid',
-		hint: '收集表ID',
 	},
 ];

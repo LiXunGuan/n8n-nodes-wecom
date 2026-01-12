@@ -15,7 +15,5 @@ export const getDocInfoDescription: INodeProperties[] = [
 			show: showOnlyForGetInfo,
 		},
 		default: '',
-		description: '文档的docid。',
-		hint: '文档ID',
 	},
 ];

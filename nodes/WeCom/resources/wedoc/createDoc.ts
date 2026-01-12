@@ -29,11 +29,9 @@ export const createDocDescription: INodeProperties[] = [
 			},
 		],
 		default: 3,
-		description: '文档类型。3:文档 4:表格 10:智能表格。',
-		hint: '文档类型',
 	},
 	{
-		displayName: '文档名称',
+		displayName: '文档名字',
 		name: 'doc_name',
 		type: 'string',
 		required: true,
@@ -41,30 +39,30 @@ export const createDocDescription: INodeProperties[] = [
 			show: showOnlyForCreate,
 		},
 		default: '',
-		description: '文档名称，最多255个字符。',
-		hint: '文档名称',
+		hint: '文件名最多填255个字符, 超过255个字符会被截断',
 	},
 	{
-		displayName: '管理员UserID列表',
+		displayName: '管理员UserID列表 Names or IDs',
 		name: 'admin_users',
-		type: 'string',
+		type: 'multiOptions',
+		typeOptions: {
+			loadOptionsMethod: 'getAllUsers',
+		},
 		displayOptions: {
 			show: showOnlyForCreate,
 		},
-		default: '',
-		description: '文档管理员userid列表，多个用逗号分隔。创建者默认为管理员。',
-		hint: 'UserID列表，用逗号分隔',
+		default: [],
+		description: '文档管理员userid列表,可选择多个成员。创建者默认为管理员',
 	},
 	{
 		displayName: '指定空间位置',
 		name: 'useSpaceId',
 		type: 'boolean',
+		required: true,
 		displayOptions: {
 			show: showOnlyForCreate,
 		},
 		default: false,
-		 
-		description: '空间Spaceid，若指定spaceid，则fatherid也要同时指定',
 		hint: '启用后需同时指定空间ID和父目录ID',
 	},
 	{
@@ -79,8 +77,6 @@ export const createDocDescription: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: '空间spaceid。若指定spaceid，则fatherid也要同时指定。',
-		hint: '空间ID',
 	},
 	{
 		displayName: '父目录ID',
@@ -94,7 +90,5 @@ export const createDocDescription: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: '父目录fileid。在根目录时为空间spaceid。',
-		hint: '父目录ID',
 	},
 ];
