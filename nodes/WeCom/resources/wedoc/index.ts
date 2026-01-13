@@ -106,18 +106,36 @@ export const wedocDescription: INodeProperties[] = [
 				action: '[管理文档] 分享文档',
 				description: '获取文档分享链接',
 			},
-			// 编辑文档
+			// 管理文档内容
 			{
-				name: '[编辑文档] 编辑文档内容',
+				name: '[管理文档内容] 编辑文档内容',
 				value: 'modDocContent',
-				action: '[编辑文档] 编辑文档内容',
+				action: '[管理文档内容] 编辑文档内容',
 				description: '编辑文本文档的内容',
 			},
 			{
-				name: '[编辑文档] 编辑表格内容',
+				name: '[管理文档内容] 获取文档数据',
+				value: 'getDocData',
+				action: '[管理文档内容] 获取文档数据',
+				description: '获取文档内容数据',
+			},
+			{
+				name: '[管理表格内容] 编辑表格内容',
 				value: 'modSheetContent',
-				action: '[编辑文档] 编辑表格内容',
+				action: '[管理表格内容] 编辑表格内容',
 				description: '编辑表格文档的内容',
+			},
+			{
+				name: '[管理表格内容] 获取表格行列信息',
+				value: 'getSheetRange',
+				action: '[管理表格内容] 获取表格行列信息',
+				description: '获取表格的行列信息',
+			},
+			{
+				name: '[管理表格内容] 获取表格数据',
+				value: 'getSheetData',
+				action: '[管理表格内容] 获取表格数据',
+				description: '获取表格指定范围的数据',
 			},
 			// 智能表格操作
 			{
@@ -191,25 +209,6 @@ export const wedocDescription: INodeProperties[] = [
 				value: 'updateSmartsheetRecord',
 				action: '[智能表格] 更新记录',
 				description: '更新子表的记录',
-			},
-			// 获取文档数据
-			{
-				name: '[获取文档数据] 获取文档数据',
-				value: 'getDocData',
-				action: '[获取文档数据] 获取文档数据',
-				description: '获取文档内容数据',
-			},
-			{
-				name: '[获取文档数据] 获取表格行列信息',
-				value: 'getSheetRange',
-				action: '[获取文档数据] 获取表格行列信息',
-				description: '获取表格的行列信息',
-			},
-			{
-				name: '[获取文档数据] 获取表格数据',
-				value: 'getSheetData',
-				action: '[获取文档数据] 获取表格数据',
-				description: '获取表格指定范围的数据',
 			},
 			// 获取智能表格数据
 			{

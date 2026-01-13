@@ -8,14 +8,23 @@ function extractFieldValue(cv: IDataObject): string | number | boolean {
 
 	switch (valueType) {
 		case 'text': {
-			// 文本类型 - 检查输入方式
-			const textInputMode = cv.text_input_mode as string;
-			if (textInputMode === 'json') {
-				// JSON输入模式
-				return (cv.text_json_data as string) || '[]';
+			// 文本类型 - 支持多个文本片段（纯文本和链接）
+			const textContentList = cv.text_content_list as IDataObject;
+			if (textContentList?.items && Array.isArray(textContentList.items)) {
+				return JSON.stringify(
+					(textContentList.items as IDataObject[]).map((item: IDataObject) => {
+						const result: IDataObject = {
+							type: item.type || 'text',
+							text: item.text || '',
+						};
+						if (item.type === 'url' && item.link) {
+							result.link = item.link;
+						}
+						return result;
+					}),
+				);
 			}
-			// 简单输入模式
-			return (cv.text_value as string) || '';
+			return '[]';
 		}
 
 		case 'email':
@@ -35,65 +44,73 @@ function extractFieldValue(cv: IDataObject): string | number | boolean {
 		case 'date_time':
 			return (cv.date_value as string) || '';
 
-		case 'url':
-			// 构建URL对象
-			return JSON.stringify({
-				link: cv.url_link || '',
-				text: cv.url_text || cv.url_link || '',
-			});
+		case 'url': {
+			// 链接类型 - 支持多个链接
+			const urlList = cv.url_list as IDataObject;
+			if (urlList?.items && Array.isArray(urlList.items)) {
+				return JSON.stringify(
+					(urlList.items as IDataObject[]).map((item: IDataObject) => ({
+						link: item.link || '',
+						text: item.text || item.link || '',
+					})),
+				);
+			}
+			return '[]';
+		}
 
 		case 'single_select':
-		case 'select':
-			// 构建选项对象
-			if (cv.option_mode === 'id') {
-				return JSON.stringify({ id: cv.option_id || '' });
-			} else {
-				return JSON.stringify({
-					text: cv.option_text || '',
-					style: cv.option_style || 1,
-				});
+		case 'select': {
+			// 选项类型 - 支持多个选项
+			const optionList = cv.option_list as IDataObject;
+			if (optionList?.items && Array.isArray(optionList.items)) {
+				return JSON.stringify(
+					(optionList.items as IDataObject[]).map((item: IDataObject) => {
+						if (item.mode === 'id') {
+							return { id: item.id || '' };
+						} else {
+							return {
+								text: item.text || '',
+								style: item.style || 1,
+							};
+						}
+					}),
+				);
 			}
+			return '[]';
+		}
 
 		case 'user': {
-			// 成员类型 - 检查输入方式
-			const userInputMode = cv.user_input_mode as string;
-			if (userInputMode === 'json') {
-				// JSON输入模式
-				return (cv.user_json_data as string) || '[]';
+			// 成员类型 - 支持多个成员
+			const userList = cv.user_list as IDataObject;
+			if (userList?.items && Array.isArray(userList.items)) {
+				return JSON.stringify(
+					(userList.items as IDataObject[]).map((item: IDataObject) => ({
+						user_id: item.user_id || '',
+					})),
+				);
 			}
-			// 简单输入模式 - 构建成员数组
-			const userIds = ((cv.user_ids as string) || '')
-				.split(',')
-				.map((id) => id.trim())
-				.filter((id) => id);
-			return JSON.stringify(userIds.map((id) => ({ user_id: id })));
+			return '[]';
 		}
 
 		case 'location': {
-			// 地点类型 - 检查输入方式
-			const locationInputMode = cv.location_input_mode as string;
-			if (locationInputMode === 'json') {
-				// JSON输入模式
-				return (cv.location_json_data as string) || '{}';
+			// 地点类型 - 支持多个地点
+			const locationList = cv.location_list as IDataObject;
+			if (locationList?.items && Array.isArray(locationList.items)) {
+				return JSON.stringify(
+					(locationList.items as IDataObject[]).map((item: IDataObject) => ({
+						source_type: item.source_type || 1,
+						id: item.id || '',
+						latitude: item.latitude || '',
+						longitude: item.longitude || '',
+						title: item.title || '',
+					})),
+				);
 			}
-			// 表单输入模式 - 构建地点对象
-			return JSON.stringify({
-				source_type: cv.location_source_type || 1,
-				id: cv.location_id || '',
-				latitude: cv.location_latitude || '',
-				longitude: cv.location_longitude || '',
-				title: cv.location_title || '',
-			});
+			return '[]';
 		}
 
 		case 'image': {
-			// 图片类型 - 检查输入方式
-			const imageInputMode = cv.image_input_mode as string;
-			if (imageInputMode === 'json') {
-				// JSON输入模式
-				return (cv.image_json_data as string) || '[]';
-			}
-			// 表单输入模式 - 构建图片数组
+			// 图片类型 - 表单输入
 			const imageList = cv.image_list as IDataObject;
 			if (imageList?.images && Array.isArray(imageList.images)) {
 				return JSON.stringify(
@@ -110,13 +127,7 @@ function extractFieldValue(cv: IDataObject): string | number | boolean {
 		}
 
 		case 'attachment': {
-			// 文件类型 - 检查输入方式
-			const attachmentInputMode = cv.attachment_input_mode as string;
-			if (attachmentInputMode === 'json') {
-				// JSON输入模式
-				return (cv.attachment_json_data as string) || '[]';
-			}
-			// 表单输入模式 - 构建文件数组
+			// 文件类型 - 表单输入
 			const attachmentList = cv.attachment_list as IDataObject;
 			if (attachmentList?.attachments && Array.isArray(attachmentList.attachments)) {
 				return JSON.stringify(
@@ -204,12 +215,27 @@ function buildCellValue(valueType: string, value: string): IDataObject[] {
 	switch (valueType) {
 		case 'text':
 			// 文本类型
+			try {
+				if (typeof value === 'string' && (value.startsWith('[') || value.startsWith('{'))) {
+					const parsed = JSON.parse(value);
+					if (Array.isArray(parsed)) {
+						// 数组格式：[{"type": "text", "text": "..."}, {"type": "url", "text": "...", "link": "..."}]
+						return parsed as IDataObject[];
+					} else if (parsed.type && parsed.text !== undefined) {
+						// 单个对象格式：{"type": "text", "text": "..."} 或 {"type": "url", "text": "...", "link": "..."}
+						return [parsed] as IDataObject[];
+					}
+				}
+			} catch {
+				// JSON解析失败，使用简单文本格式
+			}
+			// 简单文本格式
 			cellValueItem = { type: 'text', text: value };
 			break;
 
 		case 'number':
 			// 数字类型
-			cellValueItem = { type: 'number', number: parseFloat(value) || 0 };
+			cellValueItem = { type: 'double', number: parseFloat(value) || 0 };
 			break;
 
 		case 'checkbox':
@@ -226,25 +252,32 @@ function buildCellValue(valueType: string, value: string): IDataObject[] {
 			break;
 
 		case 'url':
-			// 链接类型 - 支持JSON格式或简单字符串
+			// 链接类型 - 支持JSON数组格式或对象格式
 			try {
-				const urlData =
-					typeof value === 'string' && value.startsWith('{') ? JSON.parse(value) : null;
-				if (urlData && urlData.link) {
-					// JSON格式：{"link": "https://...", "text": "显示文本"}
-					cellValueItem = {
-						type: 'url',
-						link: urlData.link,
-						text: urlData.text || urlData.link,
-					};
-				} else {
-					// 简单字符串格式：直接使用value作为link和text
-					cellValueItem = { type: 'url', link: value, text: value };
+				if (typeof value === 'string' && (value.startsWith('[') || value.startsWith('{'))) {
+					const parsed = JSON.parse(value);
+					if (Array.isArray(parsed)) {
+						// 数组格式：[{"link": "...", "text": "..."}]
+						return parsed.map((item: IDataObject) => ({
+							type: 'url',
+							text: item.text || item.link || '',
+							link: item.link || '',
+						})) as IDataObject[];
+					} else if (parsed.link) {
+						// 单个对象格式：{"link": "...", "text": "..."}
+						cellValueItem = {
+							type: 'url',
+							text: parsed.text || parsed.link || '',
+							link: parsed.link || '',
+						};
+						break;
+					}
 				}
 			} catch {
-				// 如果JSON解析失败，使用简单格式
-				cellValueItem = { type: 'url', link: value, text: value };
+				// JSON解析失败，使用简单文本格式
 			}
+			// 简单字符串格式：直接使用value作为link和text
+			cellValueItem = { type: 'url', text: value, link: value };
 			break;
 
 		case 'email':
@@ -259,25 +292,38 @@ function buildCellValue(valueType: string, value: string): IDataObject[] {
 
 		case 'single_select':
 		case 'select':
-			// 单选/多选类型
+			// 单选/多选类型 - 支持JSON数组格式
 			try {
-				const optionData = typeof value === 'string' ? JSON.parse(value) : value;
-				const option: IDataObject = {};
-
-				// id: 选项ID，当选项存在时使用
-				if (optionData.id) {
-					option.id = optionData.id;
+				const parsed = typeof value === 'string' ? JSON.parse(value) : value;
+				if (Array.isArray(parsed)) {
+					// 数组格式：[{"id": "..."}, ...] 或 [{"text": "...", "style": 1}, ...]
+					return parsed.map((item: IDataObject) => {
+						const option: IDataObject = {};
+						if (item.id) {
+							option.id = item.id;
+						}
+						if (item.style !== undefined) {
+							option.style = item.style;
+						}
+						if (item.text) {
+							option.text = item.text;
+						}
+						return { type: valueType, [valueType]: option };
+					}) as IDataObject[];
+				} else {
+					// 单个对象格式：{"id": "..."} 或 {"text": "...", "style": 1}
+					const option: IDataObject = {};
+					if (parsed.id) {
+						option.id = parsed.id;
+					}
+					if (parsed.style !== undefined) {
+						option.style = parsed.style;
+					}
+					if (parsed.text) {
+						option.text = parsed.text;
+					}
+					cellValueItem = { type: valueType, [valueType]: option };
 				}
-				// style: 选项颜色，新增选项时填写
-				if (optionData.style !== undefined) {
-					option.style = optionData.style;
-				}
-				// text: 选项内容，新增选项时填写
-				if (optionData.text) {
-					option.text = optionData.text;
-				}
-
-				cellValueItem = { type: valueType, [valueType]: option };
 			} catch (error) {
 				throw new Error(`${valueType}类型值格式错误，请提供有效的JSON格式: ${error.message}`);
 			}
@@ -285,17 +331,17 @@ function buildCellValue(valueType: string, value: string): IDataObject[] {
 
 		case 'progress':
 			// 进度类型 (0-1之间的数值)
-			cellValueItem = { type: 'progress', progress: parseFloat(value) || 0 };
+			cellValueItem = { type: 'double', progress: parseFloat(value) || 0 };
 			break;
 
 		case 'currency':
 			// 货币类型
-			cellValueItem = { type: 'currency', currency: parseFloat(value) || 0 };
+			cellValueItem = { type: 'double', currency: parseFloat(value) || 0 };
 			break;
 
 		case 'percentage':
 			// 百分数类型
-			cellValueItem = { type: 'percentage', percentage: parseFloat(value) || 0 };
+			cellValueItem = { type: 'double', percentage: parseFloat(value) || 0 };
 			break;
 
 		case 'barcode':
@@ -304,59 +350,77 @@ function buildCellValue(valueType: string, value: string): IDataObject[] {
 			break;
 
 		case 'location':
-			// 地理位置类型
+			// 地理位置类型 - 支持JSON数组格式
 			try {
-				const locationData = typeof value === 'string' ? JSON.parse(value) : value;
-				const location: IDataObject = {
-					source_type: locationData.source_type || 1, // 默认为1（腾讯地图）
+				const parsed = typeof value === 'string' ? JSON.parse(value) : value;
+
+				const processLocation = (item: IDataObject) => {
+					// 必填字段验证
+					if (!item.id) {
+						throw new Error('地点类型缺少必填字段: id');
+					}
+					if (!item.latitude) {
+						throw new Error('地点类型缺少必填字段: latitude');
+					}
+					if (!item.longitude) {
+						throw new Error('地点类型缺少必填字段: longitude');
+					}
+					if (!item.title) {
+						throw new Error('地点类型缺少必填字段: title');
+					}
+
+					const location: IDataObject = {
+						id: item.id,
+						latitude: item.latitude,
+						longitude: item.longitude,
+						source_type: item.source_type || 1,
+						title: item.title,
+					};
+
+					return { type: 'location', location };
 				};
 
-				// 必填字段
-				if (!locationData.id) {
-					throw new Error('地点类型缺少必填字段: id');
+				if (Array.isArray(parsed)) {
+					// 数组格式：[{"id": "...", "title": "...", ...}]
+					return parsed.map(processLocation) as IDataObject[];
+				} else {
+					// 单个对象格式：{"id": "...", "title": "...", ...}
+					cellValueItem = processLocation(parsed);
 				}
-				if (!locationData.latitude) {
-					throw new Error('地点类型缺少必填字段: latitude');
-				}
-				if (!locationData.longitude) {
-					throw new Error('地点类型缺少必填字段: longitude');
-				}
-				if (!locationData.title) {
-					throw new Error('地点类型缺少必填字段: title');
-				}
-
-				location.id = locationData.id;
-				location.latitude = locationData.latitude;
-				location.longitude = locationData.longitude;
-				location.title = locationData.title;
-
-				cellValueItem = { type: 'location', location };
 			} catch (error) {
 				throw new Error(`地点类型值格式错误: ${error.message}`);
 			}
 			break;
 
 		case 'image':
-			// 图片类型 - 需要JSON数组格式
+			// 图片类型 - 支持JSON数组或单个对象格式
 			try {
 				const imageData = typeof value === 'string' ? JSON.parse(value) : value;
-				if (!Array.isArray(imageData)) {
-					throw new Error('图片类型需要数组格式');
+				if (Array.isArray(imageData)) {
+					cellValueItem = { type: 'image', image: imageData };
+				} else if (imageData.image_url) {
+					// 单个对象格式：包装成数组
+					cellValueItem = { type: 'image', image: [imageData] };
+				} else {
+					throw new Error('图片类型需要数组格式或包含image_url的对象');
 				}
-				cellValueItem = { type: 'image', image: imageData };
 			} catch (error) {
 				throw new Error(`图片类型值格式错误: ${error.message}`);
 			}
 			break;
 
 		case 'attachment':
-			// 文件类型 - 需要JSON数组格式
+			// 文件类型 - 支持JSON数组或单个对象格式
 			try {
 				const attachmentData = typeof value === 'string' ? JSON.parse(value) : value;
-				if (!Array.isArray(attachmentData)) {
-					throw new Error('文件类型需要数组格式');
+				if (Array.isArray(attachmentData)) {
+					cellValueItem = { type: 'attachment', attachment: attachmentData };
+				} else if (attachmentData.file_id) {
+					// 单个对象格式：包装成数组
+					cellValueItem = { type: 'attachment', attachment: [attachmentData] };
+				} else {
+					throw new Error('文件类型需要数组格式或包含file_id的对象');
 				}
-				cellValueItem = { type: 'attachment', attachment: attachmentData };
 			} catch (error) {
 				throw new Error(`文件类型值格式错误: ${error.message}`);
 			}
@@ -401,6 +465,262 @@ function buildCellValue(valueType: string, value: string): IDataObject[] {
 	return [cellValueItem];
 }
 
+// 辅助函数：将值类型（如 'text'）映射到字段类型（如 'FIELD_TYPE_TEXT'）
+function mapValueTypeToFieldType(valueType: string): string {
+	const valueTypeToFieldTypeMap: IDataObject = {
+		text: 'FIELD_TYPE_TEXT',
+		number: 'FIELD_TYPE_NUMBER',
+		checkbox: 'FIELD_TYPE_CHECKBOX',
+		date_time: 'FIELD_TYPE_DATE_TIME',
+		image: 'FIELD_TYPE_IMAGE',
+		attachment: 'FIELD_TYPE_ATTACHMENT',
+		user: 'FIELD_TYPE_USER',
+		url: 'FIELD_TYPE_URL',
+		select: 'FIELD_TYPE_SELECT',
+		multi_select: 'FIELD_TYPE_SELECT',
+		single_select: 'FIELD_TYPE_SINGLE_SELECT',
+		progress: 'FIELD_TYPE_PROGRESS',
+		phone_number: 'FIELD_TYPE_PHONE_NUMBER',
+		email: 'FIELD_TYPE_EMAIL',
+		location: 'FIELD_TYPE_LOCATION',
+		currency: 'FIELD_TYPE_CURRENCY',
+		percentage: 'FIELD_TYPE_PERCENTAGE',
+		barcode: 'FIELD_TYPE_BARCODE',
+	};
+
+	// 如果已经是字段类型格式，直接返回
+	if (valueType.startsWith('FIELD_TYPE_')) {
+		return valueType;
+	}
+
+	// 否则映射到字段类型
+	return (valueTypeToFieldTypeMap[valueType.toLowerCase()] as string) || valueType.toUpperCase();
+}
+
+// 辅助函数：根据字段类型构建单元格值
+// 将字段类型（如 FIELD_TYPE_TEXT）映射到内部值类型（如 text），并构建正确的数据结构
+function buildCellValueByFieldType(
+	fieldType: string,
+	rawValue: string | number | boolean,
+): string | number | boolean | IDataObject[] {
+	// 将字段类型转换为内部值类型
+	const valueTypeMap: IDataObject = {
+		FIELD_TYPE_TEXT: 'text',
+		FIELD_TYPE_NUMBER: 'number',
+		FIELD_TYPE_CHECKBOX: 'checkbox',
+		FIELD_TYPE_DATE_TIME: 'date_time',
+		FIELD_TYPE_IMAGE: 'image',
+		FIELD_TYPE_ATTACHMENT: 'attachment',
+		FIELD_TYPE_USER: 'user',
+		FIELD_TYPE_URL: 'url',
+		FIELD_TYPE_SELECT: 'select',
+		FIELD_TYPE_MULTI_SELECT: 'select',
+		FIELD_TYPE_PROGRESS: 'progress',
+		FIELD_TYPE_PHONE_NUMBER: 'phone_number',
+		FIELD_TYPE_EMAIL: 'email',
+		FIELD_TYPE_SINGLE_SELECT: 'single_select',
+		FIELD_TYPE_LOCATION: 'location',
+		FIELD_TYPE_CURRENCY: 'currency',
+		FIELD_TYPE_PERCENTAGE: 'percentage',
+		FIELD_TYPE_BARCODE: 'barcode',
+	};
+
+	// 根据字段类型返回正确的数据结构
+	switch (fieldType) {
+		case 'FIELD_TYPE_TEXT':
+			// 文本类型：Object[](CellTextValue)
+			if (typeof rawValue === 'string') {
+				try {
+					const parsed = JSON.parse(rawValue);
+					if (Array.isArray(parsed)) {
+						return parsed;
+					}
+					if (parsed && typeof parsed === 'object' && parsed.type) {
+						return [parsed];
+					}
+				} catch {
+					// 不是JSON，作为简单文本处理
+				}
+				return [{ type: 'text', text: rawValue }];
+			}
+			return [{ type: 'text', text: String(rawValue) }];
+
+		case 'FIELD_TYPE_NUMBER':
+		case 'FIELD_TYPE_PROGRESS':
+		case 'FIELD_TYPE_CURRENCY':
+		case 'FIELD_TYPE_PERCENTAGE':
+			// 数字类型：double
+			return typeof rawValue === 'number' ? rawValue : parseFloat(String(rawValue)) || 0;
+
+		case 'FIELD_TYPE_CHECKBOX':
+			// 复选框类型：bool
+			if (typeof rawValue === 'boolean') {
+				return rawValue;
+			}
+			return String(rawValue).toLowerCase() === 'true' || rawValue === 1 || rawValue === '1';
+
+		case 'FIELD_TYPE_DATE_TIME':
+			// 日期类型：string(毫秒unix时间戳)
+			return String(rawValue);
+
+		case 'FIELD_TYPE_IMAGE':
+			// 图片类型：Object[](CellImageValue)
+			if (typeof rawValue === 'string') {
+				try {
+					const parsed = JSON.parse(rawValue);
+					return Array.isArray(parsed) ? parsed : [parsed];
+				} catch {
+					throw new Error('图片类型值必须是有效的JSON数组格式');
+				}
+			}
+			if (Array.isArray(rawValue)) {
+				return rawValue;
+			}
+			// extractFieldValue 对于图片类型应该返回字符串，如果不是则抛出错误
+			throw new Error('图片类型值格式错误：期望字符串格式的JSON');
+
+		case 'FIELD_TYPE_ATTACHMENT':
+			// 文件类型：Object[](CellAttachmentValue)
+			if (typeof rawValue === 'string') {
+				try {
+					const parsed = JSON.parse(rawValue);
+					return Array.isArray(parsed) ? parsed : [parsed];
+				} catch {
+					throw new Error('文件类型值必须是有效的JSON数组格式');
+				}
+			}
+			if (Array.isArray(rawValue)) {
+				return rawValue;
+			}
+			// extractFieldValue 对于文件类型应该返回字符串，如果不是则抛出错误
+			throw new Error('文件类型值格式错误：期望字符串格式的JSON');
+
+		case 'FIELD_TYPE_USER':
+			// 成员类型：Object[](CellUserValue)
+			if (typeof rawValue === 'string') {
+				try {
+					const parsed = JSON.parse(rawValue);
+					if (Array.isArray(parsed)) {
+						return parsed.map((item: IDataObject) => ({
+							user_id: item.user_id || String(item),
+						}));
+					}
+					if (parsed && typeof parsed === 'object' && parsed.user_id) {
+						return [parsed];
+					}
+				} catch {
+					// 不是JSON，作为user_id字符串处理
+				}
+				return [{ user_id: String(rawValue) }];
+			}
+			return Array.isArray(rawValue)
+				? rawValue.map((item: IDataObject) => ({
+						user_id: typeof item === 'object' && item.user_id ? String(item.user_id) : String(item),
+					}))
+				: [{ user_id: String(rawValue) }];
+
+		case 'FIELD_TYPE_URL':
+			// 链接类型：Object[](CellUrlValue)
+			if (typeof rawValue === 'string') {
+				try {
+					const parsed = JSON.parse(rawValue);
+					if (Array.isArray(parsed)) {
+						return parsed.map((item: IDataObject) => ({
+							type: 'url',
+							text: item.text || item.link || '',
+							link: item.link || '',
+						}));
+					}
+					if (parsed && typeof parsed === 'object' && parsed.link) {
+						return [
+							{
+								type: 'url',
+								text: parsed.text || parsed.link || '',
+								link: parsed.link || '',
+							},
+						];
+					}
+				} catch {
+					// 不是JSON，作为链接URL处理
+				}
+				return [{ type: 'url', text: String(rawValue), link: String(rawValue) }];
+			}
+			return [{ type: 'url', text: String(rawValue), link: String(rawValue) }];
+
+		case 'FIELD_TYPE_SELECT':
+		case 'FIELD_TYPE_MULTI_SELECT':
+		case 'FIELD_TYPE_SINGLE_SELECT':
+			// 单选/多选类型：Object[](Option)
+			if (typeof rawValue === 'string') {
+				try {
+					const parsed = JSON.parse(rawValue);
+					return Array.isArray(parsed) ? parsed : [parsed];
+				} catch {
+					throw new Error('选项类型值必须是有效的JSON数组格式');
+				}
+			}
+			if (Array.isArray(rawValue)) {
+				return rawValue;
+			}
+			// extractFieldValue 对于选项类型应该返回字符串，如果不是则抛出错误
+			throw new Error('选项类型值格式错误：期望字符串格式的JSON');
+
+		case 'FIELD_TYPE_PHONE_NUMBER':
+		case 'FIELD_TYPE_EMAIL':
+		case 'FIELD_TYPE_BARCODE':
+			// 电话/邮箱/条码类型：string
+			return String(rawValue);
+
+		case 'FIELD_TYPE_LOCATION':
+			// 地理位置类型：Object[](CellLocationValue)，长度不大于1的数组
+			if (typeof rawValue === 'string') {
+				try {
+					const parsed = JSON.parse(rawValue);
+					const location = Array.isArray(parsed) ? parsed[0] : parsed;
+					if (!location || typeof location !== 'object') {
+						throw new Error('地理位置类型值格式错误');
+					}
+					return [
+						{
+							source_type: location.source_type || 1,
+							id: location.id || '',
+							latitude: String(location.latitude || ''),
+							longitude: String(location.longitude || ''),
+							title: location.title || '',
+						},
+					];
+				} catch (error) {
+					throw new Error(
+						`地理位置类型值格式错误: ${error instanceof Error ? error.message : String(error)}`,
+					);
+				}
+			}
+			if (Array.isArray(rawValue) && rawValue.length > 0) {
+				const location = rawValue[0];
+				return [
+					{
+						source_type: location.source_type || 1,
+						id: location.id || '',
+						latitude: String(location.latitude || ''),
+						longitude: String(location.longitude || ''),
+						title: location.title || '',
+					},
+				];
+			}
+			throw new Error('地理位置类型值格式错误');
+
+		default: {
+			// 如果字段类型不在映射中，尝试使用buildCellValue函数
+			const mappedValueType = valueTypeMap[fieldType] as string;
+			if (mappedValueType) {
+				return buildCellValue(mappedValueType, String(rawValue));
+			}
+			// 如果无法映射，返回原始值的字符串形式
+			return String(rawValue);
+		}
+	}
+}
+
 // 辅助函数：构建成员信息
 function buildMemberInfo(member: IDataObject): IDataObject {
 	const info: IDataObject = { type: member.type };
@@ -422,7 +742,7 @@ export async function executeWedoc(
 ): Promise<INodeExecutionData[]> {
 	const returnData: INodeExecutionData[] = [];
 
-	for (let i = 0; i < items.length; i++) {
+	for (let i = 0; i < items.length; i++)
 		try {
 			let response: IDataObject;
 
@@ -438,13 +758,11 @@ export async function executeWedoc(
 				const adminUsersParam = this.getNodeParameter('admin_users', i, []) as string | string[];
 				if (adminUsersParam) {
 					const adminUsers = Array.isArray(adminUsersParam)
-						? (adminUsersParam as string[])
-							.map((id) => id.trim())
-							.filter((id) => id)
+						? (adminUsersParam as string[]).map((id) => id.trim()).filter((id) => id)
 						: (adminUsersParam as string)
-							.split(',')
-							.map((id) => id.trim())
-							.filter((id) => id);
+								.split(',')
+								.map((id) => id.trim())
+								.filter((id) => id);
 
 					if (adminUsers.length > 0) {
 						body.admin_users = adminUsers;
@@ -462,7 +780,7 @@ export async function executeWedoc(
 			} else if (operation === 'renameDoc') {
 				const new_name = this.getNodeParameter('new_name', i) as string;
 				const docType = this.getNodeParameter('docType', i, 'docid') as string;
-				const request: IDataObject = {new_name};
+				const request: IDataObject = { new_name };
 
 				if (docType === 'formid') {
 					request.formid = this.getNodeParameter('formid', i) as string;
@@ -505,6 +823,7 @@ export async function executeWedoc(
 			// 编辑文档
 			else if (operation === 'modDocContent') {
 				const docid = this.getNodeParameter('docid', i) as string;
+				const version = this.getNodeParameter('version', i, 0) as number;
 				const requestsCollection = this.getNodeParameter(
 					'requestsCollection',
 					i,
@@ -520,24 +839,91 @@ export async function executeWedoc(
 						if (req.request_type === 'insert_text') {
 							request.insert_text = {
 								text: req.text || '',
-								location: { index: req.location_index || 1 },
+								location: { index: req.location_index || 0 },
 							};
 						} else if (req.request_type === 'insert_paragraph') {
 							request.insert_paragraph = {
-								location: { index: req.location_index || 1 },
+								location: { index: req.location_index || 0 },
 							};
 						} else if (req.request_type === 'delete_content') {
 							request.delete_content = {
 								range: {
-									start_index: req.delete_start || 1,
-									end_index: req.delete_end || 1,
+									start_index: req.delete_start_index || 0,
+									length: req.delete_length || 1,
 								},
 							};
 						} else if (req.request_type === 'replace_text') {
-							request.replace_all_text = {
-								contains_text: { text: req.search_text || '' },
-								replace_text: req.replace_text || '',
-								match_case: false,
+							const ranges: IDataObject[] = [];
+							if (req.rangesCollection && (req.rangesCollection as IDataObject).ranges) {
+								const rangesArray = (req.rangesCollection as IDataObject).ranges as IDataObject[];
+								if (Array.isArray(rangesArray)) {
+									for (const range of rangesArray) {
+										ranges.push({
+											start_index: range.start_index || 0,
+											length: range.length || 1,
+										});
+									}
+								}
+							}
+							request.replace_text = {
+								text: req.replace_text_value || '',
+								ranges,
+							};
+						} else if (req.request_type === 'insert_image') {
+							const insertImage: IDataObject = {
+								image_id: req.image_id || '',
+								location: { index: req.location_index || 0 },
+							};
+							if (req.image_width) {
+								insertImage.width = req.image_width;
+							}
+							if (req.image_height) {
+								insertImage.height = req.image_height;
+							}
+							request.insert_image = insertImage;
+						} else if (req.request_type === 'insert_page_break') {
+							request.insert_page_break = {
+								location: { index: req.location_index || 0 },
+							};
+						} else if (req.request_type === 'insert_table') {
+							request.insert_table = {
+								rows: req.table_rows || 2,
+								cols: req.table_cols || 2,
+								location: { index: req.location_index || 0 },
+							};
+						} else if (req.request_type === 'update_text_property') {
+							const ranges: IDataObject[] = [];
+							if (req.rangesCollection && (req.rangesCollection as IDataObject).ranges) {
+								const rangesArray = (req.rangesCollection as IDataObject).ranges as IDataObject[];
+								if (Array.isArray(rangesArray)) {
+									for (const range of rangesArray) {
+										ranges.push({
+											start_index: range.start_index || 0,
+											length: range.length || 1,
+										});
+									}
+								}
+							}
+							const textProperty: IDataObject = {};
+							if (
+								req.textPropertyCollection &&
+								(req.textPropertyCollection as IDataObject).text_property
+							) {
+								const prop = (req.textPropertyCollection as IDataObject)
+									.text_property as IDataObject;
+								if (prop.bold !== undefined) {
+									textProperty.bold = prop.bold;
+								}
+								if (prop.color) {
+									textProperty.color = prop.color;
+								}
+								if (prop.background_color) {
+									textProperty.background_color = prop.background_color;
+								}
+							}
+							request.update_text_property = {
+								text_property: textProperty,
+								ranges,
 							};
 						}
 
@@ -547,10 +933,20 @@ export async function executeWedoc(
 					}
 				}
 
-				response = await weComApiRequest.call(this, 'POST', '/cgi-bin/wedoc/mod_doc', {
+				const body: IDataObject = {
 					docid,
 					requests,
-				});
+				};
+				if (version > 0) {
+					body.version = version;
+				}
+
+				response = await weComApiRequest.call(
+					this,
+					'POST',
+					'/cgi-bin/wedoc/document/batch_update',
+					body,
+				);
 			} else if (operation === 'modSheetContent') {
 				const docid = this.getNodeParameter('docid', i) as string;
 				const requestsCollection = this.getNodeParameter(
@@ -564,49 +960,45 @@ export async function executeWedoc(
 				if (requestsCollection.requests && Array.isArray(requestsCollection.requests)) {
 					for (const req of requestsCollection.requests as IDataObject[]) {
 						const request: IDataObject = {};
-						const sheetName = (req.sheet_name as string) || 'Sheet1';
 
-						if (req.request_type === 'update_range') {
+						if (req.request_type === 'add_sheet') {
+							request.add_sheet_request = {
+								title: req.title || '',
+								row_count: req.add_sheet_row_count || 10,
+								column_count: req.add_sheet_column_count || 10,
+							};
+						} else if (req.request_type === 'delete_sheet') {
+							request.delete_sheet_request = {
+								sheet_id: req.sheet_id || '',
+							};
+						} else if (req.request_type === 'update_range') {
 							const valuesStr = (req.values as string) || '';
 							const rows = valuesStr
 								.split(';')
-								.map((row) => row.split(',').map((cell) => cell.trim()));
-							request.update_range = {
-								range: `${sheetName}!${req.range || 'A1'}`,
-								values: rows,
+								.map((row) => row.split(',').map((cell) => cell.trim()))
+								.filter((row) => row.length > 0);
+
+							const gridData: IDataObject = {
+								start_row: req.start_row || 1,
+								start_column: req.start_column || 1,
+								row_count: req.row_count || 1,
+								column_count: req.column_count || 1,
 							};
-						} else if (req.request_type === 'append_rows') {
-							const valuesStr = (req.values as string) || '';
-							const rows = valuesStr
-								.split(';')
-								.map((row) => row.split(',').map((cell) => cell.trim()));
-							request.append_rows = {
-								sheet_name: sheetName,
-								values: rows,
+
+							if (rows.length > 0) {
+								gridData.values = rows;
+							}
+
+							request.update_range_request = {
+								sheet_id: req.sheet_id || '',
+								grid_data: gridData,
 							};
-						} else if (req.request_type === 'insert_rows') {
-							request.insert_rows = {
-								sheet_name: sheetName,
-								start_row: req.row_index || 1,
-								number: req.row_count || 1,
-							};
-						} else if (req.request_type === 'delete_rows') {
-							request.delete_rows = {
-								sheet_name: sheetName,
-								start_row: req.row_index || 1,
-								number: req.row_count || 1,
-							};
-						} else if (req.request_type === 'insert_columns') {
-							request.insert_columns = {
-								sheet_name: sheetName,
-								start_column: req.column_index || 1,
-								number: req.column_count || 1,
-							};
-						} else if (req.request_type === 'delete_columns') {
-							request.delete_columns = {
-								sheet_name: sheetName,
-								start_column: req.column_index || 1,
-								number: req.column_count || 1,
+						} else if (req.request_type === 'delete_dimension') {
+							request.delete_dimension_request = {
+								sheet_id: req.sheet_id || '',
+								dimension: req.dimension || 'ROW',
+								start_index: req.start_index || 1,
+								end_index: req.end_index || 2,
 							};
 						}
 
@@ -629,12 +1021,14 @@ export async function executeWedoc(
 			// 智能表格操作 - 子表
 			else if (operation === 'addSmartsheetSheet') {
 				const docid = this.getNodeParameter('docid', i) as string;
-				const sheet_title = this.getNodeParameter('sheet_title', i) as string;
-				const sheet_index = this.getNodeParameter('sheet_index', i, 0) as number;
+				const formSetting = this.getNodeParameter('formSetting', i, {}) as IDataObject;
 
-				const properties: IDataObject = { title: sheet_title };
-				if (sheet_index > 0) {
-					properties.index = sheet_index;
+				const properties: IDataObject = {};
+				if (formSetting.sheet_title) {
+					properties.title = formSetting.sheet_title;
+				}
+				if (formSetting.sheet_index !== undefined && formSetting.sheet_index !== null) {
+					properties.index = formSetting.sheet_index;
 				}
 
 				response = await weComApiRequest.call(this, 'POST', '/cgi-bin/wedoc/smartsheet/add_sheet', {
@@ -849,7 +1243,9 @@ export async function executeWedoc(
 								const valueType = cv.value_type as string;
 								// 使用新的提取函数从结构化字段中获取值
 								const value = extractFieldValue(cv);
-								values[fieldKey] = buildCellValue(valueType, String(value));
+								// 将值类型映射到字段类型，然后根据字段类型构建正确的单元格值结构
+								const fieldType = mapValueTypeToFieldType(valueType);
+								values[fieldKey] = buildCellValueByFieldType(fieldType, value);
 							}
 						}
 
@@ -905,7 +1301,9 @@ export async function executeWedoc(
 								const valueType = cv.value_type as string;
 								// 使用新的提取函数从结构化字段中获取值
 								const value = extractFieldValue(cv);
-								values[fieldKey] = buildCellValue(valueType, String(value));
+								// 将值类型映射到字段类型，然后根据字段类型构建正确的单元格值结构
+								const fieldType = mapValueTypeToFieldType(valueType);
+								values[fieldKey] = buildCellValueByFieldType(fieldType, value);
 							}
 						}
 
@@ -1465,12 +1863,12 @@ export async function executeWedoc(
 						if (formSetting.fill_in_range_userids) {
 							const userids = Array.isArray(formSetting.fill_in_range_userids)
 								? (formSetting.fill_in_range_userids as string[])
-									.map((id) => id.trim())
-									.filter((id) => id)
+										.map((id) => id.trim())
+										.filter((id) => id)
 								: (formSetting.fill_in_range_userids as string)
-									.split(',')
-									.map((id) => id.trim())
-									.filter((id) => id);
+										.split(',')
+										.map((id) => id.trim())
+										.filter((id) => id);
 							if (userids.length > 0) {
 								fill_in_range.userids = userids;
 							}
@@ -1480,12 +1878,12 @@ export async function executeWedoc(
 						if (formSetting.fill_in_range_departmentids) {
 							const departmentids = Array.isArray(formSetting.fill_in_range_departmentids)
 								? (formSetting.fill_in_range_departmentids as string[])
-									.map((id) => parseInt(id.trim(), 10))
-									.filter((id) => !isNaN(id))
+										.map((id) => parseInt(id.trim(), 10))
+										.filter((id) => !isNaN(id))
 								: (formSetting.fill_in_range_departmentids as string)
-									.split(',')
-									.map((id) => parseInt(id.trim(), 10))
-									.filter((id) => !isNaN(id));
+										.split(',')
+										.map((id) => parseInt(id.trim(), 10))
+										.filter((id) => !isNaN(id));
 							if (departmentids.length > 0) {
 								fill_in_range.departmentids = departmentids;
 							}
@@ -1500,12 +1898,12 @@ export async function executeWedoc(
 					if (formSetting.setting_manager_range) {
 						const userids = Array.isArray(formSetting.setting_manager_range)
 							? (formSetting.setting_manager_range as string[])
-								.map((id) => id.trim())
-								.filter((id) => id)
+									.map((id) => id.trim())
+									.filter((id) => id)
 							: (formSetting.setting_manager_range as string)
-								.split(',')
-								.map((id) => id.trim())
-								.filter((id) => id);
+									.split(',')
+									.map((id) => id.trim())
+									.filter((id) => id);
 
 						if (userids.length > 0) {
 							processedSetting.setting_manager_range = { userids };
@@ -1754,7 +2152,6 @@ export async function executeWedoc(
 			}
 			throw error;
 		}
-	}
 
 	return returnData;
 }

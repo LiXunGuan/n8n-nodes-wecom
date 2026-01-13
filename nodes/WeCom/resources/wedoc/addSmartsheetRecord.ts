@@ -13,7 +13,7 @@ export const addSmartsheetRecordDescription: INodeProperties[] = [
 			{ name: '字段标题', value: 'CELL_VALUE_KEY_TYPE_FIELD_TITLE', description: '使用字段标题作为单元格数据的key（推荐）' },
 			{ name: '字段ID', value: 'CELL_VALUE_KEY_TYPE_FIELD_ID', description: '使用字段ID作为单元格数据的key' },
 		],
-		description: '指定记录中字段值的key类型',
+		description: '返回记录中单元格的key类型，默认用标题',
 	},
 	{
 		displayName: '记录列表',
@@ -24,7 +24,7 @@ export const addSmartsheetRecordDescription: INodeProperties[] = [
 		default: {},
 		placeholder: '添加记录',
 		typeOptions: { multipleValues: true },
-		description: '要添加的记录列表',
+		description: '要添加的记录列表（单表最多允许有100000行记录，15000000个单元格。单次添加建议在500行内）',
 		options: [
 			{
 				displayName: '记录',
@@ -77,50 +77,61 @@ export const addSmartsheetRecordDescription: INodeProperties[] = [
 										],
 										description: '值的类型',
 									},
-									// 文本类型 - 输入方式选择
+									// 文本类型
 									{
-										displayName: '文本输入方式',
-										name: 'text_input_mode',
-										type: 'options',
+										displayName: '文本内容',
+										name: 'text_content_list',
+										type: 'fixedCollection',
 										displayOptions: {
 											show: {
 												'value_type': ['text'],
 											},
 										},
+										default: {},
+										placeholder: '添加文本片段',
+										typeOptions: { multipleValues: true },
+										description: '添加一个或多个文本片段（支持纯文本和链接）',
 										options: [
-											{ name: '简单输入', value: 'simple' },
-											{ name: 'JSON输入', value: 'json' },
+											{
+												displayName: '文本片段',
+												name: 'items',
+												values: [
+													{
+														displayName: '类型',
+														name: 'type',
+														type: 'options',
+														options: [
+															{ name: '纯文本', value: 'text' },
+															{ name: '链接', value: 'url' },
+														],
+														default: 'text',
+														description: '选择内容类型',
+													},
+													{
+														displayName: '文本内容',
+														name: 'text',
+														type: 'string',
+														default: '',
+														required: true,
+														description: '显示的文本内容',
+													},
+													{
+														displayName: '链接URL',
+														name: 'link',
+														type: 'string',
+														displayOptions: {
+															show: {
+																type: ['url'],
+															},
+														},
+														default: '',
+														required: true,
+														description: '链接跳转的URL地址',
+														placeholder: 'https://example.com',
+													},
+												],
+											},
 										],
-										default: 'simple',
-										description: '选择文本的输入方式',
-									},
-									// 文本类型 - 简单输入
-									{
-										displayName: '文本值',
-										name: 'text_value',
-										type: 'string',
-										displayOptions: {
-											show: {
-												'value_type': ['text'],
-												'text_input_mode': ['simple'],
-											},
-										},
-										default: '',
-										description: '输入文本内容',
-									},
-									// 文本类型 - JSON输入
-									{
-										displayName: '文本数据（JSON）',
-										name: 'text_json_data',
-										type: 'json',
-										displayOptions: {
-											show: {
-												'value_type': ['text'],
-												'text_input_mode': ['json'],
-											},
-										},
-										default: '[]',
-										description: '直接输入JSON格式的文本数组',
 									},
 									// 简单文本类型（邮箱、电话、条码）
 									{
@@ -177,271 +188,213 @@ export const addSmartsheetRecordDescription: INodeProperties[] = [
 									},
 									// 链接类型
 									{
-										displayName: '链接URL',
-										name: 'url_link',
-										type: 'string',
+										displayName: '链接列表',
+										name: 'url_list',
+										type: 'fixedCollection',
 										displayOptions: {
 											show: {
 												'value_type': ['url'],
 											},
 										},
-										default: '',
-										required: true,
-										description: '链接的URL地址',
-										placeholder: 'https://example.com',
-									},
-									{
-										displayName: '链接文本',
-										name: 'url_text',
-										type: 'string',
-										displayOptions: {
-											show: {
-												'value_type': ['url'],
+										default: {},
+										placeholder: '添加链接',
+										typeOptions: { multipleValues: true },
+										description: '添加一个或多个链接',
+										options: [
+											{
+												displayName: '链接',
+												name: 'items',
+												values: [
+													{
+														displayName: '链接URL',
+														name: 'link',
+														type: 'string',
+														default: '',
+														required: true,
+														description: '链接的URL地址',
+														placeholder: 'https://example.com',
+													},
+													{
+														displayName: '链接文本',
+														name: 'text',
+														type: 'string',
+														default: '',
+														description: '链接显示的文本，留空则使用URL',
+													},
+												],
 											},
-										},
-										default: '',
-										description: '链接显示的文本，留空则使用URL',
+										],
 									},
 									// 选项类型（单选/多选）
 									{
-										displayName: '输入方式',
-										name: 'option_mode',
-										type: 'options',
+										displayName: '选项列表',
+										name: 'option_list',
+										type: 'fixedCollection',
 										displayOptions: {
 											show: {
 												'value_type': ['single_select', 'select'],
 											},
 										},
+										default: {},
+										placeholder: '添加选项',
+										typeOptions: { multipleValues: true },
+										description: '添加一个或多个选项',
 										options: [
-											{ name: '使用已存在的选项ID', value: 'id' },
-											{ name: '新增选项', value: 'new' },
+											{
+												displayName: '选项',
+												name: 'items',
+												values: [
+													{
+														displayName: '输入方式',
+														name: 'mode',
+														type: 'options',
+														options: [
+															{ name: '使用已存在的选项ID', value: 'id' },
+															{ name: '新增选项', value: 'new' },
+														],
+														default: 'id',
+														description: '选择输入方式',
+													},
+													{
+														displayName: '选项ID',
+														name: 'id',
+														type: 'string',
+														displayOptions: {
+															show: {
+																mode: ['id'],
+															},
+														},
+														default: '',
+														required: true,
+														description: '已存在选项的ID',
+													},
+													{
+														displayName: '选项文本',
+														name: 'text',
+														type: 'string',
+														displayOptions: {
+															show: {
+																mode: ['new'],
+															},
+														},
+														default: '',
+														required: true,
+														description: '新增选项的文本内容',
+													},
+													{
+														displayName: '选项颜色',
+														name: 'style',
+														type: 'number',
+														displayOptions: {
+															show: {
+																mode: ['new'],
+															},
+														},
+														default: 1,
+														description: '新增选项的颜色样式（整数）',
+													},
+												],
+											},
 										],
-										default: 'id',
-										description: '选择输入方式',
 									},
+									// 成员类型
 									{
-										displayName: '选项ID',
-										name: 'option_id',
-										type: 'string',
-										displayOptions: {
-											show: {
-												'value_type': ['single_select', 'select'],
-												'option_mode': ['id'],
-											},
-										},
-										default: '',
-										required: true,
-										description: '已存在选项的ID',
-									},
-									{
-										displayName: '选项文本',
-										name: 'option_text',
-										type: 'string',
-										displayOptions: {
-											show: {
-												'value_type': ['single_select', 'select'],
-												'option_mode': ['new'],
-											},
-										},
-										default: '',
-										required: true,
-										description: '新增选项的文本内容',
-									},
-									{
-										displayName: '选项颜色',
-										name: 'option_style',
-										type: 'number',
-										displayOptions: {
-											show: {
-												'value_type': ['single_select', 'select'],
-												'option_mode': ['new'],
-											},
-										},
-										default: 1,
-										description: '新增选项的颜色样式（整数）',
-									},
-									// 成员类型 - 输入方式选择
-									{
-										displayName: '成员输入方式',
-										name: 'user_input_mode',
-										type: 'options',
+										displayName: '成员列表',
+										name: 'user_list',
+										type: 'fixedCollection',
 										displayOptions: {
 											show: {
 												'value_type': ['user'],
 											},
 										},
+										default: {},
+										placeholder: '添加成员',
+										typeOptions: { multipleValues: true },
+										description: '添加一个或多个成员',
 										options: [
-											{ name: '简单输入', value: 'simple' },
-											{ name: 'JSON输入', value: 'json' },
+											{
+												displayName: '成员',
+												name: 'items',
+												values: [
+													{
+														displayName: '成员ID',
+														name: 'user_id',
+														type: 'string',
+														default: '',
+														required: true,
+														description: '成员的userid',
+														placeholder: 'userid1',
+													},
+												],
+											},
 										],
-										default: 'simple',
-										description: '选择成员的输入方式',
 									},
-									// 成员类型 - 简单输入
+									// 地点类型
 									{
-										displayName: '成员ID列表',
-										name: 'user_ids',
-										type: 'string',
-										displayOptions: {
-											show: {
-												'value_type': ['user'],
-												'user_input_mode': ['simple'],
-											},
-										},
-										default: '',
-										required: true,
-										description: '成员的userid，多个用逗号分隔',
-										placeholder: 'userid1,userid2',
-									},
-									// 成员类型 - JSON输入
-									{
-										displayName: '成员数据（JSON）',
-										name: 'user_json_data',
-										type: 'json',
-										displayOptions: {
-											show: {
-												'value_type': ['user'],
-												'user_input_mode': ['json'],
-											},
-										},
-										default: '[]',
-										description: '直接输入JSON格式的成员数组',
-									},
-									// 地点类型 - 输入方式选择
-									{
-										displayName: '地点输入方式',
-										name: 'location_input_mode',
-										type: 'options',
+										displayName: '地点列表',
+										name: 'location_list',
+										type: 'fixedCollection',
 										displayOptions: {
 											show: {
 												'value_type': ['location'],
 											},
 										},
+										default: {},
+										placeholder: '添加地点',
+										typeOptions: { multipleValues: true },
+										description: '添加一个或多个地点',
 										options: [
-											{ name: '表单输入', value: 'form' },
-											{ name: 'JSON输入', value: 'json' },
+											{
+												displayName: '地点',
+												name: 'items',
+												values: [
+													{
+														displayName: '地点ID',
+														name: 'id',
+														type: 'string',
+														default: '',
+														required: true,
+														description: '地点的唯一标识符',
+													},
+													{
+														displayName: '地点名称',
+														name: 'title',
+														type: 'string',
+														default: '',
+														required: true,
+														description: '地点的显示名称',
+													},
+													{
+														displayName: '纬度',
+														name: 'latitude',
+														type: 'string',
+														default: '',
+														required: true,
+														description: '地点的纬度坐标',
+														placeholder: '23.10647',
+													},
+													{
+														displayName: '经度',
+														name: 'longitude',
+														type: 'string',
+														default: '',
+														required: true,
+														description: '地点的经度坐标',
+														placeholder: '113.32446',
+													},
+													{
+														displayName: '来源类型',
+														name: 'source_type',
+														type: 'options',
+														options: [{ name: '腾讯地图', value: 1 }],
+														default: 1,
+														description: '地图来源，目前仅支持腾讯地图',
+													},
+												],
+											},
 										],
-										default: 'form',
-										description: '选择地点数据的输入方式',
 									},
-									{
-										displayName: '地点数据（JSON）',
-										name: 'location_json_data',
-										type: 'json',
-										displayOptions: {
-											show: {
-												'value_type': ['location'],
-												'location_input_mode': ['json'],
-											},
-										},
-										default: '{}',
-										description: '直接输入JSON格式的地点数据',
-									},
-									// 地点类型 - 表单输入字段
-									{
-										displayName: '地点ID',
-										name: 'location_id',
-										type: 'string',
-										displayOptions: {
-											show: {
-												'value_type': ['location'],
-												'location_input_mode': ['form'],
-											},
-										},
-										default: '',
-										required: true,
-										description: '地点的唯一标识符',
-									},
-									{
-										displayName: '地点名称',
-										name: 'location_title',
-										type: 'string',
-										displayOptions: {
-											show: {
-												'value_type': ['location'],
-												'location_input_mode': ['form'],
-											},
-										},
-										default: '',
-										required: true,
-										description: '地点的显示名称',
-									},
-									{
-										displayName: '纬度',
-										name: 'location_latitude',
-										type: 'string',
-										displayOptions: {
-											show: {
-												'value_type': ['location'],
-												'location_input_mode': ['form'],
-											},
-										},
-										default: '',
-										required: true,
-										description: '地点的纬度坐标',
-										placeholder: '23.10647',
-									},
-									{
-										displayName: '经度',
-										name: 'location_longitude',
-										type: 'string',
-										displayOptions: {
-											show: {
-												'value_type': ['location'],
-												'location_input_mode': ['form'],
-											},
-										},
-										default: '',
-										required: true,
-										description: '地点的经度坐标',
-										placeholder: '113.32446',
-									},
-									{
-										displayName: '来源类型',
-										name: 'location_source_type',
-										type: 'options',
-										displayOptions: {
-											show: {
-												'value_type': ['location'],
-												'location_input_mode': ['form'],
-											},
-										},
-										options: [{ name: '腾讯地图', value: 1 }],
-										default: 1,
-										description: '地图来源，目前仅支持腾讯地图',
-									},
-									// 图片类型 - 输入方式选择
-									{
-										displayName: '图片输入方式',
-										name: 'image_input_mode',
-										type: 'options',
-										displayOptions: {
-											show: {
-												'value_type': ['image'],
-											},
-										},
-										options: [
-											{ name: '表单输入', value: 'form' },
-											{ name: 'JSON输入', value: 'json' },
-										],
-										default: 'form',
-										description: '选择图片列表的输入方式',
-									},
-									// 图片类型 - JSON输入
-									{
-										displayName: '图片列表（JSON）',
-										name: 'image_json_data',
-										type: 'json',
-										displayOptions: {
-											show: {
-												'value_type': ['image'],
-												'image_input_mode': ['json'],
-											},
-										},
-										default: '[]',
-										description: '直接输入JSON格式的图片数组',
-									},
-									// 图片类型 - 表单输入
+									// 图片类型
 									{
 										displayName: '图片列表',
 										name: 'image_list',
@@ -449,7 +402,6 @@ export const addSmartsheetRecordDescription: INodeProperties[] = [
 										displayOptions: {
 											show: {
 												'value_type': ['image'],
-												'image_input_mode': ['form'],
 											},
 										},
 										default: {},
@@ -502,38 +454,7 @@ export const addSmartsheetRecordDescription: INodeProperties[] = [
 											},
 										],
 									},
-									// 文件类型 - 输入方式选择
-									{
-										displayName: '文件输入方式',
-										name: 'attachment_input_mode',
-										type: 'options',
-										displayOptions: {
-											show: {
-												'value_type': ['attachment'],
-											},
-										},
-										options: [
-											{ name: '表单输入', value: 'form' },
-											{ name: 'JSON输入', value: 'json' },
-										],
-										default: 'form',
-										description: '选择文件列表的输入方式',
-									},
-									// 文件类型 - JSON输入
-									{
-										displayName: '文件列表（JSON）',
-										name: 'attachment_json_data',
-										type: 'json',
-										displayOptions: {
-											show: {
-												'value_type': ['attachment'],
-												'attachment_input_mode': ['json'],
-											},
-										},
-										default: '[]',
-										description: '直接输入JSON格式的文件数组',
-									},
-									// 文件类型 - 表单输入
+									// 文件类型
 									{
 										displayName: '文件列表',
 										name: 'attachment_list',
@@ -541,7 +462,6 @@ export const addSmartsheetRecordDescription: INodeProperties[] = [
 										displayOptions: {
 											show: {
 												'value_type': ['attachment'],
-												'attachment_input_mode': ['form'],
 											},
 										},
 										default: {},
